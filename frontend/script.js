@@ -98,9 +98,9 @@ const museumData = {
         description: 'Один из крупнейших музеев современного искусства в регионе. Здесь представлены работы ведущих художников XX и XXI века, включая живопись, скульптуру, инсталляции и медиа-арт. Музей регулярно проводит временные выставки, мастер-классы и образовательные программы. Основанный в 1995 году, музей стал важным центром культурной жизни города. В его постоянной коллекции представлено более 5000 произведений искусства, включая работы как российских, так и зарубежных художников.',
         price: 500,
         images: [
-            'https://cdn.poehali.dev/projects/7e7c7725-c77f-4448-88a5-a4f85ace8939/files/91a270d3-1185-489d-bbce-0e2a52ce896b.jpg',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Museu_de_Arte_Contemporânea_de_Niterói.jpg/960px-Museu_de_Arte_Contemporânea_de_Niterói.jpg',
-            'https://img.topky.sk/cestovky/900px/1114322.jpg/zaujimavosti-den-Europa.jpg'
+            'images/91a270d3-1185-489d-bbce-0e2a52ce896b.jpg',
+            'images/Museu_de_Arte_Contemporânea_de_Niterói.jpg',
+            'images/08e35c00-8b7a-426c-8366-025fa7c26fa9.jpg'
         ],
         address: 'ул. Искусств, д. 10',
         hours: 'Круглосуточно 10:00-18:00'
@@ -112,9 +112,9 @@ const museumData = {
         description: 'Основанный в 1895 году, Исторический музей хранит богатейшую коллекцию артефактов, отражающих историю региона с древнейших времен до наших дней. В музее представлены уникальные археологические находки, документы, оружие и предметы быта разных эпох. Особой гордостью музея является коллекция средневекового оружия и доспехов, а также реконструкции древнего поселения в натуральную величину.',
         price: 400,
         images: [
-            'https://cdn.poehali.dev/projects/7e7c7725-c77f-4448-88a5-a4f85ace8939/files/629ca2c2-81fd-419a-b2e4-63185088c637.jpg',
-            'https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_676c0ac2db74cf0b2a069b75_676c3a53db74cf0b2a5c5801/scale_1200',
-            'https://i.pinimg.com/736x/0d/0d/48/0d0d48952fbd8b2b305663ec5ec55688.jpg'
+            'images/629ca2c2-81fd-419a-b2e4-63185088c637.jpg',
+            'images/scale_1200.jfif',
+            'images/0d0d48952fbd8b2b305663ec5ec55688.jpg'
         ],
         address: 'ул. Историческая, д. 25',
         hours: 'Круглосуточно 10:00-18:00'
@@ -126,9 +126,9 @@ const museumData = {
         description: 'Интерактивный музей, где можно не только смотреть, но и трогать экспонаты. Посетители могут провести физические эксперименты, познакомиться с принципами работы различных механизмов и даже поуправлять роботами. Музей особенно популярен среди детей и подростков. В экспозиции представлены достижения науки от простых механизмов до современных технологий, включая разделы по робототехнике, астрономии и биологии.',
         price: 450,
         images: [
-            'https://cdn.poehali.dev/projects/7e7c7725-c77f-4448-88a5-a4f85ace8939/files/0a851476-2d06-4639-94a8-e569a11c7574.jpg',
-            'https://cdn.culture.ru/images/d520bfaf-5d0e-50f8-8d58-86c26b6afbee',
-            'https://life-globe.com/image/cache/catalog/russia/sankt-peterburg/petropavlovskaya-krepost/muzej-nauki-i-tehniki/muzej-nauki-i-tehniki-1/muzej-nauki-i-tehniki-petropavlovskaya-krepost-915x610.jpg'
+            'images/0a851476-2d06-4639-94a8-e569a11c7574.jpg',
+            'images/muzej-nauki-i-tehniki-petropavlovskaya-krepost-915x610.jpg',
+            'images/d520bfaf-5d0e-50f8-8d58-86c26b6afbee.jfif'
         ],
         address: 'пр. Науки, д. 15',
         hours: 'Круглосуточно 10:00-18:00'
@@ -140,9 +140,9 @@ const museumData = {
         description: 'Галерея представляет собой уникальное собрание произведений изобразительного искусства от классики до современности. В коллекции представлены работы известных русских и зарубежных художников, а также регулярно проводятся выставки современных авторов. Особенностью галереи является интерактивная экспозиция, позволяющая посетителям глубже понять творческий процесс художников разных эпох.',
         price: 450,
         images: [
-            'https://cdn.poehali.dev/projects/7e7c7725-c77f-4448-88a5-a4f85ace8939/files/08e35c00-8b7a-426c-8366-025fa7c26fa9.jpg',
-            'https://avatars.mds.yandex.net/i?id=291deeebd5d7ebad3fcb276740edabf8_l-9197564-images-thumbs&n=13',
-            'https://vedomostiural.ru/uploadedFiles/newsimages/big/photo_2023-04-19_14-15-03.jpg'
+            'images/XXL_height.webp',
+            'images/i.jpg',
+            'images/zaujimavosti-den-Europa.jpg'
         ],
         address: 'ул. Художественная, д. 8',
         hours: 'Круглосуточно 10:00-18:00'
@@ -154,9 +154,9 @@ const museumData = {
         description: 'Музей посвящен культуре и быту народов разных стран. В экспозиции представлены традиционные костюмы, украшения, предметы домашнего обихода, орудия труда и произведения народного искусства. Особый интерес представляет коллекция традиционных музыкальных инструментов. Музей проводит мастер-классы по народным ремеслам и фольклорные концерты, позволяющие полностью погрузиться в культуру разных народов.',
         price: 350,
         images: [
-            'https://fs.znanio.ru/d5af0e/6f/9a/724f0e997f478c5f0f0f472637e156e7a3.jpg',
-            'https://ethnomuseum.ru/images/NIWPOSETITLU/SOBITIA/2021/German/952.jpg',
-            'https://r1.nubex.ru/s998-600/f1865_01/IMG_2431.JPG'
+            'images/724f0e997f478c5f0f0f472637e156e7a3.jpg',
+            'images/952.jpg',
+            'images/b7804ad78dd2c46d504049c74436f862.jpg'
         ],
         address: 'ул. Этнографическая, д. 12',
         hours: 'Круглосуточно 10:00-18:00'
@@ -168,9 +168,9 @@ const museumData = {
         description: 'Музей предлагает уникальную возможность познакомиться с разнообразием жизни на Земле. В экспозиции представлены скелеты динозавров, коллекции минералов, чучела животных и интерактивные модели экосистем. Особой популярностью пользуется зал с макетом пещеры первобытного человека. Музей активно использует современные технологии, включая VR-экскурсии по доисторическим ландшафтам.',
         price: 420,
         images: [
-            'https://res.klook.com/image/upload/c_fill,w_627,h_470/q_80/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/bjwgmtlezhj76wkid5lq.jpg',
-            'https://cdn.culture.ru/images/c13b7fb7-c0d3-521e-9283-a73a47641ee6',
-            'https://i.pinimg.com/originals/9a/0b/ad/9a0badeb44fb220900feee928e8e77d8.jpg'
+            'images/bjwgmtlezhj76wkid5lq.jpg',
+            'images/c13b7fb7-c0d3-521e-9283-a73a47641ee6.jfif',
+            'images/9a0badeb44fb220900feee928e8e77d8.jpg'
         ],
         address: 'ул. Природная, д. 5',
         hours: 'Круглосуточно 10:00-18:00'
@@ -438,7 +438,6 @@ function decreaseTickets() {
 }
 
 function updateTicketPrice() {
-    
     updateTotal();
 }
 
@@ -577,7 +576,6 @@ function updateGallery(images) {
     }
 }
 
-
 async function getAvailableTimeSlots(museumCode, date) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/time-slots/${museumCode}/${date}`);
@@ -590,7 +588,6 @@ async function getAvailableTimeSlots(museumCode, date) {
         return [];
     }
 }
-
 
 function setupPaymentValidation() {
     const cardNumberInput = document.getElementById('card-number');
@@ -730,7 +727,6 @@ function resetPaymentForm() {
     });
 }
 
-
 async function reserveTickets(museumCode, date, startTime, quantity) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/time-slots/reserve`, {
@@ -814,7 +810,6 @@ async function generateDateSlots() {
         }
     }
 }
-
 
 function updateExistingSlots(container, allSlots, today) {
     for (let i = 0; i < 14; i++) {
@@ -942,7 +937,6 @@ function restoreSelectedSlot() {
         }
     }
 }
-
 
 function generateTimeSlotsHTML(daySlots, dateString) {
     if (!daySlots || daySlots.length === 0) {
@@ -1274,6 +1268,106 @@ function generateTicket() {
     return true;
 }
 
+/* =============================================
+   ОБНОВЛЁННЫЕ ФУНКЦИИ «ПОДЕЛИТЬСЯ»
+   ============================================= */
+
+/**
+ * Поделиться билетом из детального просмотра (ticket-container).
+ * Генерирует изображение и открывает системное меню «Поделиться».
+ */
+async function shareTicket() {
+    const ticketElement = document.getElementById('ticket-container');
+    if (!ticketElement) {
+        showMessage('Нечего отправить');
+        return;
+    }
+    await shareTicketImage(ticketElement);
+}
+
+/**
+ * Поделиться билетом из карточки в списке «Мои билеты».
+ * @param {HTMLElement} button - кнопка «Поделиться», по которой кликнули.
+ */
+async function shareSingleTicket(button) {
+    const ticketCard = button.closest('.ticket-card-compact');
+    if (!ticketCard) {
+        showMessage('Не удалось найти билет');
+        return;
+    }
+    await shareTicketImage(ticketCard);
+}
+
+/**
+ * Общая логика: рендерит элемент в canvas, превращает в файл и вызывает Web Share API.
+ * Если API недоступен или не поддерживает файлы, показывает сообщение.
+ */
+async function shareTicketImage(element) {
+    if (typeof html2canvas === 'undefined') {
+        showMessage('Функция поделиться недоступна в этом браузере');
+        return;
+    }
+
+    // Временно скрываем кнопки, чтобы они не попали на скриншот
+    const actionButtons = element.querySelectorAll('.ticket-actions-compact, .action-btn-compact, .save-btn-compact, .share-btn-compact');
+    const originalDisplays = [];
+    actionButtons.forEach(btn => {
+        originalDisplays.push(btn.style.display);
+        btn.style.display = 'none';
+    });
+
+    try {
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: '#ffffff'
+        });
+
+        // Восстанавливаем кнопки
+        actionButtons.forEach((btn, i) => {
+            btn.style.display = originalDisplays[i] || '';
+        });
+
+        canvas.toBlob(async (blob) => {
+            if (!blob) {
+                showMessage('Не удалось создать изображение');
+                return;
+            }
+
+            const file = new File([blob], 'ticket.png', { type: 'image/png' });
+            const shareData = { files: [file] };
+
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    console.log('Ошибка при попытке поделиться:', err);
+                }
+            } else {
+                // Если файлы не поддерживаются, пробуем хотя бы ссылку
+                showMessage('Ваш браузер не поддерживает отправку изображений. Изображение будет сохранено.');
+                const link = document.createElement('a');
+                link.download = 'ticket.png';
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+        }, 'image/png');
+    } catch (error) {
+        console.error('Ошибка при генерации изображения для поделиться:', error);
+        showMessage('Не удалось подготовить билет для отправки');
+        // Восстанавливаем кнопки при ошибке
+        actionButtons.forEach((btn, i) => {
+            btn.style.display = originalDisplays[i] || '';
+        });
+    }
+}
+
+/* =============================================
+   КОНЕЦ БЛОКА «ПОДЕЛИТЬСЯ»
+   ============================================= */
+
 function saveTicket() {
     const ticketElement = document.getElementById('ticket-container');
     
@@ -1295,27 +1389,6 @@ function saveTicket() {
         console.error('Ошибка при создании изображения:', error);
         showMessage('Билет сохранен в базе данных');
     });
-}
-
-function shareTicket() {
-    if (!currentMuseumId) {
-        showMessage('Ошибка: информация о музее не найдена');
-        return;
-    }
-    
-    const museum = museumData[currentMuseumId];
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'Мой билет в музей',
-            text: `Билет в ${museum.title}`,
-            url: window.location.href
-        }).catch(error => {
-            console.log('Ошибка при попытке поделиться:', error);
-        });
-    } else {
-        showMessage('Функция "Поделиться" не поддерживается в вашем браузере');
-    }
 }
 
 let ticketsRefreshInterval = null;
@@ -1423,7 +1496,6 @@ async function loadUserTickets() {
         displayTickets([]);
     }
 }
-
 
 function generateBarcodeDataURL(text, width = 200, height = 80) {
     return new Promise((resolve) => {
@@ -1620,343 +1692,6 @@ function createSimpleQRCode(text, size = 120) {
     return canvas.toDataURL('image/png', 1.0);
 }
 
-function createSimpleQRCode(text, size = 120) {
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, size, size);
-    
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(5, 5, size - 10, size - 10);
-    
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 14px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('БИЛЕТ', size/2, size/2 - 10);
-    
-    ctx.font = 'bold 10px Arial';
-    ctx.fillText(text.substring(0, 15), size/2, size/2 + 10);
-    
-    return canvas.toDataURL('image/png', 1.0);
-}
-
-async function displayTickets(tickets) {
-    const ticketsGrid = document.getElementById('tickets-grid');
-    const noTicketsMessage = document.getElementById('no-tickets-message');
-    
-    if (!ticketsGrid || !noTicketsMessage) {
-        console.error('Не найдены элементы для отображения билетов');
-        return;
-    }
-    
-    console.log('Отображаем билеты, количество:', tickets.length);
-    
-    if (!tickets || tickets.length === 0) {
-        ticketsGrid.innerHTML = '';
-        noTicketsMessage.style.display = 'block';
-        noTicketsMessage.innerHTML = `
-            <div style="text-align: center; padding: 2rem;">
-                <h3>Нет активных билетов</h3>
-                <p style="color: var(--text-light); margin-top: 0.5rem;">
-                    ${currentUser ? 'У вас нет непроверенных билетов. Проверенные билеты автоматически скрываются.' : 'Войдите в систему для просмотра билетов'}
-                </p>
-            </div>
-        `;
-        return;
-    }
-    
-    noTicketsMessage.style.display = 'none';
-    
-    const ticketsWithQR = await Promise.all(
-        tickets.map(async (ticket) => {
-            try {
-                const qrCodeDataURL = await generateQRCodeDataURL(ticket.ticket_number, 120);
-                return { ...ticket, qrCodeDataURL };
-            } catch (error) {
-                console.error('Ошибка при генерации QR-кода для билета', ticket.ticket_number, error);
-                const fallbackQR = createSimpleQRCode(ticket.ticket_number, 120);
-                return { ...ticket, qrCodeDataURL: fallbackQR };
-            }
-        })
-    );
-    
-    const ticketsHTML = ticketsWithQR.map(ticket => {
-        const isNewTicket = window.newTicketNumbers && 
-                           window.newTicketNumbers.some(newNumber => 
-                               ticket.ticket_number && 
-                               ticket.ticket_number.includes(newNumber.replace('T', '').split('-')[0])
-                           );
-        
-        const museumName = ticket.museum_name || ticket.museum_code || 'Неизвестный музей';
-        const visitorName = ticket.visitor_name || currentUser?.name || 'Не указано';
-        const visitorSurname = ticket.visitor_surname || currentUser?.surname || '';
-        const visitorPhone = ticket.visitor_phone || currentUser?.phone || 'Не указан';
-        const ticketType = ticket.ticket_type || 'Стандартный';
-        const price = ticket.price || 0;
-        const visitDate = ticket.visit_date ? formatDate(ticket.visit_date) : 'Не указана';
-        const visitTime = ticket.visit_time ? formatTime(ticket.visit_time) : '';
-        
-        const purchaseDate = ticket.issued_at ? formatDateTime(ticket.issued_at) : 
-                            (ticket.created_at ? formatDateTime(ticket.created_at) : 
-                            (ticket.purchase_date ? formatDateTime(ticket.purchase_date) : 'Не указана'));
-        
-        return `
-        <div class="ticket-card-compact ${isNewTicket ? 'new-ticket' : ''}">
-            ${isNewTicket ? '<div class="new-ticket-badge">НОВЫЙ</div>' : ''}
-            <div class="ticket-status-indicator" style="background: #10b981;"></div>
-            <div class="ticket-header-compact">
-                <h3>${museumName}</h3>
-                <div class="ticket-category-badge">${ticketType}</div>
-            </div>
-            
-            <div class="ticket-body-compact">
-                <div class="ticket-info-compact">
-                    <div class="info-row-compact">
-                        <span class="info-label-compact">Посетитель:</span>
-                        <span class="info-value-compact">${visitorName} ${visitorSurname}</span>
-                    </div>
-                    <div class="info-row-compact">
-                        <span class="info-label-compact">Телефон:</span>
-                        <span class="info-value-compact">${visitorPhone}</span>
-                    </div>
-                    <div class="info-row-compact">
-                        <span class="info-label-compact">Приобретено:</span>
-                        <span class="info-value-compact" style="color: #10b981; font-weight: bold;">${purchaseDate}</span>
-                    </div>
-                    <div class="info-row-compact">
-                        <span class="info-label-compact">Дата посещения:</span>
-                        <span class="info-value-compact">${visitDate} ${visitTime}</span>
-                    </div>
-                    <div class="info-row-compact">
-                        <span class="info-label-compact">Сумма:</span>
-                        <span class="info-value-compact" style="font-weight: bold; color: #3b82f6;">${price}₽</span>
-                    </div>
-                </div>
-                
-                <div class="ticket-number-compact">
-                    № ${ticket.ticket_number}
-                </div>
-                
-                <div class="qr-code-compact">
-                    <p style="font-size: 0.8rem; margin-bottom: 0.5rem; color: #666; text-align: center;">QR-код для входа</p>
-                    <img src="${ticket.qrCodeDataURL}" alt="QR Code" 
-                         style="width: 120px; height: 120px; border: 2px solid #000; border-radius: 8px; background: white; display: block; margin: 0 auto;">
-                </div>
-                
-                <div class="ticket-actions-compact">
-                    <button class="action-btn-compact save-btn-compact" onclick="saveSingleTicket(this)">
-                        Сохранить
-                    </button>
-                    <button class="action-btn-compact share-btn-compact" onclick="shareSingleTicket('${ticket.ticket_number}')">
-                        Поделиться
-                    </button>
-                </div>
-            </div>
-        </div>
-    `}).join('');
-    
-    ticketsGrid.innerHTML = ticketsHTML;
-    
-    if (window.newTicketNumbers && window.newTicketNumbers.length > 0) {
-        setTimeout(() => {
-            const newTickets = document.querySelectorAll('.ticket-card-compact.new-ticket');
-            newTickets.forEach(ticket => {
-                ticket.classList.remove('new-ticket');
-                const badge = ticket.querySelector('.new-ticket-badge');
-                if (badge) badge.remove();
-            });
-            window.newTicketNumbers = [];
-            console.log('Подсветка новых билетов убрана');
-        }, 7000);
-    }
-}
-
-function saveSingleTicket(button) {
-    const ticketCard = button.closest('.ticket-card-compact');
-    if (typeof html2canvas === 'undefined') {
-        showMessage('Функция сохранения недоступна');
-        return;
-    }
-
-    const originalText = button.textContent;
-    button.textContent = 'Сохраняем...';
-    button.disabled = true;
-
-    const tempContainer = document.createElement('div');
-    tempContainer.style.position = 'fixed';
-    tempContainer.style.left = '0';
-    tempContainer.style.top = '0';
-    tempContainer.style.width = '400px';
-    tempContainer.style.zIndex = '10000';
-    tempContainer.style.opacity = '0';
-    tempContainer.style.pointerEvents = 'none';
-    
-    const clone = ticketCard.cloneNode(true);
-    clone.style.width = '380px';
-    clone.style.margin = '0 auto';
-    clone.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
-    clone.style.transform = 'scale(1)';
-    
-    tempContainer.appendChild(clone);
-    document.body.appendChild(tempContainer);
-
-    setTimeout(() => {
-        const images = clone.getElementsByTagName('img');
-        let imagesLoaded = 0;
-        const totalImages = images.length;
-
-        if (totalImages === 0) {
-            captureTicket();
-            return;
-        }
-
-        const imageLoadPromises = Array.from(images).map(img => {
-            return new Promise((resolve) => {
-                if (img.complete) {
-                    resolve();
-                } else {
-                    img.onload = resolve;
-                    img.onerror = resolve;
-                    setTimeout(resolve, 1000);
-                }
-            });
-        });
-
-        Promise.all(imageLoadPromises).then(() => {
-            setTimeout(captureTicket, 100);
-        });
-
-        function captureTicket() {
-            html2canvas(clone, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#ffffff',
-                allowTaint: false,
-                width: clone.offsetWidth,
-                height: clone.offsetHeight,
-                scrollX: 0,
-                scrollY: 0,
-                onclone: function(clonedDoc, element) {
-                    element.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.15)';
-                    element.style.borderRadius = '16px';
-                    
-                    const textElements = element.querySelectorAll('*');
-                    textElements.forEach(el => {
-                        const computedStyle = window.getComputedStyle(el);
-                        if (computedStyle.color === 'rgba(0, 0, 0, 0)' || computedStyle.color === 'transparent') {
-                            el.style.color = '#000000';
-                        }
-                    });
-                    
-                    const qrImages = element.querySelectorAll('.qr-code-compact img');
-                    qrImages.forEach(img => {
-                        img.style.display = 'block';
-                        img.style.visibility = 'visible';
-                        img.style.opacity = '1';
-                    });
-                }
-            }).then(canvas => {
-                const finalCanvas = document.createElement('canvas');
-                finalCanvas.width = canvas.width;
-                finalCanvas.height = canvas.height;
-                const ctx = finalCanvas.getContext('2d');
-                
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-                
-                ctx.drawImage(canvas, 0, 0);
-                
-                const link = document.createElement('a');
-                const ticketNumber = ticketCard.querySelector('.ticket-number-compact')?.textContent?.replace(/[^\w]/g, '') || 'ticket';
-                link.download = `билет_${ticketNumber}.png`;
-                link.href = finalCanvas.toDataURL('image/png', 1.0);
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                document.body.removeChild(tempContainer);
-                
-                button.textContent = '✓ Сохранено';
-                button.style.background = '#10b981';
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = '';
-                    button.disabled = false;
-                }, 2000);
-                
-                showMessage('Билет успешно сохранен!');
-                
-            }).catch(error => {
-                console.error('Ошибка при создании изображения:', error);
-                document.body.removeChild(tempContainer);
-                fallbackSaveTicket(ticketCard, button, originalText);
-            });
-        }
-    }, 500);
-}
-
-function fallbackSaveTicket(ticketCard, button, originalText) {
-    const ticketInfo = {
-        number: ticketCard.querySelector('.ticket-number-compact')?.textContent || 'Неизвестно',
-        museum: ticketCard.querySelector('h3')?.textContent || 'Неизвестный музей',
-        visitor: ticketCard.querySelector('.info-value-compact')?.textContent || 'Неизвестно',
-        date: Array.from(ticketCard.querySelectorAll('.info-value-compact'))[3]?.textContent || 'Неизвестно'
-    };
-    
-    const textContent = `
-БИЛЕТ В МУЗЕЙ
-===============
-Номер: ${ticketInfo.number}
-Музей: ${ticketInfo.museum}
-Посетитель: ${ticketInfo.visitor}
-Дата посещения: ${ticketInfo.date}
-
-Сохраните этот QR-код для входа в музей.
-QR-код будет доступен в мобильном приложении.
-    `.trim();
-    
-    const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.download = `билет_${ticketInfo.number.replace(/\s+/g, '_')}.txt`;
-    link.href = URL.createObjectURL(blob);
-    link.click();
-    URL.revokeObjectURL(link.href);
-    
-    button.textContent = originalText;
-    button.disabled = false;
-    showMessage('Билет сохранен в текстовом формате');
-}
-
-function createFallbackQRCode(text, size) {
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, size, size);
-    
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(5, 5, size - 10, size - 10);
-    
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 14px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('QR CODE', size/2, size/2 - 10);
-    ctx.font = '10px Arial';
-    ctx.fillText(text.substring(0, 15), size/2, size/2 + 10);
-    
-    return canvas.toDataURL();
-}
-
 async function displayTickets(tickets) {
     const ticketsGrid = document.getElementById('tickets-grid');
     const noTicketsMessage = document.getElementById('no-tickets-message');
@@ -2066,7 +1801,8 @@ async function displayTickets(tickets) {
                     <button class="action-btn-compact save-btn-compact" onclick="saveSingleTicket(this)">
                         Сохранить
                     </button>
-                    <button class="action-btn-compact share-btn-compact" onclick="shareSingleTicket('${ticket.ticket_number}')">
+                    <!-- Кнопка «Поделиться» теперь передаёт саму кнопку, а не ticket_number -->
+                    <button class="action-btn-compact share-btn-compact" onclick="shareSingleTicket(this)">
                         Поделиться
                     </button>
                 </div>
@@ -2194,40 +1930,6 @@ function simpleSaveTicket(ticketCard, button, originalText) {
     showMessage('Билет сохранен в текстовом формате');
 }
 
-function fallbackSaveTicket(ticketCard, button, originalText) {
-    const ticketInfo = {
-        number: ticketCard.querySelector('.ticket-number-compact')?.textContent || 'Неизвестно',
-        museum: ticketCard.querySelector('h3')?.textContent || 'Неизвестный музей',
-        visitor: ticketCard.querySelector('.info-value-compact')?.textContent || 'Неизвестно'
-    };
-    
-    const textContent = `Билет ${ticketInfo.number}\nМузей: ${ticketInfo.museum}\nПосетитель: ${ticketInfo.visitor}`;
-    const blob = new Blob([textContent], { type: 'text/plain' });
-    const link = document.createElement('a');
-    link.download = `билет_${Date.now()}.txt`;
-    link.href = URL.createObjectURL(blob);
-    link.click();
-    URL.revokeObjectURL(link.href);
-    
-    button.textContent = originalText;
-    button.disabled = false;
-    showMessage('Билет сохранен в текстовом формате');
-}
-
-function shareSingleTicket(ticketNumber) {
-    if (navigator.share) {
-        navigator.share({
-            title: 'Мой билет в музей',
-            text: `Билет №${ticketNumber}`,
-            url: window.location.href
-        }).catch(error => {
-            console.log('Ошибка при попытке поделиться:', error);
-        });
-    } else {
-        showMessage('Функция "Поделиться" не поддерживается в вашем браузере');
-    }
-}
-
 function formatDate(dateString) {
     if (!dateString) return '';
     try {
@@ -2277,10 +1979,6 @@ function formatDateTime(dateTimeString) {
         console.error('Ошибка форматирования даты и времени:', e);
         return dateTimeString;
     }
-}
-
-function openQRLink(ticketNumber) {
-    alert(`QR код для билета №${ticketNumber}\nВ реальном приложении здесь будет ссылка на проверку билета`);
 }
 
 function saveUserToStorage(user) {
@@ -2473,40 +2171,40 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const ticketsInput = document.getElementById('tickets');
     if (ticketsInput) {
-ticketsInput.addEventListener('change', function() {
-    let value = parseInt(this.value);
-    
-    if (value < 1) {
-        this.value = 1;
-        value = 1;
-    }
-    
-    if (value > 10) {
-        showMessage('Нельзя заказать больше 10 билетов за один раз');
-        this.value = 10;
-        value = 10;
-    }
-    
-    if (selectedDateSlot && selectedTimeSlot && value > currentAvailableTickets) {
-        showMessage(`В выбранном слоте доступно только ${currentAvailableTickets} билетов. Выберите другой слот или уменьшите количество билетов.`);
-        this.value = currentAvailableTickets;
-        value = currentAvailableTickets;
-        
-        ticketCategories = ticketCategories.slice(0, currentAvailableTickets);
-    }
-    
-    const currentCount = ticketCategories.length;
-    if (value > currentCount) {
-        for (let i = currentCount; i < value; i++) {
-            ticketCategories.push('Стандартный');
-        }
-    } else if (value < currentCount) {
-        ticketCategories = ticketCategories.slice(0, value);
-    }
-    
-    updateTicketCategoriesUI();
-    updateTotal();
-});
+        ticketsInput.addEventListener('change', function() {
+            let value = parseInt(this.value);
+            
+            if (value < 1) {
+                this.value = 1;
+                value = 1;
+            }
+            
+            if (value > 10) {
+                showMessage('Нельзя заказать больше 10 билетов за один раз');
+                this.value = 10;
+                value = 10;
+            }
+            
+            if (selectedDateSlot && selectedTimeSlot && value > currentAvailableTickets) {
+                showMessage(`В выбранном слоте доступно только ${currentAvailableTickets} билетов. Выберите другой слот или уменьшите количество билетов.`);
+                this.value = currentAvailableTickets;
+                value = currentAvailableTickets;
+                
+                ticketCategories = ticketCategories.slice(0, currentAvailableTickets);
+            }
+            
+            const currentCount = ticketCategories.length;
+            if (value > currentCount) {
+                for (let i = currentCount; i < value; i++) {
+                    ticketCategories.push('Стандартный');
+                }
+            } else if (value < currentCount) {
+                ticketCategories = ticketCategories.slice(0, value);
+            }
+            
+            updateTicketCategoriesUI();
+            updateTotal();
+        });
     }
 });
 
@@ -2543,6 +2241,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 let ticketCategories = ['Стандартный'];
 
 function increaseTickets() {

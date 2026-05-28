@@ -608,7 +608,8 @@ background: var(--secondary);
 border-radius: 12px;
 padding: 1.5rem;
 display: flex;
-justify-content: space-between;
+justify-content: center;
+flex-wrap: wrap;
 }
 .num1{
 display: flex;
