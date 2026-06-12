@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления музеем</title>
+    <script src="libs/html2canvas.min.js"></script>
+    <script src="libs/jspdf.umd.min.js"></script>
+    <script src="libs/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #f1f5f9;
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #cbd5e1;
+            --card-bg: #ffffff;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --transition: 0.2s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Боковая панель */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: left 0.3s ease;
+        }
+
+        .sidebar .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar nav { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .sidebar nav a {
+            color: var(--sidebar-text);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            transition: background var(--transition), color var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+        }
+
+        .sidebar nav a svg { width: 20px; height: 20px; }
+
+        .sidebar nav a:hover, .sidebar nav a.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        .sidebar .logout-btn {
+            margin-top: auto;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: var(--sidebar-text);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background var(--transition);
+        }
+
+        .sidebar .logout-btn:hover { background: rgba(255,255,255,0.25); color: white; }
+
+        /* Плавающая шапка */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 260px;
+            width: calc(100% - 260px);
+            height: 60px;
+            background: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            z-index: 900;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: left 0.3s ease, width 0.3s ease;
+        }
+
+        .main-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Кнопка бургера в шапке */
+        .main-header .menu-toggle {
+            display: none;
+            margin-right: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1101;
+            position: relative;
+        }
+
+        .main-header .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 5px 0;
+            transition: 0.3s;
+        }
+
+        /* Крестик при открытом меню */
+        .main-header .menu-toggle.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .main-header .menu-toggle.open span:nth-child(2) {
+            opacity: 0;
+        }
+        .main-header .menu-toggle.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Основная область */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            padding-top: calc(60px + 2rem); /* высота шапки + отступ */
+            gap: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Карточки и формы (без изменений) */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .stat-card .label { font-size: 0.9rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card .value { font-size: 2rem; font-weight: 700; }
+        .stat-card .sub { font-size: 0.85rem; color: var(--text-light); }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-weight: 600; font-size: 0.9rem; color: var(--text); }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            transition: border-color var(--transition), box-shadow var(--transition);
+            background: white;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background var(--transition);
+        }
+        .btn:hover { background: var(--primary-hover); }
+        .btn.secondary { background: #e2e8f0; color: #475569; }
+        .btn.secondary:hover { background: #cbd5e1; }
+        .btn.small { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .image-preview { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+        .image-thumb {
+            width: 120px; height: 80px;
+            background-size: cover; background-position: center;
+            border-radius: 6px; position: relative; box-shadow: var(--shadow);
+        }
+        .image-thumb .remove-btn {
+            position: absolute; top: 4px; right: 4px;
+            background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%;
+            width: 22px; height: 22px; cursor: pointer; font-size: 14px;
+        }
+
+        /* Экран входа */
+        #login-screen {
+            display: none;
+            position: fixed; inset: 0;
+            background: var(--bg);
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        #login-screen.active { display: flex; }
+        .login-card {
+            background: white; padding: 3rem;
+            border-radius: var(--radius); box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%; max-width: 400px; text-align: center;
+        }
+        .login-card h2 { margin-bottom: 2rem; }
+        .login-card .btn { margin-top: 1.5rem; }
+        .error-msg { color: #ef4444; margin-top: 1rem; font-size: 0.9rem; }
+
+        /* Таблица билетов */
+        .tickets-table {
+            width: 100%; border-collapse: collapse; font-size: 0.9rem;
+            background: white; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .tickets-table th, .tickets-table td {
+            padding: 0.8rem 1rem; text-align: center;
+            border-bottom: 1px solid #f1f5f9; white-space: nowrap;
+        }
+        .tickets-table th {
+            background: #1e293b; color: white; font-weight: 600;
+            font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;
+        }
+        .tickets-table tr:hover td { background: #f8fafc; }
+        .tickets-table tr:nth-child(even) td { background: #f9fafb; }
+        .tickets-table td:first-child, .tickets-table th:first-child { text-align: left; padding-left: 1.5rem; }
+        .tickets-table td:last-child, .tickets-table th:last-child { text-align: right; padding-right: 1.5rem; }
+
+        .tickets-table .action-btn {
+            padding: 0.4rem 0.8rem; font-size: 0.85rem;
+            border-radius: 6px; border: none; cursor: pointer; font-weight: 500;
+            transition: all 0.2s;
+        }
+        .tickets-table .edit-btn { background: #e2e8f0; color: #1e293b; }
+        .tickets-table .delete-btn { background: #fee2e2; color: #ef4444; margin-left: 4px; }
+        .tickets-table .edit-btn:hover { background: #cbd5e1; }
+        .tickets-table .delete-btn:hover { background: #fecaca; }
+
+        #tickets-search-result {
+            overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0;
+        }
+
+        /* Затемнение фона */
+        .sidebar-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        /* =================== АДАПТИВНОСТЬ =================== */
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -260px; /* спрятан */
+            }
+            .sidebar.open {
+                left: 0;
+            }
+
+            .main-header {
+                left: 0;
+                width: 100%;
+                padding: 0 1rem;
+            }
+
+            .main-header h1 {
+                font-size: 1rem; /* уменьшенный текст */
+            }
+
+            .main-header .menu-toggle {
+                display: block; /* показываем бургер */
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: calc(60px + 1rem);
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #tickets-search-result {
+                max-width: 100%;
+                overflow-x: auto;
+            }
+        }
+
+        /* Дополнительные стили для слотов, обложек */
+        .time-slots-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .time-slot-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .time-slot-btn:hover { background: #f1f5f9; }
+        .time-slot-btn.selected { background: #3b82f6; color: white; border-color: #3b82f6; }
+        .time-slot-btn.closed { opacity: 0.5; background: #fee2e2; cursor: not-allowed; }
+
+        .cover-btn, .cover-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(0,0,0,0.6);
+            color: gold;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 2;
+        }
+        .cover-btn:hover { background: rgba(0,0,0,0.8); }
+        .cover-badge { background: rgba(0,0,0,0.4); cursor: default; }
+    </style>
+</head>
+<body>
+
+<!-- Экран входа -->
+<div id="login-screen" class="active">
+    <div class="login-card">
+        <h2>Вход для администратора</h2>
+        <div class="form-group" style="text-align: left;">
+            <label>Логин</label>
+            <input type="text" id="login-fullname" placeholder="top1">
+        </div>
+        <div class="form-group" style="text-align: left;">
+            <label>Пароль администратора</label>
+            <input type="text" id="login-code" placeholder="ADM001">
+        </div>
+        <button class="btn" onclick="loginAdmin()">Войти</button>
+        <div id="login-error" class="error-msg"></div>
+    </div>
+</div>
+
+<!-- Главный интерфейс -->
+<div id="admin-panel" style="display: none; flex: 1;">
+    <!-- Боковая панель -->
+    <aside class="sidebar">
+        <div class="logo" style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+                <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+                <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
+                <path d="M10 6h4"></path>
+                <path d="M10 10h4"></path>
+                <path d="M10 14h4"></path>
+                <path d="M10 18h4"></path>
+            </svg>
+            <span>Музеи <span style="font-size:0.7rem; opacity:0.8;">(Администратор)</span></span>
+        </div>
+        <nav>
+            <a href="#" class="active" data-tab="general">🏛️ Основное</a>
+            <a href="#" data-tab="closed-dates">📅 даты и слоты</a>
+            <a href="#" data-tab="images">🖼️ Изображения</a>
+            <a href="#" data-tab="stats">📊 Статистика</a>
+            <a href="#" data-tab="ticket-categories">🎫 Типы билетов</a>
+            <a href="#" data-tab="tickets">🎟️ Купленные билеты</a>
+        </nav>
+        <button class="logout-btn" onclick="logoutAdmin()">Выйти</button>
+    </aside>
+
+    <!-- Плавающая шапка -->
+    <header class="main-header">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Меню">
+            <span></span><span></span><span></span>
+        </button>
+        <h1 id="museum-title">Загрузка...</h1>
+    </header>
+
+    <!-- Затемнение для мобильного меню -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Основной контент -->
+    <div class="main">
+        <!-- Контент вкладок -->
+        <div id="tab-general" class="tab-content active">
+            <div class="card" style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow);">
+                <h3 style="margin-bottom: 1.5rem;">Основная информация</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Название</label>
+                        <input type="text" id="m-name">
+                    </div>
+                    <div class="form-group">
+                        <label>Категория</label>
+                        <select id="m-category">
+                            <option value="Искусство">Искусство</option>
+                            <option value="История">История</option>
+                            <option value="Наука">Наука</option>
+                            <option value="Культура">Культура</option>
+                            <option value="Природа">Природа</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Цена билета (₽)</label>
+                        <input type="number" id="m-price" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Адрес</label>
+                        <input type="text" id="m-address">
+                    </div>
+                    <div class="form-group">
+                        <label>Режим работы</label>
+                        <input type="text" id="m-hours">
+                    </div>
+                    <div class="form-group">
+                        <label>Активен</label>
+                        <select id="m-active">
+                            <option value="1">Да</option>
+                            <option value="0">Нет</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label>Краткое описание</label>
+                    <input type="text" id="m-short-desc">
+                </div>
+                <div class="form-group">
+                    <label>Полное описание</label>
+                    <textarea id="m-desc" rows="5"></textarea>
+                </div>
+                <button class="btn" onclick="saveGeneral()" style="margin-top: 1rem;">Сохранить изменения</button>
+            </div>
+        </div>
+
+        <div id="tab-closed-dates" class="tab-content" style="display: none;">
+            <div class="card" style="background: white; padding: 2rem;">
+                <h3>Закрытые даты</h3>
+                <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                    <input type="date" id="closed-date-input" style="padding: 0.5rem; border-radius: var(--radius); border: 1px solid var(--border);">
+                    <input type="text" id="closed-reason" placeholder="Причина" style="flex:1; padding: 0.5rem;">
+                    <button class="btn small" onclick="addClosedDate()">Добавить</button>
+                </div>
+                <div id="closed-dates-list"></div>
+            </div>
+            <div style="margin-top: 2rem;">
+                <h3>Управление слотами</h3>
+                <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                    <input type="date" id="slot-date-input">
+                    <button class="btn small" onclick="loadAdminSlots()">Показать слоты</button>
+                </div>
+                <div id="admin-slots-list"></div>
+            </div>
+        </div>
+
+        <div id="tab-images" class="tab-content" style="display: none;">
+            <div class="card" style="background: white; padding: 2rem;">
+                <h3>Изображения</h3>
+                <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                    <input type="text" id="new-image-url" placeholder="URL изображения" style="flex:1; padding: 0.5rem;">
+                    <button class="btn small" onclick="addImage()">Добавить</button>
+                </div>
+                <div class="image-preview" id="image-list-container"></div>
+            </div>
+        </div>
+
+        <div id="tab-stats" class="tab-content" style="display: none;">
+            <div class="card" style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 1rem;">Период отображения</h3>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <button class="btn small secondary period-btn" data-period="today">Сегодня</button>
+                    <button class="btn small secondary period-btn" data-period="week">Текущая неделя</button>
+                    <button class="btn small secondary period-btn" data-period="last_week">Прошлая неделя</button>
+                    <button class="btn small secondary period-btn" data-period="month">Текущий месяц</button>
+                    <button class="btn small secondary period-btn" data-period="last_month">Прошлый месяц</button>
+                    <button class="btn small secondary period-btn" data-period="year">Текущий год</button>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <label>С: <input type="date" id="start-date-input" style="padding: 0.5rem; border-radius: var(--radius); border: 1px solid var(--border);"></label>
+                    <label>По: <input type="date" id="end-date-input" style="padding: 0.5rem; border-radius: var(--radius); border: 1px solid var(--border);"></label>
+                    <button class="btn small" onclick="applyCustomPeriod()">Применить</button>
+                </div>
+            </div>
+
+            <div class="cards-grid" id="stats-summary"></div>
+
+            <div class="card" style="background: white; padding: 2rem; margin-top: 1.5rem;">
+                <h3>Доход по месяцам</h3>
+                <canvas id="incomeChart" height="80"></canvas>
+            </div>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <button class="btn" onclick="downloadReport()">📄 Скачать отчёт</button>
+            </div>
+        </div>
+
+        <div id="tab-ticket-categories" class="tab-content" style="display: none;">
+            <div class="card" style="background: white; padding: 2rem;">
+                <h3>Типы билетов и скидки</h3>
+                <div style="display: flex; gap: 1rem; margin: 1rem 0; flex-wrap: wrap;">
+                    <input type="text" id="new-category-name" placeholder="Название (например, Детский)" style="padding: 0.5rem;">
+                    <input type="text" id="new-category-discount" placeholder="Скидка (%)" style="padding: 0.5rem; width: 120px;">
+                    <button class="btn small" onclick="addTicketCategory()">Добавить</button>
+                </div>
+                <table style="width: 100%; border-collapse: collapse;" id="ticket-categories-table">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <th style="padding: 0.75rem; text-align: left;">Название</th>
+                            <th style="padding: 0.75rem; text-align: left;">Множитель</th>
+                            <th style="padding: 0.75rem; text-align: left;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-tickets" class="tab-content" style="display: none;">
+            <div class="card" style="background: white; padding: 2rem;">
+                <h3>Поиск билетов</h3>
+                <div style="display: flex; gap: 1rem; margin: 1rem 0; position: relative;">
+                    <input type="text" id="ticket-search" placeholder="Поиск по имени, фамилии, телефону или номеру билета" 
+                           style="flex:1; padding: 0.5rem; padding-right: 2.5rem;" autocomplete="off">
+                    <span id="clear-search" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; display: none; color: #999; font-size: 1.2rem;" onclick="clearSearch()">✕</span>
+                </div>
+                <div id="tickets-search-result" style="margin-top: 1rem; overflow-x: auto;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// ================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==================
+const API = 'http://localhost:8002';
+let currentMuseumId = null;
+let currentMuseum = null;
+let incomeChart = null;
+let currentPeriod = 'today';
+let currentGroupBy = 'day';
+let currentStartDate = '';
+let currentEndDate = '';
+
+// ================== ИНИЦИАЛИЗАЦИЯ ==================
+document.addEventListener('DOMContentLoaded', () => {
+    const savedId = sessionStorage.getItem('adminMuseumId');
+    if (savedId) {
+        currentMuseumId = savedId;
+        loadAdminMuseum();
+    } else {
+        document.getElementById('login-screen').classList.add('active');
+    }
+
+    document.querySelectorAll('.sidebar nav a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const tab = this.dataset.tab;
+            switchTab(tab);
+        });
+    });
+
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            setPeriod(this.dataset.period);
+        });
+    });
+
+    const searchInput = document.getElementById('ticket-search');
+    const clearBtn = document.getElementById('clear-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const value = this.value.trim();
+            if (clearBtn) clearBtn.style.display = value ? 'block' : 'none';
+            searchTimeout = setTimeout(() => searchTickets(), 300);
+        });
+    }
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearSearch);
+    }
+});
+
+// ================== АВТОРИЗАЦИЯ ==================
+function showLogin() {
+    document.getElementById('login-screen').classList.add('active');
+    document.getElementById('admin-panel').style.display = 'none';
+}
+function showPanel() {
+    document.getElementById('login-screen').classList.remove('active');
+    document.getElementById('admin-panel').style.display = 'flex';
+}
+async function loginAdmin() {
+    const fullname = document.getElementById('login-fullname').value.trim();
+    const code = document.getElementById('login-code').value.trim();
+    const errorDiv = document.getElementById('login-error');
+    if (!fullname || !code) { errorDiv.textContent = 'Заполните все поля'; return; }
+    try {
+        const response = await fetch(`${API}/api/admin/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ full_name: fullname, admin_code: code })
+        });
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.detail || 'Неверные данные');
+        }
+        const result = await response.json();
+        currentMuseumId = result.museum_id;
+        sessionStorage.setItem('adminMuseumId', currentMuseumId);
+        errorDiv.textContent = '';
+        loadAdminMuseum();
+    } catch (err) {
+        errorDiv.textContent = err.message;
+    }
+}
+
+// ================== ЗАГРУЗКА МУЗЕЯ ==================
+async function loadAdminMuseum() {
+    if (!currentMuseumId) {
+        showLogin();
+        return;
+    }
+    try {
+        const response = await fetch(`${API}/api/admin/museum?museum_id=${currentMuseumId}`);
+        if (response.status === 404 || response.status === 401) {
+            sessionStorage.removeItem('adminMuseumId');
+            currentMuseumId = null;
+            showLogin();
+            return;
+        }
+        if (!response.ok) throw new Error('Ошибка загрузки данных музея');
+        currentMuseum = await response.json();
+        populateForm(currentMuseum);
+        showPanel();
+        setPeriod('today');
+        switchTab('general');
+    } catch (err) {
+        alert('Ошибка: ' + err.message);
+        showLogin();
+    }
+}
+
+function populateForm(museum) {
+    document.getElementById('museum-title').textContent = museum.name + ' (Администратор)';
+    document.getElementById('m-name').value = museum.name || '';
+    document.getElementById('m-category').value = museum.category || 'Искусство';
+    document.getElementById('m-price').value = museum.ticket_price;
+    document.getElementById('m-address').value = museum.address || '';
+    document.getElementById('m-hours').value = museum.working_hours || '';
+    document.getElementById('m-active').value = museum.is_active ? '1' : '0';
+    document.getElementById('m-short-desc').value = museum.short_description || '';
+    document.getElementById('m-desc').value = museum.description || '';
+}
+
+// ================== СОХРАНЕНИЕ ОСНОВНОЙ ИНФОРМАЦИИ ==================
+async function saveGeneral() {
+    const data = {
+        name: document.getElementById('m-name').value.trim(),
+        category: document.getElementById('m-category').value,
+        ticket_price: parseFloat(document.getElementById('m-price').value),
+        address: document.getElementById('m-address').value.trim(),
+        working_hours: document.getElementById('m-hours').value.trim(),
+        is_active: document.getElementById('m-active').value === '1',
+        short_description: document.getElementById('m-short-desc').value.trim(),
+        description: document.getElementById('m-desc').value.trim()
+    };
+    try {
+        const resp = await fetch(`${API}/api/admin/museum?museum_id=${currentMuseumId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (resp.ok) {
+            alert('✅ Изменения сохранены');
+            loadAdminMuseum();
+        } else {
+            const err = await resp.json();
+            alert('Ошибка: ' + (err.detail || 'Не удалось сохранить'));
+        }
+    } catch (e) { alert('Ошибка сети'); }
+}
+
+// ================== ЗАКРЫТЫЕ ДАТЫ ==================
+async function loadClosedDates() {
+    try {
+        const resp = await fetch(`${API}/api/admin/closed-dates?museum_id=${currentMuseumId}`);
+        if (!resp.ok) throw new Error('Ошибка загрузки');
+        const dates = await resp.json();
+        renderClosedDates(dates);
+    } catch (e) {
+        document.getElementById('closed-dates-list').innerHTML = '<p style="color:red">Ошибка загрузки</p>';
+    }
+}
+function renderClosedDates(dates) {
+    const container = document.getElementById('closed-dates-list');
+    if (!dates || dates.length === 0) {
+        container.innerHTML = '<p>Нет закрытых дат</p>';
+        return;
+    }
+    container.innerHTML = dates.map(d => `
+        <div class="list-item">
+            <span><strong>${d.closed_date}</strong> ${d.reason ? `(${d.reason})` : ''}</span>
+            <button class="btn small secondary" onclick="deleteClosedDate(${d.id})">Удалить</button>
+        </div>
+    `).join('');
+}
+async function addClosedDate() {
+    const dateInput = document.getElementById('closed-date-input').value;
+    const reason = document.getElementById('closed-reason').value.trim();
+    if (!dateInput) { alert('Выберите дату'); return; }
+    try {
+        const resp = await fetch(`${API}/api/admin/closed-dates?museum_id=${currentMuseumId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ closed_date: dateInput, reason: reason || null })
+        });
+        if (resp.ok) {
+            loadClosedDates();
+            document.getElementById('closed-date-input').value = '';
+            document.getElementById('closed-reason').value = '';
+        } else {
+            const err = await resp.json();
+            alert('Ошибка: ' + (err.detail || 'Не удалось добавить'));
+        }
+    } catch (e) { alert('Ошибка сети'); }
+}
+async function deleteClosedDate(id) {
+    if (!confirm('Удалить эту закрытую дату?')) return;
+    try {
+        const resp = await fetch(`${API}/api/admin/closed-dates/${id}?museum_id=${currentMuseumId}`, { method: 'DELETE' });
+        if (resp.ok) loadClosedDates();
+        else {
+            const err = await resp.json();
+            alert('Ошибка: ' + (err.detail || 'Не удалось удалить'));
+        }
+    } catch (e) { alert('Ошибка сети'); }
+}
+
+// ================== ИЗОБРАЖЕНИЯ ==================
+function loadImages() {
+    if (!currentMuseum) return;
+    const container = document.getElementById('image-list-container');
+    const images = currentMuseum.images || [];
+    if (images.length === 0) {
+        container.innerHTML = '<p>Нет изображений</p>';
+        return;
+    }
+    container.innerHTML = images.map((url, idx) => {
+        const isCover = idx === 0;
+        const coverBtn = isCover
+            ? '<span class="cover-badge" title="Обложка">⭐</span>'
+            : `<button class="cover-btn" onclick="setCoverImage(${idx})" title="Сделать обложкой">⭐</button>`;
+        return `
+            <div class="image-thumb" style="background-image: url('${url}')">
+                ${coverBtn}
+                <button class="remove-btn" onclick="removeImage(${idx})">×</button>
+            </div>
+        `;
+    }).join('');
+}
+function addImage() {
+    const urlInput = document.getElementById('new-image-url');
+    const url = urlInput.value.trim();
+    if (!url) { alert('Введите URL изображения'); return; }
+    if (!currentMuseum) return;
+    const images = [...(currentMuseum.images || []), url];
+    updateImagesArray(images);
+    urlInput.value = '';
+}
+function removeImage(index) {
+    if (!currentMuseum) return;
+    const images = currentMuseum.images.filter((_, i) => i !== index);
+    updateImagesArray(images);
+}
+function setCoverImage(index) {
+    if (!currentMuseum) return;
+    const images = [...currentMuseum.images];
+    if (index <= 0 || index >= images.length) return;
+    const [moved] = images.splice(index, 1);
+    images.unshift(moved);
+    updateImagesArray(images);
+}
+async function updateImagesArray(images) {
+    try {
+        const resp = await fetch(`${API}/api/admin/museum?museum_id=${currentMuseumId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ images })
+        });
+        if (resp.ok) {
+            currentMuseum.images = images;
+            loadImages();
+        } else {
+            const err = await resp.json();
+            alert('Ошибка: ' + (err.detail || 'Не удалось обновить изображения'));
+        }
+    } catch (e) { alert('Ошибка сети'); }
+}
+
+// ================== СТАТИСТИКА ==================
+function setPeriod(period) {
+    currentPeriod = period;
+    const now = new Date();
+    let startDate, endDate;
+    switch(period) {
+        case 'today':
+            startDate = endDate = now.toISOString().split('T')[0];
+            currentGroupBy = 'day';
+            break;
+        case 'week':
+            const dayOfWeek = now.getDay() || 7;
+            const monday = new Date(now);
+            monday.setDate(now.getDate() - dayOfWeek + 1);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            startDate = monday.toISOString().split('T')[0];
+            endDate = sunday.toISOString().split('T')[0];
+            currentGroupBy = 'day';
+            break;
+        case 'last_week':
+            const lastMonday = new Date(now);
+            lastMonday.setDate(now.getDate() - now.getDay() - 6);
+            const lastSunday = new Date(lastMonday);
+            lastSunday.setDate(lastMonday.getDate() + 6);
+            startDate = lastMonday.toISOString().split('T')[0];
+            endDate = lastSunday.toISOString().split('T')[0];
+            currentGroupBy = 'day';
+            break;
+        case 'month':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+            currentGroupBy = 'day';
+            break;
+        case 'last_month':
+            const lastMonthFirst = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            startDate = lastMonthFirst.toISOString().split('T')[0];
+            const lastMonthLast = new Date(now.getFullYear(), now.getMonth(), 0);
+            endDate = lastMonthLast.toISOString().split('T')[0];
+            currentGroupBy = 'day';
+            break;
+        case 'year':
+            startDate = new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0];
+            endDate = new Date(now.getFullYear(), 11, 31).toISOString().split('T')[0];
+            currentGroupBy = 'month';
+            break;
+    }
+    currentStartDate = startDate;
+    currentEndDate = endDate;
+    document.getElementById('start-date-input').value = startDate;
+    document.getElementById('end-date-input').value = endDate;
+    loadStats(startDate, endDate, currentGroupBy);
+}
+
+function applyCustomPeriod() {
+    currentPeriod = 'custom';
+    const startDate = document.getElementById('start-date-input').value;
+    const endDate = document.getElementById('end-date-input').value;
+    if (!startDate || !endDate) { alert('Выберите обе даты'); return; }
+    currentStartDate = startDate;
+    currentEndDate = endDate;
+    const diff = (new Date(endDate) - new Date(startDate)) / (1000*60*60*24);
+    currentGroupBy = diff > 60 ? 'month' : 'day';
+    loadStats(startDate, endDate, currentGroupBy);
+}
+
+async function loadStats(startDate, endDate, groupBy) {
+    const summaryContainer = document.getElementById('stats-summary');
+    try {
+        let url = `${API}/api/admin/stats?museum_id=${currentMuseumId}&group_by=${groupBy}`;
+        if (startDate) url += `&start_date=${startDate}`;
+        if (endDate) url += `&end_date=${endDate}`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('Ошибка загрузки');
+        const stats = await resp.json();
+
+        summaryContainer.innerHTML = `
+            <div class="stat-card">
+                <div class="label">Продажи</div>
+                <div class="value">${stats.total_sales}</div>
+                <div class="sub">всего заказов</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Билеты</div>
+                <div class="value">${stats.total_tickets}</div>
+                <div class="sub">продано штук</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Доход</div>
+                <div class="value">${parseFloat(stats.total_income).toLocaleString('ru-RU')} ₽</div>
+                <div class="sub">общая выручка</div>
+            </div>
+        `;
+
+        const periods = stats.periods || [];
+        if (periods.length > 0) {
+            const labels = periods.map(p => p.period);
+            const incomeData = periods.map(p => parseFloat(p.income));
+            drawIncomeChart(labels, incomeData);
+        } else {
+            const canvas = document.getElementById('incomeChart');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '16px sans-serif';
+                ctx.fillStyle = '#999';
+                ctx.textAlign = 'center';
+                ctx.fillText('Нет данных для графика', canvas.width/2, canvas.height/2);
+            }
+        }
+    } catch (e) {
+        summaryContainer.innerHTML = '<p style="color:red">Не удалось загрузить статистику</p>';
+    }
+}
+
+function drawIncomeChart(labels, data) {
+    const ctx = document.getElementById('incomeChart').getContext('2d');
+    if (incomeChart) incomeChart.destroy();
+    incomeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Доход (₽)',
+                data: data,
+                backgroundColor: data.map(val => val > 500 ? '#3b82f6' : '#93c5fd'),
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: value => value.toLocaleString('ru-RU') + ' ₽' }
+                },
+                x: {
+                    ticks: { maxRotation: 45, autoSkip: true }
+                }
+            }
+        }
+    });
+}
+
+async function downloadReport() {
+    if (!currentMuseum) return;
+    let periodTitle = '';
+    if (currentPeriod === 'today') periodTitle = 'за сегодня';
+    else if (currentPeriod === 'week') periodTitle = 'за текущую неделю';
+    else if (currentPeriod === 'last_week') periodTitle = 'за прошлую неделю';
+    else if (currentPeriod === 'month') periodTitle = 'за текущий месяц';
+    else if (currentPeriod === 'last_month') periodTitle = 'за прошлый месяц';
+    else if (currentPeriod === 'year') periodTitle = 'за текущий год';
+    else if (currentPeriod === 'custom') periodTitle = `с ${currentStartDate} по ${currentEndDate}`;
+    else periodTitle = 'за всё время';
+
+    const reportElement = document.createElement('div');
+    reportElement.style.cssText = 'background:white; padding:20px; width:750px; font-family:sans-serif; position:absolute; left:-9999px;';
+    reportElement.innerHTML = `
+        <h2 style="text-align:center;">Отчёт о доходах ${periodTitle}</h2>
+        <p style="text-align:center;">${currentMuseum.name} — ${new Date().toLocaleDateString('ru-RU')}</p>
+        <div id="report-content"></div>
+    `;
+
+    const cardsClone = document.querySelector('#stats-summary').cloneNode(true);
+    const contentDiv = reportElement.querySelector('#report-content');
+    contentDiv.appendChild(cardsClone);
+
+    const chartCanvas = document.getElementById('incomeChart');
+    if (chartCanvas && incomeChart) {
+        const maxWidth = 700;
+        let w = chartCanvas.width;
+        let h = chartCanvas.height;
+        if (w > maxWidth) {
+            h = h * (maxWidth / w);
+            w = maxWidth;
+        }
+        const newCanvas = document.createElement('canvas');
+        newCanvas.width = w;
+        newCanvas.height = h;
+        const ctx = newCanvas.getContext('2d');
+        ctx.drawImage(chartCanvas, 0, 0, w, h);
+        const wrapper = document.createElement('div');
+        wrapper.style.marginTop = '20px';
+        wrapper.style.textAlign = 'center';
+        wrapper.appendChild(newCanvas);
+        contentDiv.appendChild(wrapper);
+    }
+
+    document.body.appendChild(reportElement);
+    try {
+        const canvas = await html2canvas(reportElement, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: '#ffffff',
+            width: 750
+        });
+        document.body.removeChild(reportElement);
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = (canvas.height * pageWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
+        pdf.save(`Отчёт_${currentMuseum.name}_${periodTitle.replace(/\s/g,'_')}.pdf`);
+    } catch (error) {
+        document.body.removeChild(reportElement);
+        alert('Ошибка при создании отчёта: ' + error.message);
+    }
+}
+
+// ================== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ==================
+function switchTab(tabName) {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        document.querySelector('.menu-toggle').classList.remove('open');
+    }
+
+    document.querySelectorAll('.sidebar nav a').forEach(link => link.classList.remove('active'));
+    document.querySelectorAll('.sidebar nav a').forEach(link => {
+        if (link.dataset.tab === tabName) link.classList.add('active');
+    });
+    document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
+    const target = document.getElementById(`tab-${tabName}`);
+    if (target) target.style.display = 'block';
+
+    if (tabName === 'closed-dates') loadClosedDates();
+    if (tabName === 'images') loadImages();
+    if (tabName === 'stats') setPeriod('today');
+    if (tabName === 'ticket-categories') loadTicketCategories();
+    if (tabName === 'tickets') {
+        document.getElementById('ticket-search').value = '';
+        searchTickets();
+    }
+}
+
+// ================== ВЫХОД ==================
+function logoutAdmin() {
+    currentMuseumId = null;
+    currentMuseum = null;
+    sessionStorage.removeItem('adminMuseumId');
+    if (incomeChart) { incomeChart.destroy(); incomeChart = null; }
+    showLogin();
+}
+
+// ================== КАТЕГОРИИ БИЛЕТОВ ==================
+async function loadTicketCategories() {
+    try {
+        const resp = await fetch(`${API}/api/admin/ticket-categories?museum_id=${currentMuseumId}`);
+        if (!resp.ok) throw new Error('Ошибка загрузки');
+        const categories = await resp.json();
+        renderTicketCategories(categories);
+    } catch (e) {
+        document.getElementById('ticket-categories-table').querySelector('tbody').innerHTML =
+            '<tr><td colspan="3" style="color:red;">Ошибка загрузки</td></tr>';
+    }
+}
+function renderTicketCategories(categories) {
+    const tbody = document.getElementById('ticket-categories-table').querySelector('tbody');
+    if (!categories.length) { tbody.innerHTML = '<tr><td colspan="3">Нет категорий</td></tr>'; return; }
+    tbody.innerHTML = categories.map(c => `
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 0.5rem;">${c.name}</td>
+            <td style="padding: 0.5rem;">${Math.round((1 - c.discount_multiplier) * 100)}%</td>
+            <td style="padding: 0.5rem;">
+                <button class="btn small secondary" onclick="editTicketCategory(${c.id}, '${c.name}', ${c.discount_multiplier})">Изменить</button>
+                <button class="btn small secondary" onclick="deleteTicketCategory(${c.id})">Удалить</button>
+            </td>
+        </tr>
+    `).join('');
+}
+async function addTicketCategory() {
+    const name = document.getElementById('new-category-name').value.trim();
+    const discountStr = document.getElementById('new-category-discount').value;
+    if (!name) { alert('Введите название категории'); return; }
+    const multiplier = parseDiscount(discountStr);
+    if (multiplier === null || multiplier < 0 || multiplier > 1) { alert('Скидка от 0 до 100%'); return; }
+    try {
+        const resp = await fetch(`${API}/api/admin/ticket-categories?museum_id=${currentMuseumId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, discount_multiplier: multiplier })
+        });
+        if (resp.ok) {
+            loadTicketCategories();
+            document.getElementById('new-category-name').value = '';
+            document.getElementById('new-category-discount').value = '';
+        } else {
+            const err = await resp.json();
+            alert('Ошибка: ' + (err.detail || 'Не удалось добавить'));
+        }
+    } catch (e) { alert('Ошибка сети'); }
+}
+function editTicketCategory(id, name, multiplier) { openEditCategoryModal(id, name, multiplier); }
+async function deleteTicketCategory(id) {
+    if (!confirm('Удалить категорию?')) return;
+    try {
+        const resp = await fetch(`${API}/api/admin/ticket-categories/${id}?museum_id=${currentMuseumId}`, { method: 'DELETE' });
+        if (resp.ok) loadTicketCategories();
+        else { const err = await resp.json(); alert('Ошибка: ' + err.detail); }
+    } catch (e) { alert('Ошибка сети'); }
+}
+
+// ================== РЕДАКТИРОВАНИЕ КАТЕГОРИИ ==================
+let editingCategoryId = null;
+function openEditCategoryModal(id, name, multiplier) {
+    editingCategoryId = id;
+    document.getElementById('edit-cat-name').value = name;
+    document.getElementById('edit-cat-discount').value = Math.round((1 - multiplier) * 100);
+    document.getElementById('edit-category-modal').style.display = 'flex';
+}
+function closeEditCategoryModal() {
+    document.getElementById('edit-category-modal').style.display = 'none';
+    editingCategoryId = null;
+}
+async function saveCategoryChanges() {
+    const name = document.getElementById('edit-cat-name').value.trim();
+    const discountStr = document.getElementById('edit-cat-discount').value;
+    if (!name) { alert('Введите название'); return; }
+    const multiplier = parseDiscount(discountStr);
+    if (multiplier === null || multiplier < 0 || multiplier > 1) { alert('Некорректная скидка'); return; }
+    try {
+        const resp = await fetch(`${API}/api/admin/ticket-categories/${editingCategoryId}?museum_id=${currentMuseumId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, discount_multiplier: multiplier })
+        });
+        if (resp.ok) {
+            closeEditCategoryModal();
+            loadTicketCategories();
+        } else {
+            const err = await resp.json();
+            alert('Ошибка: ' + err.detail);
+        }
+    } catch (e) { alert('Ошибка сети'); }
+}
+
+function parseDiscount(value) {
+    let str = value.trim().replace('%', '').trim();
+    const num = parseFloat(str);
+    if (isNaN(num) || num < 0 || num > 100) return null;
+    return 1 - num / 100;
+}
+
+// ================== УПРАВЛЕНИЕ СЛОТАМИ ==================
+async function loadAdminSlots() {
+    const date = document.getElementById('slot-date-input').value;
+    if (!date) { alert('Выберите дату'); return; }
+    if (!currentMuseum) return;
+    try {
+        const resp = await fetch(`${API}/api/time-slots/${currentMuseum.code}/${date}`);
+        if (!resp.ok) throw new Error('Ошибка загрузки');
+        const slots = await resp.json();
+        renderAdminSlots(slots);
+    } catch (e) {
+        document.getElementById('admin-slots-list').innerHTML = '<p style="color:red">Ошибка загрузки слотов</p>';
+    }
+}
+function renderAdminSlots(slots) {
+    const container = document.getElementById('admin-slots-list');
+    if (!slots.length) { container.innerHTML = '<p>Нет слотов на эту дату</p>'; return; }
+    container.innerHTML = slots.map(s => {
+        const isClosed = !!s.is_closed;
+        const actionBtn = isClosed
+            ? `<button class="btn small" onclick="openSlot(${s.id})">Открыть слот</button>`
+            : `<button class="btn small secondary" onclick="closeSlot(${s.id})">Закрыть слот</button>`;
+        const reasonText = s.close_reason ? ` (причина: ${s.close_reason})` : '';
+        const status = isClosed ? ` (закрыт${reasonText})` : '';
+        return `
+            <div class="list-item">
+                <span>${s.start_time.substring(0,5)} – ${s.end_time.substring(0,5)} (${s.available_tickets} билетов)${status}</span>
+                ${actionBtn}
+            </div>
+        `;
+    }).join('');
+}
+let pendingSlotId = null;
+function closeSlot(slotId) {
+    pendingSlotId = slotId;
+    document.getElementById('slot-reason-text').value = '';
+    document.getElementById('slot-reason-modal').style.display = 'flex';
+}
+function closeSlotReasonModal() {
+    document.getElementById('slot-reason-modal').style.display = 'none';
+    pendingSlotId = null;
+}
+async function confirmCloseSlot() {
+    const reason = document.getElementById('slot-reason-text').value.trim();
+    if (!reason) { alert('Введите причину блокировки'); return; }
+    if (!pendingSlotId) return;
+    try {
+        const resp = await fetch(`${API}/api/admin/time-slots/${pendingSlotId}/close?museum_id=${currentMuseumId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason })
+        });
+        if (resp.ok) {
+            document.getElementById('slot-reason-modal').style.display = 'none';
+            pendingSlotId = null;
+            loadAdminSlots();
+        } else {
+            const err = await resp.json();
+            alert('Ошибка: ' + (err.detail || 'Не удалось закрыть слот'));
+        }
+    } catch (e) { alert('Ошибка сети'); }
+}
+async function openSlot(slotId) {
+    if (!confirm('Открыть слот?')) return;
+    try {
+        const resp = await fetch(`${API}/api/admin/time-slots/${slotId}/open?museum_id=${currentMuseumId}`, { method: 'PUT' });
+        if (resp.ok) loadAdminSlots();
+        else { const err = await resp.json(); alert('Ошибка: ' + err.detail); }
+    } catch (e) { alert('Ошибка сети'); }
+}
+
+// ================== ПОИСК И РЕДАКТИРОВАНИЕ БИЛЕТОВ ==================
+let lastSearchTickets = [];
+let searchTimeout = null;
+async function searchTickets() {
+    const search = document.getElementById('ticket-search').value.trim();
+    try {
+        const resp = await fetch(`${API}/api/admin/tickets?museum_id=${currentMuseumId}&search=${encodeURIComponent(search)}`);
+        if (!resp.ok) throw new Error('Ошибка поиска');
+        const tickets = await resp.json();
+        renderTickets(tickets);
+    } catch(e) {
+        document.getElementById('tickets-search-result').innerHTML = '<p style="color:red">Ошибка загрузки</p>';
+    }
+}
+function renderTickets(tickets) {
+    lastSearchTickets = tickets;
+    const container = document.getElementById('tickets-search-result');
+    if (!tickets || tickets.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:2rem;">Билеты не найдены</p>';
+        return;
+    }
+    let html = `<table class="tickets-table">
+        <thead><tr><th>Посетитель</th><th>Телефон</th><th>Приобретено</th><th>Дата посещения</th><th>Номер билета</th><th>Цена</th><th>Статус</th><th>Действия</th></tr></thead><tbody>`;
+    tickets.forEach(t => {
+        const dateStr = t.visit_date || '';
+        const timeStr = t.visit_time ? t.visit_time.substring(0,5) : '';
+        const purchased = t.issued_at ? new Date(t.issued_at).toLocaleString('ru-RU') : '';
+        html += `<tr>
+            <td>${t.visitor_name || ''} ${t.visitor_surname || ''}</td>
+            <td>${t.visitor_phone || ''}</td>
+            <td>${purchased}</td>
+            <td>${dateStr} ${timeStr}</td>
+            <td>${t.ticket_number}</td>
+            <td>${t.price}₽</td>
+            <td>${t.status || 'online'}</td>
+            <td>
+                <button class="action-btn edit-btn" onclick="editTicket(${t.id})">Изменить</button>
+                <button class="action-btn delete-btn" onclick="deleteTicket(${t.id})">Удалить</button>
+            </td>
+        </tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+function clearSearch() {
+    document.getElementById('ticket-search').value = '';
+    document.getElementById('clear-search').style.display = 'none';
+    searchTickets();
+}
+
+// ================== РЕДАКТИРОВАНИЕ БИЛЕТА ==================
+let selectedEditTime = null;
+let editCategoriesCache = [];
+let editingTicketId = null;
+
+async function loadEditCategories() {
+    try {
+        const resp = await fetch(`${API}/api/admin/ticket-categories?museum_id=${currentMuseumId}`);
+        if (!resp.ok) throw new Error('Ошибка загрузки категорий');
+        const categories = await resp.json();
+        editCategoriesCache = categories;
+        const select = document.getElementById('edit-ticket-type');
+        select.innerHTML = '<option value="">Выберите тип</option>';
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.name;
+            option.dataset.multiplier = cat.discount_multiplier;
+            option.textContent = `${cat.name} (скидка ${Math.round((1 - cat.discount_multiplier) * 100)}%)`;
+            select.appendChild(option);
+        });
+    } catch(e) { console.error('Ошибка загрузки категорий:', e); }
+}
+
+function onEditTicketTypeChange() {
+    const select = document.getElementById('edit-ticket-type');
+    const selectedOption = select.options[select.selectedIndex];
+    if (!selectedOption || !selectedOption.dataset.multiplier) {
+        document.getElementById('edit-price-diff').style.display = 'none';
+        return;
+    }
+    const multiplier = parseFloat(selectedOption.dataset.multiplier);
+    const basePrice = currentMuseum ? parseFloat(currentMuseum.ticket_price) : 0;
+    const newPrice = Math.round(basePrice * multiplier);
+    document.getElementById('edit-ticket-price').value = newPrice;
+    const diff = basePrice - newPrice;
+    const diffBlock = document.getElementById('edit-price-diff');
+    if (Math.abs(diff) > 0.01) {
+        diffBlock.style.display = 'block';
+        const percent = Math.round((1 - multiplier) * 100);
+        if (diff > 0) {
+            diffBlock.innerHTML = `Полная цена: ${basePrice} ₽<br>Скидка по категории: ${percent}%<br>Итоговая цена: ${newPrice} ₽<br><b>Клиенту нужно вернуть ${diff} ₽</b>`;
+            diffBlock.style.background = '#fef3c7';
+            diffBlock.style.color = '#92400e';
+        } else {
+            diffBlock.innerHTML = `Полная цена: ${basePrice} ₽<br>Скидка по категории: ${percent}%<br>Итоговая цена: ${newPrice} ₽<br><b>Клиент должен доплатить ${Math.abs(diff)} ₽</b>`;
+            diffBlock.style.background = '#fee2e2';
+            diffBlock.style.color = '#991b1b';
+        }
+    } else {
+        diffBlock.style.display = 'none';
+    }
+}
+
+function onEditPriceChange() {
+    document.getElementById('edit-price-diff').style.display = 'none';
+}
+
+async function loadEditTimeSlots(date) {
+    const container = document.getElementById('edit-time-slots');
+    if (!currentMuseum || !date) {
+        container.innerHTML = '<p style="padding:0.5rem;">Выберите дату</p>';
+        return;
+    }
+    try {
+        const respClosed = await fetch(`${API}/api/admin/closed-dates?museum_id=${currentMuseumId}`);
+        if (respClosed.ok) {
+            const closedDates = await respClosed.json();
+            if (closedDates.some(cd => cd.closed_date === date)) {
+                container.innerHTML = '<p style="color:red; padding:0.5rem;">Эта дата закрыта администратором</p>';
+                return;
+            }
+        }
+    } catch(e) {}
+    try {
+        const resp = await fetch(`${API}/api/time-slots/${currentMuseum.code}/${date}`);
+        if (!resp.ok) throw new Error('Ошибка');
+        const slots = await resp.json();
+        const now = new Date();
+        const selectedDate = new Date(date + 'T00:00:00');
+        const availableSlots = slots.filter(slot => {
+            if (slot.is_closed) return false;
+            const [h, m] = slot.start_time.split(':').map(Number);
+            const slotTime = new Date(selectedDate);
+            slotTime.setHours(h, m, 0, 0);
+            return slotTime >= now || date > now.toISOString().split('T')[0];
+        });
+        if (availableSlots.length === 0) {
+            container.innerHTML = '<p style="padding:0.5rem;">Нет доступных слотов на эту дату</p>';
+            return;
+        }
+        container.innerHTML = availableSlots.map(slot => {
+            const timeStr = slot.start_time.substring(0,5) + '-' + slot.end_time.substring(0,5);
+            const availableInfo = slot.available_tickets ? ` (${slot.available_tickets} бил.)` : '';
+            return `<button class="time-slot-btn" data-time="${slot.start_time}" onclick="selectEditTimeSlot('${slot.start_time}')">${timeStr}${availableInfo}</button>`;
+        }).join('');
+        if (selectedEditTime) {
+            const btn = container.querySelector(`[data-time="${selectedEditTime}"]`);
+            if (btn) btn.classList.add('selected');
+            else selectedEditTime = null;
+        }
+    } catch(e) {
+        container.innerHTML = '<p style="color:red;">Ошибка загрузки слотов</p>';
+    }
+}
+
+function selectEditTimeSlot(time) {
+    selectedEditTime = time;
+    document.querySelectorAll('#edit-time-slots .time-slot-btn').forEach(b => b.classList.remove('selected'));
+    const btn = document.querySelector(`#edit-time-slots [data-time="${time}"]`);
+    if (btn) btn.classList.add('selected');
+}
+
+function onEditDateChange() {
+    const date = document.getElementById('edit-ticket-date').value;
+    selectedEditTime = null;
+    document.getElementById('edit-time-slots').innerHTML = '<p style="padding:0.5rem;">Загрузка...</p>';
+    loadEditTimeSlots(date);
+}
+
+function editTicket(id) {
+    const ticket = lastSearchTickets.find(t => t.id === id);
+    if (!ticket) { alert('Данные билета не найдены'); return; }
+    editingTicketId = id;
+    if (editCategoriesCache.length === 0) {
+        loadEditCategories().then(() => {
+            document.getElementById('edit-ticket-type').value = ticket.ticket_type || '';
+        });
+    } else {
+        document.getElementById('edit-ticket-type').value = ticket.ticket_type || '';
+    }
+    document.getElementById('edit-ticket-price').value = ticket.price || 0;
+    document.getElementById('edit-ticket-date').value = ticket.visit_date || '';
+    selectedEditTime = ticket.visit_time ? ticket.visit_time.substring(0,5) : null;
+    if (ticket.visit_date) {
+        loadEditTimeSlots(ticket.visit_date);
+    } else {
+        document.getElementById('edit-time-slots').innerHTML = '<p style="padding:0.5rem;">Выберите дату</p>';
+    }
+    document.getElementById('edit-ticket-status').value = ticket.status || 'online';
+    document.getElementById('edit-ticket-check').value = ticket.check || '';
+    document.getElementById('edit-ticket-reason').value = ticket.reason || '';
+    document.getElementById('edit-ticket-modal').style.display = 'flex';
+    document.getElementById('edit-price-diff').style.display = 'none';
+}
+
+function closeEditTicketModal() {
+    document.getElementById('edit-ticket-modal').style.display = 'none';
+    editingTicketId = null;
+    selectedEditTime = null;
+}
+
+async function saveTicketChanges() {
+    const data = {
+        ticket_type: document.getElementById('edit-ticket-type').value,
+        price: parseFloat(document.getElementById('edit-ticket-price').value),
+        visit_date: document.getElementById('edit-ticket-date').value || null,
+        visit_time: selectedEditTime || null,
+        status: document.getElementById('edit-ticket-status').value,
+        check: document.getElementById('edit-ticket-check').value || null,
+        reason: document.getElementById('edit-ticket-reason').value || null
+    };
+    try {
+        const resp = await fetch(`${API}/api/admin/tickets/${editingTicketId}?museum_id=${currentMuseumId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        if (!resp.ok) { const err = await resp.json(); alert('Ошибка: ' + err.detail); return; }
+        closeEditTicketModal();
+        searchTickets();
+    } catch(e) { alert('Ошибка сети'); }
+}
+
+async function deleteTicket(id) {
+    if (!confirm('Удалить билет безвозвратно?')) return;
+    try {
+        const resp = await fetch(`${API}/api/admin/tickets/${id}?museum_id=${currentMuseumId}`, { method: 'DELETE' });
+        if (!resp.ok) { const err = await resp.json(); alert('Ошибка: ' + err.detail); return; }
+        searchTickets();
+    } catch(e) { alert('Ошибка сети'); }
+}
+
+// ================== АДАПТИВНОЕ МЕНЮ ==================
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const toggle = document.querySelector('.menu-toggle');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+    toggle.classList.toggle('open');
+}
+</script>
+
+<!-- Модальные окна -->
+<div id="edit-category-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+        <h3 style="margin-bottom: 1.5rem;">Изменить категорию</h3>
+        <div class="form-group">
+            <label>Название</label>
+            <input type="text" id="edit-cat-name" placeholder="Название категории">
+        </div>
+        <div class="form-group">
+            <label>Скидка (%)</label>
+            <input type="text" id="edit-cat-discount" placeholder="Например, 50 (без знака %%)">
+        </div>
+        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn small secondary" onclick="closeEditCategoryModal()">Отмена</button>
+            <button class="btn small" onclick="saveCategoryChanges()">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<div id="slot-reason-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10001; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 12px; width: 100%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+        <h3>Укажите причину блокировки</h3>
+        <textarea id="slot-reason-text" rows="3" style="width: 100%; margin-top: 1rem; padding: 0.5rem; border-radius: 8px; border: 1px solid #ccc;"></textarea>
+        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn small secondary" onclick="closeSlotReasonModal()">Отмена</button>
+            <button class="btn small" onclick="confirmCloseSlot()">Заблокировать</button>
+        </div>
+    </div>
+</div>
+
+<div id="edit-ticket-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; align-items: flex-start; justify-content: center; padding: 2rem; overflow-y: auto;">
+    <div style="background: white; padding: 2rem; border-radius: 12px; width: 100%; max-width: 520px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); margin: auto;">
+        <h3>Редактировать билет</h3>
+        <input type="hidden" id="edit-ticket-id">
+        <div class="form-group">
+            <label>Тип билета</label>
+            <select id="edit-ticket-type" onchange="onEditTicketTypeChange()">
+                <option value="">Выберите тип</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Цена (₽)</label><input type="number" id="edit-ticket-price" step="0.01" oninput="onEditPriceChange()"></div>
+        <div id="edit-price-diff" style="display: none; margin-bottom: 1rem; padding: 0.75rem; border-radius: 8px; background: #fef3c7; color: #92400e; font-weight: 500;"></div>
+        <div class="form-group"><label>Дата посещения</label><input type="date" id="edit-ticket-date" onchange="onEditDateChange()"></div>
+        <div class="form-group">
+            <label>Время посещения</label>
+            <div id="edit-time-slots" class="time-slots-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem;"></div>
+        </div>
+        <div class="form-group"><label>Статус</label>
+            <select id="edit-ticket-status">
+                <option value="online">online</option>
+                <option value="проверено">проверено</option>
+                <option value="отменён">отменён</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Отметка проверки</label><input type="text" id="edit-ticket-check"></div>
+        <div class="form-group"><label>Причина</label><input type="text" id="edit-ticket-reason"></div>
+        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn small secondary" onclick="closeEditTicketModal()">Отмена</button>
+            <button class="btn small" onclick="saveTicketChanges()">Сохранить</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

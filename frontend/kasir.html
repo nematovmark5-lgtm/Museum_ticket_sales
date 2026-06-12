@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Касса музея – Продажа и проверка билетов</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        /* Экран входа */
+        .login-screen {
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid var(--border);
+        }
+        .login-screen.hidden { display: none; }
+        .login-screen h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+        .form-group input, .form-group select {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: white;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+        }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .btn-outline:hover { background: #f1f5f9; }
+        .error-message {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        /* Основной интерфейс */
+        .cashier-app {
+    display: none;
+    width: 100%;
+    max-width: 1100px;  /* было 900px – увеличили */
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+        .cashier-app.active { display: block; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .museum-badge {
+            background: var(--primary-light);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        .tabs button {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+        .tabs button.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .ticket-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 700px) {
+            .ticket-panel { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .time-slots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .time-slot {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .time-slot.selected { background: var(--accent); color: white; border-color: var(--accent); }
+        .time-slot:disabled { opacity: 0.5; background: #fee2e2; cursor: not-allowed; }
+
+        .ticket-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+        .ticket-item select {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .ticket-item .price {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 600;
+        }
+        .ticket-item .remove-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+        }
+
+        .summary {
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .total-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Таблица проверки билетов */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: white;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        th {
+            background: var(--primary-light);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        tr:hover td { background: #f1f5f9; }
+        /* Компактные кнопки для таблицы */
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    width: auto;
+}
+
+/* Таблица – адаптивность и перенос */
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+table {
+    width: 100%;
+    font-size: 0.85rem;
+}
+th, td {
+    padding: 0.6rem 0.8rem;
+    white-space: nowrap;
+}
+/* Разрешаем перенос в колонке посетителя и телефона */
+td:nth-child(2), td:nth-child(3) {
+    white-space: normal;
+    word-break: break-word;
+    max-width: 140px;
+}
+
+/* Анимация исчезновения */
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; transform: translateX(20px); }
+}
+.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
+.btn-warning {
+    background: var(--warning);
+    color: white;
+}
+.btn-warning:hover {
+    background: #eab308;
+}
+    </style>
+</head>
+<body>
+    <!-- Экран входа -->
+    <div id="login-screen" class="login-screen">
+        <h2>Вход для кассира</h2>
+        <div class="form-group">
+            <label>Код музея</label>
+            <input type="text" id="museum-code" placeholder="Например, modern-art">
+        </div>
+        <div class="form-group">
+            <label>Пароль</label>
+            <input type="password" id="password" placeholder="Пароль музея">
+        </div>
+        <button class="btn btn-primary" onclick="loginCashier()">Войти</button>
+        <div id="login-error" class="error-message"></div>
+    </div>
+
+    <!-- Основной интерфейс кассира -->
+    <div id="cashier-app" class="cashier-app">
+        <div class="header">
+            <h1>Касса музея</h1>
+            <div>
+                <span class="museum-badge" id="museum-name"></span>
+                <button class="btn btn-outline" style="width:auto; margin-left:1rem;" onclick="logoutCashier()">Выйти</button>
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <div class="tabs">
+            <button class="active" id="tab-sale-btn" onclick="switchCashierTab('sale')">Продажа билетов</button>
+            <button id="tab-check-btn" onclick="switchCashierTab('check')">Проверка билетов</button>
+            <button id="tab-checked-btn" onclick="switchCashierTab('checked')">Проверенные</button>
+        </div>
+
+        <!-- Вкладка продажи билетов -->
+        <div id="tab-sale">
+            <div class="ticket-panel">
+                <!-- Левая колонка: дата и время -->
+                <div class="card">
+                    <div class="form-group">
+                        <label>Дата посещения</label>
+                        <input type="date" id="visit-date" onchange="loadTimeSlots()">
+                    </div>
+                    <div class="form-group">
+                        <label>Время</label>
+                        <div id="time-slots" class="time-slots"></div>
+                    </div>
+                </div>
+
+                <!-- Правая колонка: билеты и посетитель -->
+                <div class="card">
+                    <div class="form-group">
+                        <label>Билеты</label>
+                        <div id="ticket-list"></div>
+                        <button class="btn btn-outline" style="width:auto; margin-top:0.5rem;" onclick="addTicket()">+ Добавить билет</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Информация о посетителе</label>
+                        <input type="text" id="visitor-name" placeholder="Имя" required>
+                        <input type="text" id="visitor-surname" placeholder="Фамилия (необязательно)" style="margin-top:0.5rem;">
+                        <input type="tel" id="visitor-phone" placeholder="Телефон (необязательно)" style="margin-top:0.5rem;">
+                    </div>
+
+                    <div class="summary">
+                        <span>Итого к оплате:</span>
+                        <span class="total-price" id="total-price">0.00 ₽</span>
+                    </div>
+
+                    <button class="btn btn-success" onclick="sellTickets()" style="margin-top:1rem;">
+                        Оформить продажу
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка проверки билетов -->
+        <div id="tab-check" style="display: none;">
+            <div class="card">
+                <h3>Проверка билетов</h3>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <input type="text" id="check-search" class="form-group input" placeholder="Поиск по номеру, имени, фамилии или телефону" style="flex:1;" oninput="handleCheckSearch()">
+                    <button class="btn btn-outline" onclick="clearCheckSearch()" style="width:auto;">Очистить</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>№ билета</th>
+                                <th>Посетитель</th>
+                                <th>Телефон</th>
+                                <th>Тип</th>
+                                <th>Цена</th>
+                                <th>Дата/Время</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="check-tickets-body"></tbody>
+                    </table>
+                </div>
+                <div id="check-search-info" class="text-center" style="margin-top:0.5rem; color: var(--text-light);"></div>
+            </div>
+        </div>
+        <!-- Вкладка проверенных билетов -->
+<div id="tab-checked" style="display: none;">
+    <div class="card">
+        <h3>Проверенные билеты</h3>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <input type="text" id="checked-search" class="form-group input" placeholder="Поиск..." style="flex:1;" oninput="handleCheckedSearch()">
+            <button class="btn btn-outline" onclick="clearCheckedSearch()" style="width:auto;">Очистить</button>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>№ билета</th>
+                        <th>Посетитель</th>
+                        <th>Телефон</th>
+                        <th>Тип</th>
+                        <th>Цена</th>
+                        <th>Дата/Время</th>
+                        <th>Статус</th>
+                        <th>Причина</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody id="checked-tickets-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <!-- Модальное окно для уведомлений -->
+    <div id="cashier-notification-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10001; align-items:center; justify-content:center;">
+        <div style="background:white; padding:2rem; border-radius:12px; max-width:420px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom:1rem;">Внимание</h3>
+            <p id="cashier-notification-message"></p>
+            <p style="margin-top:0.5rem; color:#64748b;">Приносим извинения за неудобства</p>
+            <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="closeCashierNotification()">Хорошо</button>
+        </div>
+    </div>
+
+    <script>
+    const API = 'http://localhost:8002';
+    let closedDates = [];
+    let museumWs = null;
+    let categoriesWs = null;
+    let selectedDate = null;
+    let currentMuseum = null;           // { id, code, name, ticket_price }
+    let selectedTimeSlot = null;
+    let tickets = [];
+    let ticketIdCounter = 0;
+    let availableTickets = 0;
+    let ticketCategories = [];
+    let checkRefreshInterval = null;
+
+    // ================== ВХОД ==================
+    async function loginCashier() {
+        const code = document.getElementById('museum-code').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const errorDiv = document.getElementById('login-error');
+        if (!code || !password) { errorDiv.textContent = 'Заполните все поля'; return; }
+        try {
+            const response = await fetch(`${API}/api/cashier/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code, password })
+            });
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.detail || 'Неверный код или пароль');
+            }
+            const result = await response.json();
+            currentMuseum = {
+                id: result.museum_id,                  // <-- ID теперь здесь
+                code: result.museum_code,
+                name: result.museum_name,
+                ticket_price: result.ticket_price
+            };
+
+            await loadClosedDates();
+            await loadTicketCategories(currentMuseum.id);
+            if (ticketCategories.length === 0) await loadTicketCategories();
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('cashier-app').classList.add('active');
+            document.getElementById('museum-name').textContent = currentMuseum.name;
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('visit-date').value = today;
+            loadTimeSlots();
+            tickets = [];
+            ticketIdCounter = 0;
+            addTicket();
+            connectMuseumWebSocket();
+            connectCategoriesWebSocket();
+        } catch (err) {
+            errorDiv.textContent = err.message;
+        }
+    }
+
+    // ================== ЗАКРЫТЫЕ ДАТЫ ==================
+    async function loadClosedDates() {
+        try {
+            const resp = await fetch(`${API}/api/museums-data`);
+            if (resp.ok) {
+                const data = await resp.json();
+                const museum = data.museums.find(m => m.code === currentMuseum.code);
+                if (museum) {
+                    closedDates = data.closed_dates.filter(cd => cd.museum_id === museum.id);
+                }
+            }
+        } catch(e) { console.error('Ошибка закрытых дат:', e); }
+    }
+
+    // ================== ВЫХОД ==================
+    function logoutCashier() {
+        stopAutoRefreshCheck();
+        if (museumWs) { museumWs.close(); museumWs = null; }
+        if (categoriesWs) { categoriesWs.close(); categoriesWs = null; }
+        currentMuseum = null;
+        document.getElementById('cashier-app').classList.remove('active');
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('museum-code').value = '';
+        document.getElementById('password').value = '';
+    }
+
+    // ================== АВТООБНОВЛЕНИЕ ПРОВЕРКИ ==================
+    function startAutoRefreshCheck() {
+        stopAutoRefreshCheck();
+        loadCheckTickets(document.getElementById('check-search').value.trim());
+        checkRefreshInterval = setInterval(() => {
+            if (document.getElementById('tab-check').style.display !== 'none') {
+                loadCheckTickets(document.getElementById('check-search').value.trim());
+            }
+        }, 5000);
+    }
+    function stopAutoRefreshCheck() {
+        if (checkRefreshInterval) {
+            clearInterval(checkRefreshInterval);
+            checkRefreshInterval = null;
+        }
+    }
+
+    // ================== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ==================
+    function switchCashierTab(tab) {
+        document.getElementById('tab-sale').style.display = tab === 'sale' ? 'block' : 'none';
+        document.getElementById('tab-check').style.display = tab === 'check' ? 'block' : 'none';
+        document.getElementById('tab-checked').style.display = tab === 'checked' ? 'block' : 'none';
+        document.getElementById('tab-sale-btn').classList.toggle('active', tab === 'sale');
+        document.getElementById('tab-check-btn').classList.toggle('active', tab === 'check');
+        document.getElementById('tab-checked-btn').classList.toggle('active', tab === 'checked');
+        if (tab === 'check') {
+            startAutoRefreshCheck();
+        } else {
+            stopAutoRefreshCheck();
+        }
+        if (tab === 'checked') loadCheckedTickets();
+    }
+
+    // ================== ВРЕМЕННЫЕ СЛОТЫ ==================
+    async function loadTimeSlots() {
+        if (!currentMuseum) return;
+        const date = document.getElementById('visit-date').value;
+        if (!date) return;
+        selectedDate = date;
+        const container = document.getElementById('time-slots');
+        container.innerHTML = 'Загрузка...';
+        if (closedDates.some(cd => cd.closed_date === date)) {
+            container.innerHTML = '<p style="color:red;">Эта дата закрыта администратором</p>';
+            return;
+        }
+        try {
+            const resp = await fetch(`${API}/api/time-slots/${currentMuseum.code}/${date}`);
+            if (!resp.ok) throw new Error('Ошибка загрузки');
+            const slots = await resp.json();
+            selectedTimeSlot = null;
+            container.innerHTML = '';
+            if (slots.length === 0) {
+                container.innerHTML = '<p>Нет слотов</p>';
+                return;
+            }
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            slots.forEach(slot => {
+                const btn = document.createElement('button');
+                btn.className = 'time-slot';
+                btn.textContent = `${slot.start_time.substring(0,5)}–${slot.end_time.substring(0,5)} (${slot.available_tickets} бил.)`;
+                let disabled = false;
+                if (slot.is_closed) {
+                    disabled = true;
+                    btn.style.background = '#fee2e2';
+                    btn.textContent += ' (закрыто админ.)';
+                } else if (date === todayStr) {
+                    const [h,m] = slot.start_time.split(':').map(Number);
+                    const slotTime = new Date(); slotTime.setHours(h,m,0,0);
+                    if (slotTime < now) { disabled = true; btn.style.background = '#fee2e2'; btn.textContent += ' (прошло)'; }
+                } else if (date < todayStr) { disabled = true; btn.style.background = '#fee2e2'; btn.textContent += ' (прошло)'; }
+                else if (slot.available_tickets === 0) { disabled = true; btn.style.opacity = '0.5'; }
+                btn.disabled = disabled;
+                if (!disabled) {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        selectedTimeSlot = slot;
+                        availableTickets = slot.available_tickets;
+                    });
+                }
+                container.appendChild(btn);
+            });
+        } catch(e) { container.innerHTML = '<p style="color:red;">Ошибка</p>'; }
+    }
+
+    // ================== БИЛЕТЫ ==================
+    function addTicket() {
+        const id = ticketIdCounter++;
+        const defCat = ticketCategories.length > 0 ? ticketCategories[0].name : 'Стандартный';
+        tickets.push({ id, type: defCat, price: calculatePrice(defCat) });
+        renderTickets();
+    }
+    function removeTicket(id) {
+        if (tickets.length <= 1) return;
+        tickets = tickets.filter(t => t.id !== id);
+        renderTickets();
+    }
+    function changeTicketType(id, newType) {
+        const t = tickets.find(t => t.id === id);
+        if (!t) return;
+        t.type = newType;
+        t.price = calculatePrice(newType);
+        renderTickets();
+    }
+    function calculatePrice(categoryName) {
+        if (!currentMuseum) return 0;
+        const mult = getMultiplier(categoryName);
+        return Math.round(currentMuseum.ticket_price * mult);
+    }
+    function getMultiplier(name) {
+        const cat = ticketCategories.find(c => c.name === name);
+        return cat ? cat.discount_multiplier : 1.0;
+    }
+    async function loadTicketCategories(museumId) {
+    try {
+        const resp = await fetch(`${API}/api/admin/ticket-categories?museum_id=${museumId}`);
+        if (resp.ok) {
+            ticketCategories = await resp.json();
+        } else {
+            ticketCategories = [];
+        }
+    } catch(e) {
+        console.error('Ошибка категорий:', e);
+        ticketCategories = [];
+    }
+}
+    function renderTickets() {
+        const container = document.getElementById('ticket-list');
+        let total = 0;
+        container.innerHTML = tickets.map(t => {
+            const cat = ticketCategories.find(c => c.name === t.type);
+            const mult = cat ? cat.discount_multiplier : 1.0;
+            const basePrice = currentMuseum.ticket_price || 0;
+            const finalPrice = calculatePrice(t.type);
+            const disc = Math.round((1 - mult) * 100);
+            let priceDisplay = disc > 0 ? 
+                `<span style="text-decoration:line-through;color:#999;font-size:0.8rem;">${basePrice}₽</span> ${finalPrice}₽ <span style="color:green;">(-${disc}%)</span>` 
+                : `${finalPrice}₽`;
+            total += finalPrice;
+            const options = ticketCategories.map(c => `<option value="${c.name}" ${t.type===c.name?'selected':''}>${c.name}</option>`).join('');
+            return `<div class="ticket-item"><select onchange="changeTicketType(${t.id}, this.value)">${options}</select><span class="price">${priceDisplay}</span><button class="remove-btn" onclick="removeTicket(${t.id})">✕</button></div>`;
+        }).join('');
+        document.getElementById('total-price').textContent = total.toFixed(2) + ' ₽';
+    }
+
+    // ================== ПРОДАЖА ==================
+    async function sellTickets() {
+        const visitorName = document.getElementById('visitor-name').value.trim();
+        if (!visitorName) { alert('Введите имя'); return; }
+        if (!selectedTimeSlot) { alert('Выберите время'); return; }
+        if (tickets.length === 0) { alert('Добавьте билет'); return; }
+        if (tickets.length > availableTickets) { alert(`Доступно ${availableTickets}`); return; }
+        if (closedDates.some(cd => cd.closed_date === document.getElementById('visit-date').value)) {
+            alert('Дата закрыта администратором'); return;
+        }
+        if (selectedTimeSlot.is_closed) { alert('Слот закрыт администратором'); return; }
+
+        const btn = document.querySelector('#tab-sale .btn-success');
+        const orig = btn.textContent;
+        btn.textContent = 'Оформление...';
+        btn.disabled = true;
+        try {
+            const resp = await fetch(`${API}/api/cashier/sell`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    museum_id: currentMuseum.id,          // <-- вместо token
+                    museum_code: currentMuseum.code,
+                    date: document.getElementById('visit-date').value,
+                    start_time: selectedTimeSlot.start_time,
+                    quantity: tickets.length,
+                    tickets: tickets.map(t => ({ type: t.type, price: 0 })),
+                    visitor: {
+                        name: visitorName,
+                        surname: document.getElementById('visitor-surname').value.trim(),
+                        phone: document.getElementById('visitor-phone').value.trim(),
+                        login: '',
+                        password: ''
+                    }
+                })
+            });
+            if (!resp.ok) {
+                const err = await resp.json();
+                throw new Error(err.detail || 'Ошибка');
+            }
+            const result = await resp.json();
+            alert(`✅ Продажа успешна! Номера: ${result.ticket_numbers.join(', ')}`);
+            resetForm();
+            loadTimeSlots();
+        } catch(e) {
+            alert('Ошибка: ' + e.message);
+        } finally {
+            btn.textContent = orig;
+            btn.disabled = false;
+        }
+    }
+
+    function resetForm() {
+        tickets = [];
+        ticketIdCounter = 0;
+        addTicket();
+        selectedTimeSlot = null;
+        document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+        document.getElementById('visitor-name').value = '';
+        document.getElementById('visitor-surname').value = '';
+        document.getElementById('visitor-phone').value = '';
+    }
+
+    // ================== WEBSOCKET ==================
+    function connectMuseumWebSocket() {
+        if (museumWs) museumWs.close();
+        museumWs = new WebSocket(`ws://localhost:8002/ws/museum/${currentMuseum.code}`);
+        museumWs.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.action === 'slot_closed' || data.action === 'slot_opened') {
+                const reason = data.reason ? ` Причина: ${data.reason}` : '';
+                showCashierNotification(`Слот ${data.start_time.substring(0,5)}–${data.end_time.substring(0,5)} на ${data.date} ${data.action === 'slot_closed' ? 'заблокирован' : 'снова доступен'}.${reason}`);
+                if (document.getElementById('visit-date').value === data.date) loadTimeSlots();
+                return;
+            }
+            if (data.action === 'closed_date_added') {
+                const museumName = data.museum_name || currentMuseum.name;
+                showCashierNotification(`День ${data.closed_date} в музее «${museumName}» закрыт.`);
+                if (data.museum_code === currentMuseum.code) {
+                    closedDates.push({ museum_id: currentMuseum.id, closed_date: data.closed_date, reason: data.reason || '' });
+                    if (document.getElementById('visit-date').value === data.closed_date) loadTimeSlots();
+                }
+                return;
+            }
+            if (data.action === 'closed_date_removed') {
+                const museumName = data.museum_name || currentMuseum.name;
+                showCashierNotification(`День ${data.closed_date} в музее «${museumName}» снова доступен.`);
+                if (data.museum_code === currentMuseum.code) {
+                    closedDates = closedDates.filter(cd => cd.closed_date !== data.closed_date);
+                    if (document.getElementById('visit-date').value === data.closed_date) loadTimeSlots();
+                }
+                return;
+            }
+            if (data.ticket_price && data.ticket_price !== currentMuseum.ticket_price) {
+                const old = currentMuseum.ticket_price;
+                currentMuseum.ticket_price = data.ticket_price;
+                showCashierNotification(`Цена изменена с ${old}₽ на ${data.ticket_price}₽.`);
+                tickets.forEach(t => t.price = calculatePrice(t.type));
+                renderTickets();
+            }
+        };
+    }
+
+    function connectCategoriesWebSocket() {
+        if (categoriesWs) categoriesWs.close();
+        categoriesWs = new WebSocket(`ws://localhost:8002/ws/ticket-categories`);
+        categoriesWs.onmessage = async function(event) {
+            const data = JSON.parse(event.data);
+            if (data.action === 'created' || data.action === 'updated' || data.action === 'deleted') {
+                let deletedName = null;
+                if (data.action === 'deleted') {
+                    const oldCat = ticketCategories.find(c => c.id === data.category_id);
+                    deletedName = oldCat ? oldCat.name : 'Неизвестная категория';
+                }
+                await loadTicketCategories(currentMuseum.id);
+                tickets.forEach(t => {
+                    if (!ticketCategories.some(c => c.name === t.type)) {
+                        t.type = ticketCategories.length > 0 ? ticketCategories[0].name : 'Стандартный';
+                    }
+                    t.price = calculatePrice(t.type);
+                });
+                renderTickets();
+                if (data.action === 'created') {
+                    showCashierNotification(`Добавлена категория «${data.category.name}» (скидка ${Math.round((1-data.category.discount_multiplier)*100)}%)`);
+                } else if (data.action === 'updated') {
+                    showCashierNotification(`Изменена категория «${data.category.name}» (скидка ${Math.round((1-data.category.discount_multiplier)*100)}%)`);
+                } else if (data.action === 'deleted') {
+                    showCashierNotification(`Категория «${deletedName}» удалена.`);
+                }
+            }
+        };
+    }
+
+    // ================== ПРОВЕРКА БИЛЕТОВ ==================
+    let checkSearchTimeout;
+    function handleCheckSearch() {
+        clearTimeout(checkSearchTimeout);
+        checkSearchTimeout = setTimeout(() => {
+            loadCheckTickets(document.getElementById('check-search').value.trim());
+        }, 300);
+    }
+
+    function clearCheckSearch() {
+        document.getElementById('check-search').value = '';
+        loadCheckTickets();
+    }
+
+    async function loadCheckTickets(search = '') {
+        if (!currentMuseum || !currentMuseum.id) {
+            setTimeout(() => loadCheckTickets(search), 200);
+            return;
+        }
+        try {
+            const params = new URLSearchParams({ museum_id: currentMuseum.id });
+            if (search) params.append('search', search);
+            const resp = await fetch(`${API}/api/cashier/tickets?${params}`);
+            if (!resp.ok) throw new Error('Ошибка загрузки');
+            const tickets = await resp.json();
+            renderCheckTickets(tickets, search);
+        } catch (e) {
+            document.getElementById('check-tickets-body').innerHTML = '<tr><td colspan="8">Ошибка загрузки</td></tr>';
+        }
+    }
+
+    function renderCheckTickets(tickets, searchTerm) {
+        const tbody = document.getElementById('check-tickets-body');
+        const info = document.getElementById('check-search-info');
+        if (!tickets || tickets.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Нет билетов для проверки</td></tr>';
+            info.textContent = '';
+            return;
+        }
+        tbody.innerHTML = tickets.map(t => {
+            const visitor = `${t.visitor_name || ''} ${t.visitor_surname || ''}`.trim();
+            const phone = t.visitor_phone || '';
+            const date = t.visit_date || '';
+            const time = t.visit_time ? t.visit_time.substring(0,5) : '';
+            const status = t.status || 'online';
+            return `<tr>
+                <td>${t.ticket_number}</td>
+                <td>${visitor}</td>
+                <td>${phone}</td>
+                <td>${t.ticket_type}</td>
+                <td>${t.price}₽</td>
+                <td>${date} ${time}</td>
+                <td>${status}</td>
+                <td>
+                    <button class="btn btn-success btn-sm" data-ticket-number="${t.ticket_number}" onclick="verifyTicket(this)">Проверено</button>
+                    <button class="btn btn-danger btn-sm" data-ticket-number="${t.ticket_number}" onclick="rejectTicket(this)">Отказано</button>
+                </td>
+            </tr>`;
+        }).join('');
+        info.textContent = searchTerm ? `Найдено: ${tickets.length}` : '';
+    }
+
+    // ================== ПРОВЕРКА / ОТКАЗ ==================
+    let pendingRejectTicketNumber = null;
+
+    function rejectTicket(button) {
+        const ticketNumber = button.getAttribute('data-ticket-number');
+        if (!ticketNumber) { showCashierNotification('Ошибка: номер билета не найден'); return; }
+        pendingRejectTicketNumber = ticketNumber;
+        document.getElementById('reject-reason-select').value = '1';
+        document.getElementById('custom-reason-group').style.display = 'none';
+        document.getElementById('custom-reason-input').value = '';
+        document.getElementById('reject-modal').style.display = 'flex';
+    }
+
+    function onRejectReasonChange() {
+        const select = document.getElementById('reject-reason-select');
+        document.getElementById('custom-reason-group').style.display = select.value === '5' ? 'block' : 'none';
+    }
+
+    function closeRejectModal() {
+        document.getElementById('reject-modal').style.display = 'none';
+        pendingRejectTicketNumber = null;
+    }
+
+    async function submitRejectReason() {
+        const ticketNumber = pendingRejectTicketNumber;
+        if (!ticketNumber) { showCashierNotification('Ошибка: не выбран билет'); return; }
+        const select = document.getElementById('reject-reason-select');
+        let reasonText = '';
+        if (select.value === '5') {
+            reasonText = document.getElementById('custom-reason-input').value.trim();
+            if (!reasonText) { alert('Введите причину отказа'); return; }
+            reasonText = '(Отказано) ' + reasonText;
+        } else {
+            const reasons = {
+                '1': '(Отказано) Недостоверность данных',
+                '2': '(Отказано) Возраст клиента не соответствует',
+                '3': '(Отказано) Билет уже использован',
+                '4': '(Отказано) Просроченный билет',
+            };
+            reasonText = reasons[select.value];
+        }
+        closeRejectModal();
+        const success = await updateCheckStatus(ticketNumber, 'проверено', reasonText);
+        if (success) {
+            const row = document.querySelector(`#check-tickets-body tr:has(button[data-ticket-number="${ticketNumber}"])`);
+            if (row) {
+                row.classList.add('fade-out');
+                setTimeout(() => {
+                    row.remove();
+                    if (document.querySelectorAll('#check-tickets-body tr').length === 0) {
+                        document.getElementById('check-tickets-body').innerHTML = '<tr><td colspan="8" style="text-align:center;">Все билеты проверены</td></tr>';
+                    }
+                }, 500);
+            } else {
+                loadCheckTickets(document.getElementById('check-search').value.trim());
+            }
+        }
+    }
+
+    async function verifyTicket(button) {
+        const ticketNumber = button.dataset.ticketNumber;
+        if (!ticketNumber) { showCashierNotification('Ошибка: номер билета не найден'); return; }
+        if (!confirm('Подтвердить проверку билета?')) return;
+        const success = await updateCheckStatus(ticketNumber, 'проверено', null);
+        if (success) {
+            const row = button.closest('tr');
+            if (row) {
+                row.classList.add('fade-out');
+                setTimeout(() => {
+                    row.remove();
+                    if (document.querySelectorAll('#check-tickets-body tr').length === 0) {
+                        document.getElementById('check-tickets-body').innerHTML = '<tr><td colspan="8" style="text-align:center;">Все билеты проверены</td></tr>';
+                    }
+                }, 500);
+            } else {
+                loadCheckTickets(document.getElementById('check-search').value.trim());
+            }
+        }
+    }
+
+    async function updateCheckStatus(ticketNumber, check, reason) {
+        try {
+            const resp = await fetch(`${API}/api/cashier/tickets/${ticketNumber}/check?museum_id=${currentMuseum.id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ check, reason })
+            });
+            if (resp.ok) {
+                showCashierNotification('Статус билета обновлён');
+                return true;
+            } else {
+                const err = await resp.json();
+                showCashierNotification('Ошибка: ' + (err.detail || ''));
+                return false;
+            }
+        } catch(e) {
+            showCashierNotification('Ошибка сети');
+            return false;
+        }
+    }
+
+    // ================== ПРОВЕРЕННЫЕ БИЛЕТЫ ==================
+    let checkedSearchTimeout;
+    function handleCheckedSearch() {
+        clearTimeout(checkedSearchTimeout);
+        checkedSearchTimeout = setTimeout(() => {
+            loadCheckedTickets(document.getElementById('checked-search').value.trim());
+        }, 300);
+    }
+
+    function clearCheckedSearch() {
+        document.getElementById('checked-search').value = '';
+        loadCheckedTickets();
+    }
+
+    async function loadCheckedTickets(search = '') {
+        if (!currentMuseum || !currentMuseum.id) {
+            setTimeout(() => loadCheckedTickets(search), 200);
+            return;
+        }
+        try {
+            const params = new URLSearchParams({ museum_id: currentMuseum.id });
+            if (search) params.append('search', search);
+            const resp = await fetch(`${API}/api/cashier/tickets/checked?${params}`);
+            if (!resp.ok) throw new Error('Ошибка загрузки');
+            const tickets = await resp.json();
+            renderCheckedTickets(tickets, search);
+        } catch (e) {
+            document.getElementById('checked-tickets-body').innerHTML = '<tr><td colspan="9">Ошибка загрузки</td></tr>';
+        }
+    }
+
+    function renderCheckedTickets(tickets, searchTerm) {
+        const tbody = document.getElementById('checked-tickets-body');
+        if (!tickets || tickets.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Нет проверенных билетов</td></tr>';
+            return;
+        }
+        tbody.innerHTML = tickets.map(t => {
+            const visitor = `${t.visitor_name || ''} ${t.visitor_surname || ''}`.trim();
+            const phone = t.visitor_phone || '';
+            const date = t.visit_date || '';
+            const time = t.visit_time ? t.visit_time.substring(0,5) : '';
+            const reason = t.reason || '';
+            const check = t.check || '';
+            let statusDisplay = check === 'проверено' && !reason.startsWith('(Отказано)') ? 
+                '<span style="color:green;">✓ Проверено</span>' : `<span style="color:red;">${reason}</span>`;
+            return `<tr>
+                <td>${t.ticket_number}</td>
+                <td>${visitor}</td>
+                <td>${phone}</td>
+                <td>${t.ticket_type}</td>
+                <td>${t.price}₽</td>
+                <td>${date} ${time}</td>
+                <td>${t.status || 'online'}</td>
+                <td>${reason || ''}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="uncheckTicket('${t.ticket_number}')">Вернуть</button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    async function uncheckTicket(ticketNumber) {
+        if (!confirm('Вернуть билет в список проверки?')) return;
+        try {
+            const resp = await fetch(`${API}/api/cashier/tickets/${ticketNumber}/uncheck?museum_id=${currentMuseum.id}`, {
+                method: 'PUT'
+            });
+            if (resp.ok) {
+                showCashierNotification('Билет возвращён в очередь проверки');
+                const row = document.querySelector(`#checked-tickets-body tr:has(button[onclick*="${ticketNumber}"])`);
+                if (row) row.remove();
+                if (document.querySelectorAll('#checked-tickets-body tr').length === 0) {
+                    document.getElementById('checked-tickets-body').innerHTML = '<tr><td colspan="9" style="text-align:center;">Нет проверенных билетов</td></tr>';
+                }
+                if (document.getElementById('tab-check').style.display !== 'none') {
+                    loadCheckTickets(document.getElementById('check-search').value.trim());
+                }
+            } else {
+                const err = await resp.json();
+                showCashierNotification('Ошибка: ' + (err.detail || ''));
+            }
+        } catch(e) {
+            showCashierNotification('Ошибка сети');
+        }
+    }
+
+    // ================== УВЕДОМЛЕНИЯ ==================
+    function showCashierNotification(msg) {
+        document.getElementById('cashier-notification-message').textContent = msg;
+        document.getElementById('cashier-notification-overlay').style.display = 'flex';
+    }
+    function closeCashierNotification() {
+        document.getElementById('cashier-notification-overlay').style.display = 'none';
+    }
+
+    // ================== ИНИЦИАЛИЗАЦИЯ ==================
+    window.addEventListener('beforeunload', () => {
+        if (museumWs) museumWs.close();
+        if (categoriesWs) categoriesWs.close();
+        stopAutoRefreshCheck();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        /* loadTicketCategories(); */
+        const dateInput = document.getElementById('visit-date');
+        if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+    });
+</script>
+<!-- Модальное окно отказа -->
+<div id="reject-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10002; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:12px; max-width:420px; width:90%; box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+        <h3 style="margin-bottom:1rem;">Причина отказа</h3>
+        <div class="form-group">
+            <label>Выберите причину</label>
+            <select id="reject-reason-select" onchange="onRejectReasonChange()">
+                <option value="1">Недостоверность данных</option>
+                <option value="2">Возраст клиента не соответствует</option>
+                <option value="3">Билет уже использован</option>
+                <option value="4">Просроченный билет</option>
+                <option value="5">Другое</option>
+            </select>
+        </div>
+        <div class="form-group" id="custom-reason-group" style="display:none;">
+            <label>Укажите свою причину</label>
+            <input type="text" id="custom-reason-input" placeholder="Введите причину">
+        </div>
+        <div style="margin-top:1.5rem; display:flex; gap:1rem; justify-content:flex-end;">
+            <button class="btn btn-outline" onclick="closeRejectModal()" style="width:auto;">Отмена</button>
+            <button class="btn btn-danger" id="submit-reject-btn" style="width:auto;" onclick="submitRejectReason()">Отказать</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

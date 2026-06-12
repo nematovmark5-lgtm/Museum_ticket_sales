@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <script src="libs/html2canvas.min.js"></script>
+    <script src="libs/jspdf.umd.min.js"></script>
+    <script src="libs/chart.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Панель генерального директора</title>
+    <style>
+:root {
+    --bg: #f1f5f9;
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #cbd5e1;
+    --card-bg: #ffffff;
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --radius: 12px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --transition: 0.2s ease;
+    --header-height: 64px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ================= БОКОВАЯ ПАНЕЛЬ ================= */
+.sidebar {
+    width: 280px;
+    background: var(--sidebar-bg);
+    color: white;
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
+    z-index: 1100;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar .logo {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.sidebar select {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    width: 100%;
+    outline: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.sidebar select option {
+    color: #000;
+    background: #fff;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.sidebar nav a {
+    color: var(--sidebar-text);
+    text-decoration: none;
+    padding: 0.65rem 0.9rem;
+    border-radius: var(--radius);
+    transition: background var(--transition), color var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.sidebar .logout-btn {
+    margin-top: auto;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--sidebar-text);
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background var(--transition), color var(--transition);
+    flex-shrink: 0;
+}
+
+.sidebar .logout-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* ================= ОСНОВНАЯ ОБЛАСТЬ ================= */
+.main {
+    margin-left: 280px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--header-height);  /* ← компенсация фиксированной шапки */
+    gap: 0;
+    overflow-y: auto;
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* ================= ПЛАВАЮЩАЯ ШАПКА (fixed) ================= */
+.top-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: fixed;                 /* ← теперь всегда наверху */
+    top: 0;
+    left: 280px;                     /* отступ под боковую панель (десктоп) */
+    right: 0;
+    z-index: 1050;
+    background: #1e293b;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    padding: 0.6rem 1.25rem;
+    min-height: var(--header-height);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+.top-bar-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+    flex: 1;
+}
+
+.top-bar h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    color: white;
+    background-color: #1e293b;
+}
+
+.admin-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.admin-badge::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* Бургер – скрыт на десктопе */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: white;
+    line-height: 1;
+    padding: 0.3rem 0.5rem;
+    border-radius: 8px;
+    /* transition: background var(--transition); */
+    flex-shrink: 0;
+}
+
+.menu-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Затемнение при открытом меню */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1090;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ================= КОНТЕНТ ================= */
+.content-wrapper {
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+/* ================= КАРТОЧКИ ================= */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card .label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-card .value {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.stat-card .sub {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+/* ================= ФОРМЫ ================= */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    background: white;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+/* ================= КНОПКИ ================= */
+.btn {
+    padding: 0.7rem 1.4rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+.btn:active {
+    transform: scale(0.97);
+}
+.btn.secondary {
+    background: #e2e8f0;
+    color: #475569;
+}
+.btn.secondary:hover {
+    background: #cbd5e1;
+}
+.btn.small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+}
+.btn.danger {
+    background: #ef4444;
+    color: white;
+}
+.btn.danger:hover {
+    background: #dc2626;
+}
+
+/* ================= ТАБЛИЦЫ ================= */
+.tickets-table,
+.categories-table,
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    min-width: 600px;
+}
+
+.tickets-table th,
+.tickets-table td,
+.categories-table th,
+.categories-table td,
+.admin-table th,
+.admin-table td {
+    padding: 0.7rem 0.9rem;
+    text-align: center;
+    border-bottom: 1px solid #f1f5f9;
+    white-space: nowrap;
+}
+
+.tickets-table th,
+.categories-table th,
+.admin-table th {
+    background: #1e293b;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.tickets-table tr:hover td {
+    background: #f8fafc;
+}
+.tickets-table tr:nth-child(even) td {
+    background: #f9fafb;
+}
+
+.tickets-table td:first-child,
+.tickets-table th:first-child {
+    text-align: left;
+    padding-left: 1.2rem;
+}
+.tickets-table td:last-child,
+.tickets-table th:last-child {
+    text-align: right;
+    padding-right: 1.2rem;
+}
+
+.action-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.edit-btn {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+.delete-btn {
+    background: #fee2e2;
+    color: #ef4444;
+    margin-left: 4px;
+}
+.edit-btn:hover {
+    background: #cbd5e1;
+}
+.delete-btn:hover {
+    background: #fecaca;
+}
+
+/* ================= СПИСКИ ================= */
+.list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.image-thumb {
+    width: 110px;
+    height: 75px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: var(--shadow);
+    flex-shrink: 0;
+}
+
+.image-thumb .remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.55);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.image-thumb .remove-btn:hover {
+    background: rgba(239, 68, 68, 0.8);
+}
+
+.cover-btn,
+.cover-badge {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background: rgba(0, 0, 0, 0.55);
+    color: gold;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: background 0.2s;
+}
+.cover-btn:hover {
+    background: rgba(0, 0, 0, 0.75);
+}
+.cover-badge {
+    background: rgba(0, 0, 0, 0.4);
+    cursor: default;
+}
+
+/* ================= ЭКРАН ВХОДА ================= */
+#login-screen {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+#login-screen.hidden {
+    display: none;
+}
+
+.login-card {
+    background: white;
+    padding: 2.5rem 2rem;
+    border-radius: var(--radius);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-card h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+.login-card .btn {
+    margin-top: 1.25rem;
+}
+.error-msg {
+    color: #ef4444;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+}
+
+/* ================= СЛОТЫ ================= */
+.time-slots-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.time-slot-btn {
+    padding: 0.45rem 0.9rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.time-slot-btn:hover {
+    background: #f1f5f9;
+}
+.time-slot-btn.selected {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+.time-slot-btn.closed {
+    opacity: 0.5;
+    background: #fee2e2;
+    cursor: not-allowed;
+}
+
+/* ================= КАРТОЧКИ-ОБЁРТКИ ================= */
+.card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+/* ================= МОДАЛЬНЫЕ ОКНА ================= */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+.modal-overlay.active {
+    display: flex;
+}
+.modal-content {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.modal-content h3 {
+    margin-bottom: 1rem;
+}
+
+/* ================= АДАПТИВНОСТЬ ================= */
+@media (max-width: 768px) {
+    :root {
+        --header-height: 56px;
+    }
+
+    .sidebar {
+        left: -280px;
+        z-index: 1100;
+        width: 280px;
+        padding: 1rem;
+        gap: 1rem;
+        border-radius: 0 12px 12px 0;
+        box-shadow: 8px 0 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .main {
+        margin-left: 0;
+        padding-top: var(--header-height); /* уже задано */
+    }
+
+    .top-bar {
+        left: 0;                     /* ← на мобильных шапка на всю ширину */
+        right: 0;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .sidebar-overlay {
+        display: none;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+
+    .top-bar h1 {
+        font-size: 1.05rem;
+        letter-spacing: -0.2px;
+    }
+
+    .admin-badge {
+        font-size: 0.7rem;
+        letter-spacing: 0.6px;
+    }
+
+    .content-wrapper {
+        padding: 1rem 1rem;
+        gap: 1rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+
+    .btn.small {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.78rem;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-card .value {
+        font-size: 1.4rem;
+    }
+
+    .stat-card .label {
+        font-size: 0.75rem;
+    }
+
+    .tickets-table th,
+    .tickets-table td,
+    .categories-table th,
+    .categories-table td,
+    .admin-table th,
+    .admin-table td {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .tickets-table .action-btn {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.7rem;
+    }
+
+    .image-thumb {
+        width: 80px;
+        height: 55px;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -0.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .modal-content {
+        max-width: 100%;
+        border-radius: 16px 16px 0 0;
+        margin-top: auto;
+        max-height: 85vh;
+    }
+}
+
+@media (max-width: 400px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .top-bar h1 {
+        font-size: 0.95rem;
+    }
+
+    .top-bar {
+        padding: 0.45rem 0.75rem;
+        gap: 0.4rem;
+    }
+
+    .menu-toggle {
+        font-size: 1.4rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .admin-badge {
+        font-size: 0.65rem;
+    }
+
+    .content-wrapper {
+        padding: 0.75rem 0.75rem;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.55rem 0.85rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Планшеты */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .sidebar {
+        width: 240px;
+    }
+    .main {
+        margin-left: 240px;
+        padding-top: var(--header-height); /* уже задано */
+    }
+    .top-bar {
+        left: 240px;               /* ← под планшетную боковую панель */
+        right: 0;
+    }
+    .content-wrapper {
+        padding: 1.25rem 1.5rem;
+    }
+    .top-bar h1 {
+        font-size: 1.2rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Экран входа -->
+    <div id="login-screen">
+        <div class="login-card">
+            <h2>Вход для руководства</h2>
+            <div class="form-group" style="text-align: left">
+                <label>Логин</label>
+                <input type="text" id="super-username" placeholder="admin" style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 8px" />
+            </div>
+            <div class="form-group" style="text-align: left">
+                <label>Пароль</label>
+                <input type="password" id="super-password" placeholder="admin" style="width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 8px" />
+            </div>
+            <button class="btn" onclick="loginSuper()" style="margin-top: 1.5rem; width: 100%">Войти</button>
+            <div id="login-error" class="error-msg"></div>
+        </div>
+    </div>
+
+    <!-- Главный интерфейс -->
+    <div id="super-panel" style="display: none; flex: 1">
+        <!-- Боковая панель -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+                    <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+                    <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
+                    <path d="M10 6h4"></path>
+                    <path d="M10 10h4"></path>
+                    <path d="M10 14h4"></path>
+                    <path d="M10 18h4"></path>
+                </svg>
+                <span>Музеи <span style="font-size: 0.7rem; opacity: 0.8"> </span></span>
+            </div>
+            <select id="museum-select" onchange="onMuseumChange()">
+                <option value="">-- Выберите музей --</option>
+            </select>
+            <nav>
+                <a href="#" class="active" data-tab="general">🏛️ Основное</a>
+                <a href="#" data-tab="closed-dates">📅 Закрытые даты</a>
+                <a href="#" data-tab="images">🖼️ Изображения</a>
+                <a href="#" data-tab="stats">📊 Статистика</a>
+                <a href="#" data-tab="ticket-categories">🎫 Типы билетов</a>
+                <a href="#" data-tab="tickets">🎟️ Купленные билеты</a>
+                <a href="#" data-tab="coupons">🎫 Купоны</a>
+                <a href="#" data-tab="create-museum">➕ Создать музей</a>
+                <a href="#" data-tab="admins">👥 Администраторы</a>
+            </nav>
+            <button class="logout-btn" onclick="logoutSuper()">🚪 Выйти</button>
+        </aside>
+
+        <!-- Затемнение -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Основной контент -->
+        <div class="main" id="main-content">
+            <!-- ПЛАВАЮЩАЯ ШАПКА -->
+            <div class="top-bar" id="top-bar">
+                <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Меню">☰</button>
+                <div class="top-bar-title">
+                    <h1 id="museum-title">Выберите музей</h1>
+                    <span class="admin-badge">Директор</span>
+                </div>
+            </div>
+
+            <!-- Оборачиваем весь контент -->
+            <div class="content-wrapper">
+                <!-- Вкладка "Основное" -->
+                <div id="tab-general" class="tab-content active">
+                    <div class="card">
+                        <h3 style="margin-bottom: 1.25rem">Основная информация</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Название</label>
+                                <input type="text" id="m-name" />
+                            </div>
+                            <div class="form-group">
+                                <label>Категория</label>
+                                <select id="m-category">
+                                    <option value="Искусство">Искусство</option>
+                                    <option value="История">История</option>
+                                    <option value="Наука">Наука</option>
+                                    <option value="Культура">Культура</option>
+                                    <option value="Природа">Природа</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Цена билета (₽)</label>
+                                <input type="number" id="m-price" min="0" />
+                            </div>
+                            <div class="form-group">
+                                <label>Адрес</label>
+                                <input type="text" id="m-address" />
+                            </div>
+                            <div class="form-group">
+                                <label>Режим работы</label>
+                                <input type="text" id="m-hours" />
+                            </div>
+                            <div class="form-group">
+                                <label>Активен</label>
+                                <select id="m-active">
+                                    <option value="1">Да</option>
+                                    <option value="0">Нет</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 1rem">
+                            <label>Краткое описание</label>
+                            <input type="text" id="m-short-desc" />
+                        </div>
+                        <div class="form-group">
+                            <label>Полное описание</label>
+                            <textarea id="m-desc" rows="5"></textarea>
+                        </div>
+                        <button class="btn" onclick="saveGeneral()" style="margin-top: 1rem">Сохранить изменения</button>
+                        <button class="btn danger" onclick="deleteCurrentMuseum()" style="margin-top: 0.5rem">🗑️ Удалить музей</button>
+                    </div>
+                </div>
+
+                <!-- Вкладка "Закрытые даты" -->
+                <div id="tab-closed-dates" class="tab-content" style="display: none">
+                    <div class="card">
+                        <h3>Закрытые даты</h3>
+                        <div style="display: flex; gap: 0.75rem; margin: 1rem 0; flex-wrap: wrap">
+                            <input type="date" id="closed-date-input" style="padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border)" />
+                            <input type="text" id="closed-reason" placeholder="Причина" style="flex: 1; padding: 0.5rem; min-width: 140px" />
+                            <button class="btn small" onclick="addClosedDate()">Добавить</button>
+                        </div>
+                        <div id="closed-dates-list"></div>
+                    </div>
+                    <div class="card" style="margin-top: 1.5rem">
+                        <h3>Управление слотами</h3>
+                        <div style="display: flex; gap: 0.75rem; margin: 1rem 0; flex-wrap: wrap">
+                            <input type="date" id="slot-date-input" />
+                            <button class="btn small" onclick="loadAdminSlots()">Показать слоты</button>
+                        </div>
+                        <div id="admin-slots-list"></div>
+                    </div>
+                    <div class="card" style="margin-top: 1.5rem">
+                        <h3>Настройки генерации слотов</h3>
+                        <div class="form-grid" style="grid-template-columns: 1fr 1fr">
+                            <div class="form-group">
+                                <label>Начало дня</label>
+                                <input type="time" id="slot-start" />
+                            </div>
+                            <div class="form-group">
+                                <label>Конец дня</label>
+                                <input type="time" id="slot-end" />
+                            </div>
+                            <div class="form-group">
+                                <label>Длительность слота (мин.)</label>
+                                <input type="number" id="slot-duration" min="30" step="10" />
+                            </div>
+                            <div class="form-group">
+                                <label>Дней вперёд</label>
+                                <input type="number" id="slot-days-ahead" min="1" max="365" />
+                            </div>
+                            <div class="form-group">
+                                <label>Билетов по умолчанию</label>
+                                <input type="number" id="slot-tickets-default" min="1" />
+                            </div>
+                        </div>
+                        <button class="btn" onclick="saveSlotSettings()" style="margin-top: 1rem">Сохранить настройки</button>
+                    </div>
+                </div>
+
+                <!-- Вкладка "Изображения" -->
+                <div id="tab-images" class="tab-content" style="display: none">
+                    <div class="card">
+                        <h3>Изображения</h3>
+                        <div style="display: flex; gap: 0.75rem; margin: 1rem 0; flex-wrap: wrap">
+                            <input type="text" id="new-image-url" placeholder="URL изображения" style="flex: 1; padding: 0.5rem; min-width: 180px" />
+                            <input type="file" id="new-image-file" accept="image/*" onchange="handleImageFileSelect(this)" style="display: none" />
+                            <button class="btn small secondary" onclick="document.getElementById('new-image-file').click()">📁 Загрузить</button>
+                            <button class="btn small" onclick="addImage()">Добавить</button>
+                        </div>
+                        <div id="image-preview" style="margin-top: 0.5rem; max-width: 100%; display: none">
+                            <img id="preview-image" src="" style="max-height: 120px; border-radius: 8px" alt="Предпросмотр" />
+                        </div>
+                        <div class="image-preview" id="image-list-container"></div>
+                    </div>
+                </div>
+
+                <!-- Вкладка "Статистика" -->
+                <div id="tab-stats" class="tab-content" style="display: none">
+                    <div class="card" style="margin-bottom: 1.25rem">
+                        <h3 style="margin-bottom: 0.75rem">Период отображения</h3>
+                        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.75rem">
+                            <button class="btn small secondary period-btn" data-period="today">Сегодня</button>
+                            <button class="btn small secondary period-btn" data-period="week">Тек. неделя</button>
+                            <button class="btn small secondary period-btn" data-period="last_week">Прош. неделя</button>
+                            <button class="btn small secondary period-btn" data-period="month">Тек. месяц</button>
+                            <button class="btn small secondary period-btn" data-period="last_month">Прош. месяц</button>
+                            <button class="btn small secondary period-btn" data-period="year">Тек. год</button>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap">
+                            <label>С: <input type="date" id="start-date-input" style="padding: 0.4rem; border-radius: 8px; border: 1px solid var(--border)" /></label>
+                            <label>По: <input type="date" id="end-date-input" style="padding: 0.4rem; border-radius: 8px; border: 1px solid var(--border)" /></label>
+                            <button class="btn small" onclick="applyCustomPeriod()">Применить</button>
+                        </div>
+                    </div>
+                    <div class="cards-grid" id="stats-summary"></div>
+                    <div class="card" style="margin-top: 1.25rem">
+                        <h3>Доход по месяцам</h3>
+                        <canvas id="incomeChart" height="80"></canvas>
+                    </div>
+                    <div style="text-align: center; margin-top: 1.25rem">
+                        <button class="btn" onclick="downloadReport()">📄 Скачать отчёт</button>
+                    </div>
+                </div>
+
+                <!-- Вкладка "Типы билетов" -->
+                <div id="tab-ticket-categories" class="tab-content" style="display: none">
+                    <div class="card">
+                        <h3>Типы билетов и скидки</h3>
+                        <div style="display: flex; gap: 0.75rem; margin: 1rem 0; flex-wrap: wrap">
+                            <input type="text" id="new-category-name" placeholder="Название (например, Детский)" style="padding: 0.5rem; min-width: 160px" />
+                            <input type="text" id="new-category-discount" placeholder="Скидка (%)" style="padding: 0.5rem; width: 110px" />
+                            <button class="btn small" onclick="addTicketCategory()">Добавить</button>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="categories-table" id="ticket-categories-table">
+                                <thead>
+                                    <tr>
+                                        <th style="padding: 0.7rem; text-align: left">Название</th>
+                                        <th style="padding: 0.7rem; text-align: left">Множитель</th>
+                                        <th style="padding: 0.7rem; text-align: left">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вкладка "Купленные билеты" -->
+                <div id="tab-tickets" class="tab-content" style="display: none">
+                    <div class="card">
+                        <h3>Поиск билетов</h3>
+                        <div style="display: flex; gap: 0.75rem; margin: 1rem 0; position: relative">
+                            <input type="text" id="ticket-search" placeholder="Поиск по имени, фамилии, телефону или номеру билета" style="flex: 1; padding: 0.5rem 2.5rem 0.5rem 0.5rem" autocomplete="off" />
+                            <span id="clear-search" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; display: none; color: #999; font-size: 1.2rem" onclick="clearSearch()">✕</span>
+                        </div>
+                        <div class="table-scroll" id="tickets-search-result" style="margin-top: 1rem"></div>
+                    </div>
+                </div>
+
+                <!-- Вкладка "Купоны" -->
+                <div id="tab-coupons" class="tab-content" style="display: none">
+                    <div class="card">
+                        <h3>Управление купонами</h3>
+                        <div style="display: flex; gap: 0.75rem; margin: 1rem 0; flex-wrap: wrap; align-items: flex-end">
+                            <div class="form-group">
+                                <label>Код купона</label>
+                                <input type="text" id="coupon-code" placeholder="SUMMER2026" style="padding: 0.5rem; text-transform: uppercase" />
+                            </div>
+                            <div class="form-group">
+                                <label>Скидка (%)</label>
+                                <input type="number" id="coupon-discount" placeholder="10" min="1" max="99" style="padding: 0.5rem; width: 90px" />
+                            </div>
+                            <div class="form-group">
+                                <label>Макс. использований (0=∞)</label>
+                                <input type="number" id="coupon-max-uses" value="0" min="0" style="padding: 0.5rem; width: 90px" />
+                            </div>
+                            <div class="form-group">
+                                <label>Действует до</label>
+                                <input type="date" id="coupon-expires" style="padding: 0.5rem" />
+                            </div>
+                            <button class="btn small" onclick="addCoupon()">Создать купон</button>
+                        </div>
+                        <div id="coupons-list" style="margin-top: 1.25rem"></div>
+                    </div>
+                </div>
+
+                <!-- Вкладка "Создать музей" -->
+                <div id="tab-create-museum" class="tab-content" style="display: none">
+                    <div class="card">
+                        <h3 style="margin-bottom: 1.25rem">Создание нового музея</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Код музея (уникальный) *</label>
+                                <input type="text" id="new-code" placeholder="например, art-gallery" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Пароль музея (для кассира) *</label>
+                                <input type="text" id="new-password" placeholder="Пароль" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Название *</label>
+                                <input type="text" id="new-name" placeholder="Название музея" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Категория</label>
+                                <select id="new-category">
+                                    <option value="Искусство">Искусство</option>
+                                    <option value="История">История</option>
+                                    <option value="Наука">Наука</option>
+                                    <option value="Культура">Культура</option>
+                                    <option value="Природа">Природа</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Цена билета (₽) *</label>
+                                <input type="number" id="new-price" min="0" step="0.01" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Адрес</label>
+                                <input type="text" id="new-address" placeholder="Адрес" />
+                            </div>
+                            <div class="form-group">
+                                <label>Режим работы</label>
+                                <input type="text" id="new-hours" placeholder="например, 10:00–18:00" />
+                            </div>
+                            <div class="form-group">
+                                <label>Активен</label>
+                                <select id="new-active">
+                                    <option value="1">Да</option>
+                                    <option value="0">Нет</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 1rem">
+                            <label>Краткое описание</label>
+                            <input type="text" id="new-short-desc" placeholder="Краткое описание" />
+                        </div>
+                        <div class="form-group">
+                            <label>Полное описание</label>
+                            <textarea id="new-desc" rows="4" placeholder="Полное описание"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Изображения</label>
+                            <div style="display: flex; gap: 0.5rem; align-items: center">
+                                <input type="text" id="new-images" placeholder="URL или выберите файл" style="flex: 1" />
+                                <input type="file" id="new-images-file" accept="image/*" onchange="handleNewImageFileSelect(this)" style="display: none" />
+                                <button type="button" class="btn small secondary" onclick="document.getElementById('new-images-file').click()">📁</button>
+                            </div>
+                            <div id="new-images-preview" style="margin-top: 0.5rem; display: none; flex-wrap: wrap; gap: 0.5rem"></div>
+                        </div>
+                        <h4 style="margin-top: 1.25rem">Данные Директора</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>ФИО Директора</label>
+                                <input type="text" id="new-admin-name" placeholder="Иванов Иван Иванович" />
+                            </div>
+                            <div class="form-group">
+                                <label>Код Директора</label>
+                                <input type="text" id="new-admin-code" placeholder="ADM001" />
+                            </div>
+                        </div>
+                        <button class="btn" onclick="createMuseum()" style="margin-top: 1.25rem">Создать музей</button>
+                    </div>
+                </div>
+                <!-- Вкладка "Администраторы" -->
+<div id="tab-admins" class="tab-content" style="display: none">
+    <div class="card">
+        <h3>Администраторы музеев</h3>
+        <div class="table-scroll" id="admins-list"></div>
+    </div>
+</div>
+            </div>
+            <!-- конец .content-wrapper -->
+        </div>
+        <!-- конец .main -->
+    </div>
+    <!-- конец #super-panel -->
+
+    <!-- Модальное окно редактирования категории билета -->
+    <div class="modal-overlay" id="edit-category-modal">
+        <div class="modal-content">
+            <h3>Изменить категорию</h3>
+            <div class="form-group">
+                <label>Название</label>
+                <input type="text" id="edit-cat-name" placeholder="Название категории" />
+            </div>
+            <div class="form-group">
+                <label>Скидка (%)</label>
+                <input type="text" id="edit-cat-discount" placeholder="Например, 50 (без знака %)" />
+            </div>
+            <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem; justify-content: flex-end">
+                <button class="btn small secondary" onclick="closeEditCategoryModal()">Отмена</button>
+                <button class="btn small" onclick="saveCategoryChanges()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для ввода причины блокировки слота -->
+    <div class="modal-overlay" id="slot-reason-modal">
+        <div class="modal-content">
+            <h3>Укажите причину блокировки</h3>
+            <textarea id="slot-reason-text" rows="3" style="width: 100%; margin-top: 0.75rem; padding: 0.5rem; border-radius: 8px; border: 1px solid #ccc"></textarea>
+            <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem; justify-content: flex-end">
+                <button class="btn small secondary" onclick="closeSlotReasonModal()">Отмена</button>
+                <button class="btn small" onclick="confirmCloseSlot()">Заблокировать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования билета -->
+    <div class="modal-overlay" id="edit-ticket-modal">
+        <div class="modal-content" style="max-width: 520px">
+            <h3>Редактировать билет</h3>
+            <input type="hidden" id="edit-ticket-id" />
+            <div class="form-group">
+                <label>Тип билета</label>
+                <select id="edit-ticket-type" onchange="onEditTicketTypeChange()">
+                    <option value="">Выберите тип</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Цена (₽)</label><input type="number" id="edit-ticket-price" step="0.01" oninput="onEditPriceChange()" /></div>
+            <div id="edit-price-diff" style="display: none; margin-bottom: 0.75rem; padding: 0.7rem; border-radius: 8px; background: #fef3c7; color: #92400e; font-weight: 500"></div>
+            <div class="form-group"><label>Дата посещения</label><input type="date" id="edit-ticket-date" onchange="onEditDateChange()" /></div>
+            <div class="form-group">
+                <label>Время посещения</label>
+                <div id="edit-time-slots" class="time-slots-container" style="max-height: 180px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem"></div>
+            </div>
+            <div class="form-group">
+                <label>Статус</label>
+                <select id="edit-ticket-status">
+                    <option value="online">online</option>
+                    <option value="проверено">проверено</option>
+                    <option value="отменён">отменён</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Отметка проверки</label><input type="text" id="edit-ticket-check" /></div>
+            <div class="form-group"><label>Причина</label><input type="text" id="edit-ticket-reason" /></div>
+            <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem; justify-content: flex-end">
+                <button class="btn small secondary" onclick="closeEditTicketModal()">Отмена</button>
+                <button class="btn small" onclick="saveTicketChanges()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const API = 'http://localhost:8002';
+let allMuseums = [];
+let currentMuseumId = null;
+let currentMuseum = null;
+let incomeChart = null;
+let currentPeriod = 'today';
+let currentGroupBy = 'day';
+let currentStartDate = '';
+let currentEndDate = '';
+let lastSearchTickets = [];
+let couponsRefreshInterval = null;
+
+// ===================== ВХОД =====================
+async function loginSuper() {
+    const username = document.getElementById('super-username').value.trim();
+    const password = document.getElementById('super-password').value.trim();
+    const errorDiv = document.getElementById('login-error');
+
+    if (!username || !password) {
+        errorDiv.textContent = 'Заполните все поля';
+        return;
+    }
+
+    try {
+        const resp = await fetch(`${API}/api/super/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (!resp.ok) {
+            const data = await resp.json();
+            throw new Error(data.detail || 'Неверные данные');
+        }
+
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('super-panel').style.display = 'flex';
+        loadAllMuseums();
+    } catch (err) {
+        errorDiv.textContent = err.message;
+    }
+}
+
+// ===================== ВЫХОД =====================
+function logoutSuper() {
+    currentMuseumId = null;
+    currentMuseum = null;
+    document.getElementById('museum-select').innerHTML = '<option value="">-- Выберите музей --</option>';
+    document.getElementById('museum-title').textContent = 'Выберите музей';
+    sessionStorage.removeItem('superSelectedMuseum');
+
+    document.getElementById('super-panel').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('super-username').value = '';
+    document.getElementById('super-password').value = '';
+    document.getElementById('login-error').textContent = '';
+
+    if (incomeChart) { incomeChart.destroy(); incomeChart = null; }
+}
+
+// ===================== ЗАГРУЗКА МУЗЕЕВ =====================
+async function loadAllMuseums() {
+    try {
+        const resp = await fetch(`${API}/api/museums-data`);
+        const data = await resp.json();
+        allMuseums = data.museums || [];
+        fillMuseumSelect();
+        const savedId = sessionStorage.getItem('superSelectedMuseum');
+        if (savedId && allMuseums.some(m => m.id == savedId)) {
+            document.getElementById('museum-select').value = savedId;
+            onMuseumChange();
+        }
+    } catch (e) { console.error('Ошибка загрузки музеев'); }
+}
+
+function fillMuseumSelect() {
+    const select = document.getElementById('museum-select');
+    select.innerHTML = '<option value="">-- Выберите музей --</option>';
+    allMuseums.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = m.name;
+        select.appendChild(opt);
+    });
+}
+
+function onMuseumChange() {
+    if (document.getElementById('tab-coupons').style.display === 'block') loadCoupons();
+    const id = document.getElementById('museum-select').value;
+    if (!id) {
+        currentMuseumId = null;
+        currentMuseum = null;
+        document.getElementById('museum-title').textContent = 'Выберите музей';
+        return;
+    }
+    currentMuseumId = id;
+    currentMuseum = allMuseums.find(m => m.id == id) || null;
+    document.getElementById('museum-title').textContent = (currentMuseum?.name || '') + '  ';
+    sessionStorage.setItem('superSelectedMuseum', id);
+
+    // Всегда загружаем основные данные (они нужны всем вкладкам)
+    loadMuseumDetails();
+
+    // Принудительно обновляем данные для всех вкладок
+    loadClosedDates();
+    loadImages();
+    setPeriod('today');               // загрузит статистику за сегодня
+    loadTicketCategories();           // обновит категории
+    searchTickets();                  // обновит список билетов
+}
+
+async function loadMuseumDetails() {
+    if (!currentMuseumId) return;
+    const resp = await fetch(`${API}/api/admin/museum?museum_id=${currentMuseumId}`);
+    if (!resp.ok) return;
+    const museum = await resp.json();
+    currentMuseum = museum;
+    document.getElementById('m-name').value = museum.name || '';
+    document.getElementById('m-category').value = museum.category || '';
+    document.getElementById('m-price').value = museum.ticket_price;
+    document.getElementById('m-address').value = museum.address || '';
+    document.getElementById('m-hours').value = museum.working_hours || '';
+    document.getElementById('m-active').value = museum.is_active ? '1' : '0';
+    document.getElementById('m-short-desc').value = museum.short_description || '';
+    document.getElementById('m-desc').value = museum.description || '';
+
+    const start = museum.slot_start_time;
+    document.getElementById('slot-start').value = start ? String(start).substring(0,5) : '10:00';
+    const end = museum.slot_end_time;
+    document.getElementById('slot-end').value = end ? String(end).substring(0,5) : '18:00';
+    document.getElementById('slot-duration').value = museum.slot_duration_minutes || 120;
+    document.getElementById('slot-days-ahead').value = museum.slot_days_ahead || 90;
+    document.getElementById('slot-tickets-default').value = museum.slot_tickets_default || 10;
+}
+
+// ===================== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК =====================
+// Найдите функцию switchTab и приведите к такому виду:
+function switchTab(tabName) {
+    // Останавливаем автообновление купонов, если уходим с вкладки
+    stopCouponsRefresh();
+
+    // Навигация
+    document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+    const activeLink = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeLink) activeLink.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
+    const tabContent = document.getElementById(`tab-${tabName}`);
+    if (tabContent) tabContent.style.display = 'block';
+
+    // Загрузка данных
+    if (tabName === 'general') loadMuseumDetails();
+    else if (tabName === 'closed-dates') loadClosedDates();
+    else if (tabName === 'images') loadImages();
+    else if (tabName === 'stats') setPeriod('today');
+    else if (tabName === 'ticket-categories') loadTicketCategories();
+    else if (tabName === 'tickets') { 
+        document.getElementById('ticket-search').value = ''; 
+        searchTickets(); 
+    }
+    else if (tabName === 'coupons') {      // <-- ДОБАВЬ ЭТО
+        loadCoupons();
+        startCouponsRefresh();
+    }
+    else if (tabName === 'admins') loadAdmins();
+    // create-museum – ничего не загружаем
+}
+
+// ===================== СОХРАНЕНИЕ ОСНОВНОЙ ИНФОРМАЦИИ =====================
+async function saveGeneral() {
+    if (!currentMuseumId) { alert('Выберите музей'); return; }
+    const data = {
+        name: document.getElementById('m-name').value.trim(),
+        category: document.getElementById('m-category').value,
+        ticket_price: parseFloat(document.getElementById('m-price').value),
+        address: document.getElementById('m-address').value.trim(),
+        working_hours: document.getElementById('m-hours').value.trim(),
+        is_active: document.getElementById('m-active').value === '1',
+        short_description: document.getElementById('m-short-desc').value.trim(),
+        description: document.getElementById('m-desc').value.trim()
+    };
+    const resp = await fetch(`${API}/api/admin/museum?museum_id=${currentMuseumId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    if (resp.ok) alert('✅ Изменения сохранены');
+    else alert('Ошибка сохранения');
+}
+
+async function saveSlotSettings() {
+    if (!currentMuseumId) { alert('Выберите музей'); return; }
+    const data = {
+        slot_start_time: document.getElementById('slot-start').value,
+        slot_end_time: document.getElementById('slot-end').value,
+        slot_duration_minutes: parseInt(document.getElementById('slot-duration').value),
+        slot_days_ahead: parseInt(document.getElementById('slot-days-ahead').value) + 1,
+        slot_tickets_default: parseInt(document.getElementById('slot-tickets-default').value)
+    };
+    const resp = await fetch(`${API}/api/admin/museum?museum_id=${currentMuseumId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    if (resp.ok) {
+        alert('Настройки слотов сохранены');
+        currentMuseum = { ...currentMuseum, ...data };
+    } else {
+        alert('Ошибка сохранения');
+    }
+}
+
+async function deleteCurrentMuseum() {
+    if (!currentMuseumId) { alert('Музей не выбран'); return; }
+    if (!confirm('Вы уверены, что хотите безвозвратно удалить этот музей?')) return;
+    try {
+        const resp = await fetch(`${API}/api/admin/museum?museum_id=${currentMuseumId}`, { method: 'DELETE' });
+        if (resp.ok) {
+            alert('Музей удалён');
+            currentMuseumId = null;
+            currentMuseum = null;
+            document.getElementById('museum-title').textContent = 'Выберите музей';
+            document.getElementById('museum-select').value = '';
+            ['m-name','m-category','m-price','m-address','m-hours','m-short-desc','m-desc'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            await loadAllMuseums();
+        } else {
+            const err = await resp.json();
+            alert('Ошибка: ' + (err.detail || 'Не удалось удалить'));
+        }
+    } catch(e) { alert('Ошибка сети'); }
+}
+
+// ===================== ЗАКРЫТЫЕ ДАТЫ =====================
+async function loadClosedDates() {
+    if (!currentMuseumId) return;
+    const resp = await fetch(`${API}/api/admin/closed-dates?museum_id=${currentMuseumId}`);
+    if (!resp.ok) return;
+    const dates = await resp.json();
+    renderClosedDates(dates);
+}
+function renderClosedDates(dates) {
+    const container = document.getElementById('closed-dates-list');
+    if (!dates?.length) { container.innerHTML = '<p>Нет закрытых дат</p>'; return; }
+    container.innerHTML = dates.map(d => `
+        <div class="list-item">
+            <span><strong>${d.closed_date}</strong> ${d.reason ? `(${d.reason})` : ''}</span>
+            <button class="btn small secondary" onclick="deleteClosedDate(${d.id})">Удалить</button>
+        </div>
+    `).join('');
+}
+async function addClosedDate() {
+    if (!currentMuseumId) { alert('Выберите музей'); return; }
+    const date = document.getElementById('closed-date-input').value;
+    const reason = document.getElementById('closed-reason').value.trim();
+    if (!date) { alert('Выберите дату'); return; }
+    const resp = await fetch(`${API}/api/admin/closed-dates?museum_id=${currentMuseumId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ closed_date: date, reason: reason || null })
+    });
+    if (resp.ok) { loadClosedDates(); document.getElementById('closed-date-input').value = ''; document.getElementById('closed-reason').value = ''; }
+    else alert('Ошибка добавления');
+}
+async function deleteClosedDate(id) {
+    if (!confirm('Удалить?')) return;
+    const resp = await fetch(`${API}/api/admin/closed-dates/${id}?museum_id=${currentMuseumId}`, { method: 'DELETE' });
+    if (resp.ok) loadClosedDates();
+    else alert('Ошибка удаления');
+}
+
+// ===================== ИЗОБРАЖЕНИЯ =====================
+function loadImages() {
+    if (!currentMuseum || !currentMuseum.images) {
+        document.getElementById('image-list-container').innerHTML = '<p>Нет изображений</p>';
+        return;
+    }
+    const images = currentMuseum.images || [];
+    if (!images.length) { document.getElementById('image-list-container').innerHTML = '<p>Нет изображений</p>'; return; }
+    const container = document.getElementById('image-list-container');
+    container.innerHTML = images.map((url, idx) => {
+        const isCover = idx === 0;
+        const coverBtn = isCover ? '<span class="cover-badge">⭐</span>' : `<button class="cover-btn" onclick="setCoverImage(${idx})">⭐</button>`;
+        return `<div class="image-thumb" style="background-image: url('${url}')">${coverBtn}<button class="remove-btn" onclick="removeImage(${idx})">×</button></div>`;
+    }).join('');
+}
+async function addImage() {
+    if (!currentMuseumId) { alert('Выберите музей'); return; }
+    const url = document.getElementById('new-image-url').value.trim();
+    if (!url) { alert('Введите URL'); return; }
+    const images = [...(currentMuseum.images || []), url];
+    await updateImagesArray(images);
+    document.getElementById('new-image-url').value = '';
+}
+async function removeImage(index) {
+    const images = currentMuseum.images.filter((_, i) => i !== index);
+    await updateImagesArray(images);
+}
+async function setCoverImage(index) {
+    const images = [...currentMuseum.images];
+    const [moved] = images.splice(index, 1);
+    images.unshift(moved);
+    await updateImagesArray(images);
+}
+async function updateImagesArray(images) {
+    const resp = await fetch(`${API}/api/admin/museum?museum_id=${currentMuseumId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ images })
+    });
+    if (resp.ok) {
+        currentMuseum.images = images;
+        loadImages();
+    } else alert('Ошибка обновления изображений');
+}
+
+// ===================== СТАТИСТИКА =====================
+function setPeriod(period) {
+    currentPeriod = period;
+    const now = new Date();
+    let startDate, endDate;
+    switch(period) {
+        case 'today': startDate = endDate = now.toISOString().split('T')[0]; currentGroupBy = 'day'; break;
+        case 'week':
+            const dayOfWeek = now.getDay() || 7;
+            const monday = new Date(now); monday.setDate(now.getDate() - dayOfWeek + 1);
+            const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+            startDate = monday.toISOString().split('T')[0]; endDate = sunday.toISOString().split('T')[0];
+            currentGroupBy = 'day'; break;
+        case 'last_week':
+            const lastMonday = new Date(now); lastMonday.setDate(now.getDate() - now.getDay() - 6);
+            const lastSunday = new Date(lastMonday); lastSunday.setDate(lastMonday.getDate() + 6);
+            startDate = lastMonday.toISOString().split('T')[0]; endDate = lastSunday.toISOString().split('T')[0];
+            currentGroupBy = 'day'; break;
+        case 'month':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+            currentGroupBy = 'day'; break;
+        case 'last_month':
+            const lastMonthFirst = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            startDate = lastMonthFirst.toISOString().split('T')[0];
+            const lastMonthLast = new Date(now.getFullYear(), now.getMonth(), 0);
+            endDate = lastMonthLast.toISOString().split('T')[0];
+            currentGroupBy = 'day'; break;
+        case 'year':
+            startDate = new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0];
+            endDate = new Date(now.getFullYear(), 11, 31).toISOString().split('T')[0];
+            currentGroupBy = 'month'; break;
+    }
+    currentStartDate = startDate; currentEndDate = endDate;
+    document.getElementById('start-date-input').value = startDate;
+    document.getElementById('end-date-input').value = endDate;
+    loadStats(startDate, endDate, currentGroupBy);
+}
+
+function applyCustomPeriod() {
+    currentPeriod = 'custom';
+    const startDate = document.getElementById('start-date-input').value;
+    const endDate = document.getElementById('end-date-input').value;
+    if (!startDate || !endDate) { alert('Выберите обе даты'); return; }
+    currentStartDate = startDate; currentEndDate = endDate;
+    const diff = (new Date(endDate) - new Date(startDate)) / (1000*60*60*24);
+    currentGroupBy = diff > 60 ? 'month' : 'day';
+    loadStats(startDate, endDate, currentGroupBy);
+}
+
+async function loadStats(startDate, endDate, groupBy) {
+    if (!currentMuseumId) return;
+    let url = `${API}/api/admin/stats?museum_id=${currentMuseumId}&group_by=${groupBy}`;
+    if (startDate) url += `&start_date=${startDate}`;
+    if (endDate) url += `&end_date=${endDate}`;
+    const resp = await fetch(url);
+    if (!resp.ok) return;
+    const stats = await resp.json();
+    document.getElementById('stats-summary').innerHTML = `
+        <div class="stat-card"><div class="label">Продажи</div><div class="value">${stats.total_sales}</div></div>
+        <div class="stat-card"><div class="label">Билеты</div><div class="value">${stats.total_tickets}</div></div>
+        <div class="stat-card"><div class="label">Доход</div><div class="value">${parseFloat(stats.total_income).toLocaleString('ru-RU')} ₽</div></div>
+    `;
+    const periods = stats.periods || [];
+    if (periods.length) {
+        drawIncomeChart(periods.map(p => p.period), periods.map(p => parseFloat(p.income)));
+    } else {
+        // ✅ Очищаем график, если данных нет
+        if (incomeChart) {
+            incomeChart.destroy();
+            incomeChart = null;
+        }
+        // Также можно очистить canvas, чтобы не висел старый
+        const ctx = document.getElementById('incomeChart').getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+}
+
+function drawIncomeChart(labels, data) {
+    const ctx = document.getElementById('incomeChart').getContext('2d');
+    if (incomeChart) incomeChart.destroy();
+    incomeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{ label: 'Доход (₽)', data: data, backgroundColor: data.map(val => val > 500 ? '#3b82f6' : '#93c5fd'), borderRadius: 4 }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { callback: value => value.toLocaleString('ru-RU') + ' ₽' } } }
+        }
+    });
+}
+
+async function downloadReport() {
+    if (!currentMuseum) return;
+    let periodTitle = '';
+    if (currentPeriod === 'today') periodTitle = 'за сегодня';
+    else if (currentPeriod === 'week') periodTitle = 'за текущую неделю';
+    else if (currentPeriod === 'last_week') periodTitle = 'за прошлую неделю';
+    else if (currentPeriod === 'month') periodTitle = 'за текущий месяц';
+    else if (currentPeriod === 'last_month') periodTitle = 'за прошлый месяц';
+    else if (currentPeriod === 'year') periodTitle = 'за текущий год';
+    else if (currentPeriod === 'custom') periodTitle = `с ${currentStartDate} по ${currentEndDate}`;
+    else periodTitle = 'за всё время';
+
+    const reportElement = document.createElement('div');
+    reportElement.style.cssText = 'background:white; padding:20px; width:750px; font-family:sans-serif; position:absolute; left:-9999px;';
+    reportElement.innerHTML = `
+        <h2 style="text-align:center;">Отчёт о доходах ${periodTitle}</h2>
+        <p style="text-align:center;">${currentMuseum.name} — ${new Date().toLocaleDateString('ru-RU')}</p>
+        <div id="report-content"></div>`;
+    const cardsClone = document.querySelector('#stats-summary').cloneNode(true);
+    reportElement.querySelector('#report-content').appendChild(cardsClone);
+    const chartCanvas = document.getElementById('incomeChart');
+    if (chartCanvas && incomeChart) {
+        const maxWidth = 700; let w = chartCanvas.width, h = chartCanvas.height;
+        if (w > maxWidth) { h = h * (maxWidth / w); w = maxWidth; }
+        const newCanvas = document.createElement('canvas'); newCanvas.width = w; newCanvas.height = h;
+        newCanvas.getContext('2d').drawImage(chartCanvas, 0, 0, w, h);
+        const wrapper = document.createElement('div'); wrapper.style.marginTop = '20px'; wrapper.style.textAlign = 'center';
+        wrapper.appendChild(newCanvas); reportElement.querySelector('#report-content').appendChild(wrapper);
+    }
+    document.body.appendChild(reportElement);
+    try {
+        const canvas = await html2canvas(reportElement, { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', width: 750 });
+        document.body.removeChild(reportElement);
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = (canvas.height * pageWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
+        pdf.save(`Отчёт_${currentMuseum.name}_${periodTitle.replace(/\s/g,'_')}.pdf`);
+    } catch (error) { document.body.removeChild(reportElement); alert('Ошибка при создании отчёта: ' + error.message); }
+}
+
+// ===================== КАТЕГОРИИ БИЛЕТОВ =====================
+async function loadTicketCategories() {
+    const resp = await fetch(`${API}/api/admin/ticket-categories?museum_id=${currentMuseumId}`);
+    if (!resp.ok) return;
+    const categories = await resp.json();
+    const tbody = document.querySelector('#ticket-categories-table tbody');
+    if (!categories.length) { tbody.innerHTML = '<tr><td colspan="3">Нет категорий</td></tr>'; return; }
+    tbody.innerHTML = categories.map(c => `
+        <tr>
+            <td>${c.name}</td><td>${Math.round((1 - c.discount_multiplier)*100)}%</td>
+            <td>
+                <button class="btn small secondary" onclick="editTicketCategory(${c.id}, '${c.name}', ${c.discount_multiplier})">Изменить</button>
+                <button class="btn small secondary" onclick="deleteTicketCategory(${c.id})">Удалить</button>
+            </td>
+        </tr>`).join('');
+}
+async function addTicketCategory() {
+    const name = document.getElementById('new-category-name').value.trim();
+    const discountStr = document.getElementById('new-category-discount').value;
+    if (!name) { alert('Введите название'); return; }
+    const multiplier = parseDiscount(discountStr);
+    if (multiplier === null || multiplier < 0 || multiplier > 1) { alert('Скидка от 0 до 100%'); return; }
+    const resp = await fetch(`${API}/api/admin/ticket-categories?museum_id=${currentMuseumId}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, discount_multiplier: multiplier })
+    });
+    if (resp.ok) { loadTicketCategories(); document.getElementById('new-category-name').value = ''; document.getElementById('new-category-discount').value = ''; }
+    else alert('Ошибка добавления');
+}
+let editingCategoryId = null;
+function editTicketCategory(id, name, multiplier) {
+    editingCategoryId = id;
+    document.getElementById('edit-cat-name').value = name;
+    document.getElementById('edit-cat-discount').value = Math.round((1 - multiplier) * 100);
+    document.getElementById('edit-category-modal').style.display = 'flex';
+}
+function closeEditCategoryModal() {
+    document.getElementById('edit-category-modal').style.display = 'none';
+    editingCategoryId = null;
+}
+async function saveCategoryChanges() {
+    const name = document.getElementById('edit-cat-name').value.trim();
+    const discountStr = document.getElementById('edit-cat-discount').value;
+    if (!name) { alert('Введите название'); return; }
+    const multiplier = parseDiscount(discountStr);
+    if (multiplier === null || multiplier < 0 || multiplier > 1) { alert('Некорректная скидка'); return; }
+    const resp = await fetch(`${API}/api/admin/ticket-categories/${editingCategoryId}?museum_id=${currentMuseumId}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, discount_multiplier: multiplier })
+    });
+    if (resp.ok) { closeEditCategoryModal(); loadTicketCategories(); }
+    else alert('Ошибка изменения');
+}
+async function deleteTicketCategory(id) {
+    if (!confirm('Удалить категорию?')) return;
+    const resp = await fetch(`${API}/api/admin/ticket-categories/${id}?museum_id=${currentMuseumId}`, { method: 'DELETE' });
+    if (resp.ok) loadTicketCategories();
+    else alert('Ошибка удаления');
+}
+function parseDiscount(value) {
+    let str = value.trim().replace('%', '').trim();
+    const num = parseFloat(str);
+    if (isNaN(num) || num < 0 || num > 100) return null;
+    return 1 - num / 100;
+}
+
+// ===================== БИЛЕТЫ (ПОИСК, РЕДАКТИРОВАНИЕ, УДАЛЕНИЕ) =====================
+async function searchTickets() {
+    if (!currentMuseumId) return;
+    const search = document.getElementById('ticket-search').value.trim();
+    const url = `${API}/api/admin/tickets?museum_id=${currentMuseumId}&search=${encodeURIComponent(search)}`;
+    const resp = await fetch(url);
+    if (!resp.ok) return;
+    const tickets = await resp.json();
+    renderTickets(tickets);
+}
+function renderTickets(tickets) {
+    lastSearchTickets = tickets;
+    const container = document.getElementById('tickets-search-result');
+    if (!tickets?.length) { container.innerHTML = '<p>Билеты не найдены</p>'; return; }
+    let html = `<table class="tickets-table"><thead><tr><th>Посетитель</th><th>Телефон</th><th>Приобретено</th><th>Дата посещения</th><th>Номер билета</th><th>Цена</th><th>Статус</th><th>Действия</th></tr></thead><tbody>`;
+    tickets.forEach(t => {
+        const visitor = `${t.visitor_name||''} ${t.visitor_surname||''}`.trim();
+        const purchased = t.issued_at ? new Date(t.issued_at).toLocaleString('ru-RU') : '';
+        const dateStr = t.visit_date || ''; const timeStr = t.visit_time ? t.visit_time.substring(0,5) : '';
+        html += `<tr>
+            <td>${visitor}</td><td>${t.visitor_phone||''}</td><td>${purchased}</td>
+            <td>${dateStr} ${timeStr}</td><td>${t.ticket_number}</td><td>${t.price}₽</td><td>${t.status||'online'}</td>
+            <td>
+                <button class="action-btn edit-btn" onclick="editTicket(${t.id})">Изменить</button>
+                <button class="action-btn delete-btn" onclick="deleteTicket(${t.id})">Удалить</button>
+            </td></tr>`;
+    });
+    html += '</tbody></table>'; container.innerHTML = html;
+}
+let editingTicketId = null, selectedEditTime = null, editCategoriesCache = [];
+async function loadEditCategories() {
+    const resp = await fetch(`${API}/api/admin/ticket-categories?museum_id=${currentMuseumId}`);
+    if (!resp.ok) return;
+    editCategoriesCache = await resp.json();
+    const select = document.getElementById('edit-ticket-type');
+    select.innerHTML = '<option value="">Выберите тип</option>';
+    editCategoriesCache.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.name; opt.dataset.multiplier = cat.discount_multiplier;
+        opt.textContent = `${cat.name} (скидка ${Math.round((1 - cat.discount_multiplier)*100)}%)`;
+        select.appendChild(opt);
+    });
+}
+function onEditTicketTypeChange() {
+    const select = document.getElementById('edit-ticket-type');
+    const selectedOption = select.options[select.selectedIndex];
+    if (!selectedOption?.dataset.multiplier) { document.getElementById('edit-price-diff').style.display = 'none'; return; }
+    const multiplier = parseFloat(selectedOption.dataset.multiplier);
+    const basePrice = currentMuseum?.ticket_price || 0;
+    const newPrice = Math.round(basePrice * multiplier);
+    document.getElementById('edit-ticket-price').value = newPrice;
+    const diff = basePrice - newPrice, diffBlock = document.getElementById('edit-price-diff');
+    if (Math.abs(diff) > 0.01) {
+        diffBlock.style.display = 'block';
+        const percent = Math.round((1 - multiplier) * 100);
+        diffBlock.innerHTML = diff > 0
+            ? `Полная цена: ${basePrice} ₽<br>Скидка: ${percent}%<br>Итог: ${newPrice} ₽<br><b>Клиенту нужно вернуть ${diff} ₽</b>`
+            : `Полная цена: ${basePrice} ₽<br>Скидка: ${percent}%<br>Итог: ${newPrice} ₽<br><b>Клиент должен доплатить ${Math.abs(diff)} ₽</b>`;
+        diffBlock.style.background = diff > 0 ? '#fef3c7' : '#fee2e2';
+    } else diffBlock.style.display = 'none';
+}
+function onEditPriceChange() { document.getElementById('edit-price-diff').style.display = 'none'; }
+async function loadEditTimeSlots(date) {
+    const container = document.getElementById('edit-time-slots');
+    if (!currentMuseum || !date) { container.innerHTML = '<p>Выберите дату</p>'; return; }
+    try {
+        const respClosed = await fetch(`${API}/api/admin/closed-dates?museum_id=${currentMuseumId}`);
+        if (respClosed.ok) {
+            const closed = await respClosed.json();
+            if (closed.some(cd => cd.closed_date === date)) {
+                container.innerHTML = '<p style="color:red;">Дата закрыта Директором</p>';
+                return;
+            }
+        }
+    } catch(e) {}
+    const resp = await fetch(`${API}/api/time-slots/${currentMuseum.code}/${date}`);
+    if (!resp.ok) { container.innerHTML = '<p>Ошибка загрузки слотов</p>'; return; }
+    const slots = await resp.json();
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const selectedDate = new Date(date + 'T00:00:00');
+    const available = slots.filter(slot => {
+        if (slot.is_closed) return false;
+        const [h,m] = slot.start_time.split(':').map(Number);
+        const slotTime = new Date(selectedDate);
+        slotTime.setHours(h,m,0,0);
+        return slotTime >= now || date > todayStr;
+    });
+    if (!available.length) { container.innerHTML = '<p>Нет доступных слотов</p>'; return; }
+    container.innerHTML = available.map(slot => {
+        const timeStr = slot.start_time.substring(0,5) + '-' + slot.end_time.substring(0,5);
+        const availableInfo = slot.available_tickets ? ` (${slot.available_tickets} бил.)` : '';
+        return `<button class="time-slot-btn" data-time="${slot.start_time}" onclick="selectEditTimeSlot('${slot.start_time}')">${timeStr}${availableInfo}</button>`;
+    }).join('');
+    if (selectedEditTime) {
+        const btn = container.querySelector(`[data-time="${selectedEditTime}"]`);
+        if (btn) btn.classList.add('selected');
+        else selectedEditTime = null;
+    }
+}
+function selectEditTimeSlot(time) {
+    selectedEditTime = time;
+    document.querySelectorAll('#edit-time-slots .time-slot-btn').forEach(b => b.classList.remove('selected'));
+    const btn = document.querySelector(`#edit-time-slots [data-time="${time}"]`);
+    if (btn) btn.classList.add('selected');
+}
+function onEditDateChange() {
+    const date = document.getElementById('edit-ticket-date').value;
+    selectedEditTime = null;
+    document.getElementById('edit-time-slots').innerHTML = '<p>Загрузка...</p>';
+    loadEditTimeSlots(date);
+}
+function editTicket(id) {
+    const ticket = lastSearchTickets.find(t => t.id === id);
+    if (!ticket) { alert('Билет не найден'); return; }
+    editingTicketId = id;
+    if (!editCategoriesCache.length) {
+        loadEditCategories().then(() => {
+            document.getElementById('edit-ticket-type').value = ticket.ticket_type || '';
+        });
+    } else {
+        document.getElementById('edit-ticket-type').value = ticket.ticket_type || '';
+    }
+    document.getElementById('edit-ticket-price').value = ticket.price || 0;
+    document.getElementById('edit-ticket-date').value = ticket.visit_date || '';
+    selectedEditTime = ticket.visit_time ? ticket.visit_time.substring(0,5) : null;
+    if (ticket.visit_date) loadEditTimeSlots(ticket.visit_date);
+    else document.getElementById('edit-time-slots').innerHTML = '<p>Выберите дату</p>';
+    document.getElementById('edit-ticket-status').value = ticket.status || 'online';
+    document.getElementById('edit-ticket-check').value = ticket.check || '';
+    document.getElementById('edit-ticket-reason').value = ticket.reason || '';
+    document.getElementById('edit-ticket-modal').style.display = 'flex';
+    document.getElementById('edit-price-diff').style.display = 'none';
+}
+function closeEditTicketModal() {
+    document.getElementById('edit-ticket-modal').style.display = 'none';
+    editingTicketId = null;
+    selectedEditTime = null;
+}
+async function saveTicketChanges() {
+    const data = {
+        ticket_type: document.getElementById('edit-ticket-type').value,
+        price: parseFloat(document.getElementById('edit-ticket-price').value),
+        visit_date: document.getElementById('edit-ticket-date').value || null,
+        visit_time: selectedEditTime || null,
+        status: document.getElementById('edit-ticket-status').value,
+        check: document.getElementById('edit-ticket-check').value || null,
+        reason: document.getElementById('edit-ticket-reason').value || null
+    };
+    const resp = await fetch(`${API}/api/admin/tickets/${editingTicketId}?museum_id=${currentMuseumId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    if (resp.ok) { closeEditTicketModal(); searchTickets(); }
+    else alert('Ошибка обновления билета');
+}
+async function deleteTicket(id) {
+    if (!confirm('Удалить билет безвозвратно?')) return;
+    const resp = await fetch(`${API}/api/admin/tickets/${id}?museum_id=${currentMuseumId}`, { method: 'DELETE' });
+    if (resp.ok) searchTickets();
+    else alert('Ошибка удаления');
+}
+
+// ===================== УПРАВЛЕНИЕ СЛОТАМИ =====================
+async function loadAdminSlots() {
+    if (!currentMuseumId) return;
+    const date = document.getElementById('slot-date-input').value;
+    if (!date) { alert('Выберите дату'); return; }
+    const code = currentMuseum?.code;
+    if (!code) return;
+    const resp = await fetch(`${API}/api/time-slots/${code}/${date}`);
+    if (!resp.ok) return;
+    const slots = await resp.json();
+    renderAdminSlots(slots);
+}
+function renderAdminSlots(slots) {
+    const container = document.getElementById('admin-slots-list');
+    if (!slots.length) { container.innerHTML = '<p>Нет слотов</p>'; return; }
+    container.innerHTML = slots.map(s => {
+        const isClosed = !!s.is_closed;
+        const btn = isClosed 
+            ? `<button class="btn small" onclick="openSlot(${s.id})">Открыть слот</button>`
+            : `<button class="btn small secondary" onclick="closeSlot(${s.id})">Закрыть слот</button>`;
+        const reason = s.close_reason ? ` (причина: ${s.close_reason})` : '';
+        const status = isClosed ? ` (закрыт${reason})` : '';
+        return `<div class="list-item"><span>${s.start_time.substring(0,5)}–${s.end_time.substring(0,5)} (${s.available_tickets} бил.)${status}</span>${btn}</div>`;
+    }).join('');
+}
+let pendingSlotId = null;
+function closeSlot(slotId) {
+    pendingSlotId = slotId;
+    document.getElementById('slot-reason-text').value = '';
+    document.getElementById('slot-reason-modal').style.display = 'flex';
+}
+function closeSlotReasonModal() {
+    document.getElementById('slot-reason-modal').style.display = 'none';
+    pendingSlotId = null;
+}
+async function confirmCloseSlot() {
+    const reason = document.getElementById('slot-reason-text').value.trim();
+    if (!reason) { alert('Введите причину'); return; }
+    if (!pendingSlotId) return;
+    const resp = await fetch(`${API}/api/admin/time-slots/${pendingSlotId}/close?museum_id=${currentMuseumId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ reason })
+    });
+    if (resp.ok) { closeSlotReasonModal(); loadAdminSlots(); }
+    else alert('Ошибка закрытия слота');
+}
+async function openSlot(slotId) {
+    if (!confirm('Открыть слот?')) return;
+    const resp = await fetch(`${API}/api/admin/time-slots/${slotId}/open?museum_id=${currentMuseumId}`, { method: 'PUT' });
+    if (resp.ok) loadAdminSlots();
+    else alert('Ошибка открытия слота');
+}
+
+
+
+async function createMuseum() {
+    const code = document.getElementById('new-code').value.trim();
+    const password = document.getElementById('new-password').value.trim();
+    const name = document.getElementById('new-name').value.trim();
+    const price = parseFloat(document.getElementById('new-price').value);
+
+    if (!code || !password || !name || isNaN(price)) {
+        alert('Заполните обязательные поля (код, пароль, название, цена)');
+        return;
+    }
+
+    // Собираем изображения
+    const imagesStr = document.getElementById('new-images').value.trim();
+    let images = [];
+    if (imagesStr) {
+        images = imagesStr.split('|||').map(s => s.trim()).filter(s => s.length > 0);
+    }
+
+    const data = {
+        code,
+        password,
+        name,
+        ticket_price: price,
+        category: document.getElementById('new-category').value,
+        address: document.getElementById('new-address').value.trim() || null,
+        working_hours: document.getElementById('new-hours').value.trim() || null,
+        short_description: document.getElementById('new-short-desc').value.trim() || null,
+        description: document.getElementById('new-desc').value.trim() || null,
+        is_active: document.getElementById('new-active').value === '1',
+        images: images.length > 0 ? images : null,
+        admin_full_name: document.getElementById('new-admin-name').value.trim() || null,
+        admin_code: document.getElementById('new-admin-code').value.trim() || null
+    };
+
+    try {
+        const resp = await fetch(`${API}/api/admin/museum`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (resp.ok) {
+            alert('✅ Музей успешно создан!');
+            // Очищаем форму
+            ['new-code','new-password','new-name','new-price','new-address','new-hours',
+             'new-short-desc','new-desc','new-images','new-admin-name','new-admin-code'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            // Очищаем превью изображений
+            const preview = document.getElementById('new-images-preview');
+            preview.innerHTML = '';
+            preview.style.display = 'none';
+            // Обновить список музеев в селекте
+            await loadAllMuseums();
+        } else {
+            const err = await resp.json();
+            alert('Ошибка: ' + (err.detail || 'Не удалось создать музей'));
+        }
+    } catch(e) {
+        alert('Ошибка сети');
+    }
+}
+
+// ===================== АДАПТИВНОСТЬ =====================
+function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
+}
+
+// ===================== ИНИЦИАЛИЗАЦИЯ =====================
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.sidebar nav a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            switchTab(this.dataset.tab);
+        });
+    });
+
+    const searchInput = document.getElementById('ticket-search');
+    const clearBtn = document.getElementById('clear-search');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const value = this.value.trim();
+            if (clearBtn) clearBtn.style.display = value ? 'block' : 'none';
+            searchTimeout = setTimeout(() => searchTickets(), 300);
+        });
+    }
+    if (clearBtn) clearBtn.addEventListener('click', () => {
+        document.getElementById('ticket-search').value = '';
+        clearBtn.style.display = 'none';
+        searchTickets();
+    });
+
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            setPeriod(this.dataset.period);
+        });
+    });
+
+    // При загрузке показываем экран входа (ждём пользователя)
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('super-panel').style.display = 'none';
+});
+
+function handleImageFileSelect(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Вставляем data URL в поле URL (заменяем запятую, чтобы избежать конфликтов)
+        const url = e.target.result;
+        document.getElementById('new-image-url').value = url;
+        // Показываем предпросмотр
+        document.getElementById('preview-image').src = url;
+        document.getElementById('image-preview').style.display = 'block';
+        // Сбрасываем input file
+        input.value = '';
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function handleNewImageFileSelect(input) {
+    if (!input.files || !input.files[0]) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const url = e.target.result;
+        // Получаем текущее значение поля и добавляем новый URL через разделитель ||
+        const existing = document.getElementById('new-images').value.trim();
+        const newValue = existing ? existing + '|||' + url : url;
+        document.getElementById('new-images').value = newValue;
+
+        // Предпросмотр
+        const preview = document.getElementById('new-images-preview');
+        preview.style.display = 'flex';
+        const img = document.createElement('img');
+        img.src = url;
+        img.style.maxHeight = '80px';
+        img.style.marginRight = '5px';
+        img.style.borderRadius = '4px';
+        preview.appendChild(img);
+
+        input.value = '';
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+
+async function loadCoupons() {
+    if (!currentMuseumId) return;
+    const resp = await fetch(`${API}/api/admin/coupons?museum_id=${currentMuseumId}`);
+    if (!resp.ok) return;
+    const coupons = await resp.json();
+    renderCoupons(coupons);
+}
+
+function renderCoupons(coupons) {
+    const container = document.getElementById('coupons-list');
+    if (!coupons.length) {
+        container.innerHTML = '<p>Нет купонов</p>';
+        return;
+    }
+    container.innerHTML = `<table class="categories-table"><thead><tr>
+        <th>Код</th><th>Скидка</th><th>Ост. использований</th><th>Истекает</th><th>Действия</th>
+    </tr></thead><tbody>${coupons.map(c => {
+        const remaining = c.max_uses > 0 ? `${c.max_uses - c.current_uses}/${c.max_uses}` : '∞';
+        return `<tr>
+            <td>${c.code}</td>
+            <td>${c.discount_percent}%</td>
+            <td>${remaining}</td>
+            <td>${c.expires_at || '—'}</td>
+            <td><button class="btn small secondary" onclick="deleteCoupon(${c.id})">Удалить</button></td>
+        </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+async function addCoupon() {
+    const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+    const discount = parseFloat(document.getElementById('coupon-discount').value);
+    const maxUses = parseInt(document.getElementById('coupon-max-uses').value) || 0;
+    const expires = document.getElementById('coupon-expires').value || null;
+
+    if (isNaN(discount) || discount <= 0 || discount > 100) {
+    alert('Введите корректные данные');
+        return;
+    }
+
+    const resp = await fetch(`${API}/api/admin/coupons`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            code,
+            discount_percent: discount,
+            museum_id: currentMuseumId ? parseInt(currentMuseumId) : null,
+            max_uses: maxUses,
+            expires_at: expires
+        })
+    });
+
+    if (resp.ok) {
+        document.getElementById('coupon-code').value = '';
+        document.getElementById('coupon-discount').value = '';
+        loadCoupons();
+    } else {
+        const err = await resp.json();
+        alert('Ошибка: ' + (err.detail || ''));
+    }
+}
+
+async function deleteCoupon(id) {
+    if (!confirm('Удалить купон?')) return;
+    await fetch(`${API}/api/admin/coupons/${id}`, { method: 'DELETE' });
+    loadCoupons();
+}
+
+
+
+function startCouponsRefresh() {
+    stopCouponsRefresh();
+    couponsRefreshInterval = setInterval(() => {
+        if (document.getElementById('tab-coupons').style.display === 'block') {
+            loadCoupons();
+        }
+    }, 5000);
+}
+
+function stopCouponsRefresh() {
+    if (couponsRefreshInterval) clearInterval(couponsRefreshInterval);
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const couponCodeInput = document.getElementById('coupon-code');
+    if (couponCodeInput) {
+        couponCodeInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    }
+});
+// ===================== АДМИНИСТРАТОРЫ =====================
+async function loadAdmins() {
+    try {
+        const resp = await fetch(`${API}/api/super/admins`);
+        if (!resp.ok) throw new Error('Ошибка загрузки');
+        const admins = await resp.json();
+        renderAdmins(admins);
+    } catch (e) {
+        document.getElementById('admins-list').innerHTML = '<p>Ошибка загрузки данных</p>';
+    }
+}
+
+function renderAdmins(admins) {
+    const container = document.getElementById('admins-list');
+    if (!admins.length) {
+        container.innerHTML = '<p>Нет музеев</p>';
+        return;
+    }
+    let html = `<table class="admin-table"><thead><tr>
+        <th>Музей</th><th>ФИО администратора</th><th>Логин</th><th>Пароль</th><th>Действия</th>
+    </tr></thead><tbody>`;
+    admins.forEach(a => {
+        html += `<tr>
+            <td>${a.museum_name}</td>
+            <td>${a.admin_full_name || '—'}</td>
+            <td>${a.login || '—'}</td>
+            <td>${a.admin_code || '—'}</td>
+            <td>
+                <button class="action-btn edit-btn" onclick="editAdmin(${a.museum_id}, '${escapeHtml(a.admin_full_name || '')}', '${escapeHtml(a.login || '')}', '${escapeHtml(a.admin_code || '')}')">Изменить</button>
+            </td>
+        </tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function escapeHtml(text) {
+    return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function editAdmin(museumId, fullname, login, password) {
+    document.getElementById('edit-admin-museum-id').value = museumId;
+    document.getElementById('edit-admin-fullname').value = fullname;
+    document.getElementById('edit-admin-login').value = login;
+    document.getElementById('edit-admin-password').value = password;
+    document.getElementById('edit-admin-modal').style.display = 'flex';
+}
+
+function closeEditAdminModal() {
+    document.getElementById('edit-admin-modal').style.display = 'none';
+}
+
+async function saveAdminChanges() {
+    const museumId = document.getElementById('edit-admin-museum-id').value;
+    const fullname = document.getElementById('edit-admin-fullname').value.trim();
+    const login = document.getElementById('edit-admin-login').value.trim();
+    const password = document.getElementById('edit-admin-password').value.trim();
+
+    const data = {};
+    if (fullname) data.admin_full_name = fullname;
+    if (login) data.login = login;
+    if (password) data.admin_code = password;
+
+    if (Object.keys(data).length === 0) {
+        alert('Нет изменений');
+        return;
+    }
+
+    try {
+        const resp = await fetch(`${API}/api/super/admins/${museumId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (resp.ok) {
+            alert('✅ Данные администратора обновлены');
+            closeEditAdminModal();
+            loadAdmins();
+        } else {
+            const err = await resp.json();
+            alert('Ошибка: ' + (err.detail || 'Не удалось сохранить'));
+        }
+    } catch (e) {
+        alert('Ошибка сети');
+    }
+}
+    </script>
+
+
+<!-- Модальное окно редактирования администратора -->
+<div class="modal-overlay" id="edit-admin-modal">
+    <div class="modal-content">
+        <h3>Редактировать администратора</h3>
+        <input type="hidden" id="edit-admin-museum-id" />
+        <div class="form-group">
+            <label>ФИО администратора</label>
+            <input type="text" id="edit-admin-fullname" />
+        </div>
+        <div class="form-group">
+            <label>Логин</label>
+            <input type="text" id="edit-admin-login" />
+        </div>
+        <div class="form-group">
+            <label>Пароль (admin_code)</label>
+            <input type="text" id="edit-admin-password" />
+        </div>
+        <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem; justify-content: flex-end">
+            <button class="btn small secondary" onclick="closeEditAdminModal()">Отмена</button>
+            <button class="btn small" onclick="saveAdminChanges()">Сохранить</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

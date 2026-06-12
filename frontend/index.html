@@ -4,33 +4,2377 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Музеи - Откройте мир культуры</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <!-- <link rel="stylesheet" type="text/css" href="styles.css"> -->
+    <style>
+       :root {
+--primary: #0da2e7;
+--primary-foreground: #ffffff;
+--secondary: #f0f9ff;
+--secondary-foreground: #1a1a1a;
+--muted-foreground: #6b7280;
+--card: #ffffff;
+--card-foreground: #1a1a1a;
+--border: #e5e7eb;
+--background: #ffffff;
+--foreground: #1a1a1a;
+}
+.time-slot.expired {
+    border: 2px solid #ef4444;
+    background-color: #fee2e2;
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.time-slot.closed-admin {
+    border: 2px solid #ef4444;
+    background-color: #fee2e2;
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.coupon-section {
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+}
+.coupon-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+.coupon-input-group input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Стили для окна "Поделиться" */
+.share-modal-content {
+    max-width: 340px !important;
+    text-align: center;
+}
+.share-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.share-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    color: white;
+}
+.share-btn .icon {
+    font-size: 1.3rem;
+    width: 28px;
+    text-align: center;
+}
+.share-btn.telegram { background: #0088cc; }
+.share-btn.whatsapp { background: #25D366; }
+.share-btn.vk { background: #0077FF; }
+.share-btn.copy { background: #6c757d; }
+.share-btn:hover { filter: brightness(0.9); transform: translateY(-1px); }
+.share-btn:active { transform: scale(0.98); }
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+body {
+background-color: var(--background);
+color: var(--foreground);
+line-height: 1.6;
+}
+.container {
+max-width: 1400px;
+margin: 0 auto;
+padding: 0 1rem;
+}
+header {
+height: 65.09px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+background-color: rgba(255, 255, 255, 0.95);
+backdrop-filter: blur(8px);
+z-index: 50;
+border-bottom: 1px solid var(--border);
+}
+.header-container {
+max-width: 1400px;
+margin: 0 auto;
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 1rem;
+}
+.logo-container {
+display: flex;
+/* align-items: center; */
+justify-content: center;
+}
+.text-2xl {
+font-size: 1.5rem;
+line-height: 2rem;
+}
+.font-bold {
+font-weight: 700;
+}
+.text-foreground {
+color: var(--foreground);
+}
+.text-primary {
+color: var(--primary);
+}
+nav {
+display: flex;
+gap: 1.5rem;
+}
+nav a {
+text-decoration: none;
+color: var(--foreground);
+transition: color 0.3s;
+}
+nav a:hover {
+color: var(--primary);
+}
+.hero-section {
+position: relative;
+width: 100%;
+height: 600px;
+margin-top: 65.09px;
+overflow: hidden;
+}
+.background-slider {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+}
+.slide {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+opacity: 0;
+transition: opacity 1s ease-in-out;
+}
+.slide.active {
+opacity: 1;
+}
+.slide img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+object-position: center 30%;
+pointer-events: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+-webkit-user-drag: none;
+}
+.hero-content {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+text-align: center;
+color: white;
+z-index: 10;
+background: rgba(0, 0, 0, 0.5);
+padding: 0 2rem;
+}
+.text-5xl {
+font-size: 3.5rem;
+line-height: 1.1;
+max-width: 900px;
+margin: 0 auto;
+}
+.text-7xl {
+font-size: 5rem;
+line-height: 1.1;
+max-width: 900px;
+margin: 0 auto;
+}
+.mb-6 {
+margin-bottom: 1.5rem;
+}
+.mb-8 {
+margin-bottom: 2rem;
+}
+.text-xl {
+font-size: 1.5rem;
+line-height: 1.75rem;
+max-width: 700px;
+}
+.text-2xl {
+font-size: 1.5rem;
+line-height: 2rem;
+}
+.text-gray-200 {
+color: rgba(229, 231, 235, 1);
+}
+button {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 0.5rem;
+white-space: nowrap;
+font-weight: 500;
+transition: all 0.3s;
+outline: none;
+border: none;
+cursor: pointer;
+}
+.bg-primary {
+background-color: var(--primary);
+}
+.text-primary-foreground {
+color: var(--primary-foreground);
+}
+.h-11 {
+height: 2.75rem;
+}
+.rounded-md {
+border-radius: 0.375rem;
+}
+.text-lg {
+font-size: 1.125rem;
+line-height: 1.75rem;
+}
+.px-8 {
+padding-left: 2rem;
+padding-right: 2rem;
+}
+.py-6 {
+padding-top: 1.5rem;
+padding-bottom: 1.5rem;
+}
+.hover\:bg-primary\/90:hover {
+background-color: rgba(13, 162, 231, 0.9);
+}
+.slider-indicators {
+position: absolute;
+bottom: 1.5rem;
+left: 50%;
+transform: translateX(-50%);
+z-index: 20;
+display: flex;
+gap: 0.5rem;
+}
+.slider-indicators button {
+width: 0.75rem;
+height: 0.75rem;
+border-radius: 9999px;
+transition: all 0.3s;
+background-color: rgba(255, 255, 255, 0.5);
+border: none;
+cursor: pointer;
+}
+.slider-indicators button:hover {
+background-color: rgba(255, 255, 255, 0.7);
+}
+.slider-indicators button.active {
+width: 2rem;
+background-color: rgba(255, 255, 255, 1);
+}
+.museums-section {
+padding: 4rem 0;
+text-align: center;
+}
+.text-4xl {
+font-size: 2.25rem;
+line-height: 2.5rem;
+}
+.text-5xl {
+font-size: 3rem;
+line-height: 1;
+}
+.mb-4 {
+margin-bottom: 1rem;
+}
+.text-muted-foreground {
+color: var(--muted-foreground);
+}
+.grid {
+display: grid;
+gap: 2rem;
+margin-top: 3rem;
+}
+.md\:grid-cols-2 {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.lg\:grid-cols-3 {
+grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.gap-8 {
+gap: 2rem;
+}
+.rounded-lg {
+border-radius: 12px;
+}
+.border {
+border: 1px solid var(--border);
+}
+.bg-card {
+background-color: var(--card);
+}
+.text-card-foreground {
+color: var(--card-foreground);
+}
+.shadow-sm {
+box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+.overflow-hidden {
+overflow: hidden;
+}
+.hover\:shadow-2xl:hover {
+box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+.transition-all {
+transition: all 0.3s;
+}
+.duration-300 {
+transition-duration: 300ms;
+}
+.hover\:-translate-y-2:hover {
+transform: translateY(-0.5rem);
+}
+.cursor-pointer {
+cursor: pointer;
+}
+.h-64 {
+height: 16rem;
+}
+.card-image-container {
+height: 16rem;
+overflow: hidden;
+position: relative;
+}
+.card-image {
+background: #e2e8f0;
+width: 100%;
+height: 100%;
+object-fit: cover;
+object-position: center;
+transition: transform 0.5s;
+}
+.hover\:scale-110:hover {
+transform: scale(1.1);
+}
+.flex {
+display: flex;
+}
+.flex-col {
+flex-direction: column;
+}
+.space-y-1\.5 > :not([hidden]) ~ :not([hidden]) {
+--tw-space-y-reverse: 0;
+margin-top: calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));
+margin-bottom: calc(0.375rem * var(--tw-space-y-reverse));
+}
+.p-6 {
+padding: 1.5rem;
+}
+.items-start {
+align-items: flex-start;
+}
+.justify-between {
+justify-content: space-between;
+}
+.mb-2 {
+margin-bottom: 0.5rem;
+}
+.inline-flex {
+display: inline-flex;
+}
+.items-center {
+align-items: center;
+}
+.rounded-full {
+border-radius: 9999px;
+}
+.px-2\.5 {
+padding-left: 0.625rem;
+padding-right: 0.625rem;
+}
+.py-0\.5 {
+padding-top: 0.125rem;
+padding-bottom: 0.125rem;
+}
+.text-xs {
+font-size: 0.75rem;
+line-height: 1rem;
+}
+.font-semibold {
+font-weight: 600;
+}
+.border-transparent {
+border-color: transparent;
+}
+.category-tag {
+background-color: #0da2e7 !important;
+color: white !important;
+}
+.category-tag:hover {
+background-color: #0b8bc7 !important;
+}
+.bg-secondary {
+background-color: var(--secondary);
+}
+.text-secondary-foreground {
+color: var(--secondary-foreground);
+}
+.hover\:bg-secondary\/80:hover {
+background-color: rgba(240, 249, 255, 0.8);
+}
+.tracking-tight {
+letter-spacing: -0.025em;
+}
+.text-base {
+font-size: 1rem;
+line-height: 1.5rem;
+text-align: left;
+}
+.pt-0 {
+padding-top: 0;
+}
+.w-full {
+width: 100%;
+}
+.text-sm {
+font-size: 0.875rem;
+line-height: 1.25rem;
+}
+.card-content {
+text-align: left;
+}
+.card-content h3 {
+text-align: left;
+}
+@keyframes scale-in {
+from {
+opacity: 0;
+transform: scale(0.9);
+}
+to {
+opacity: 1;
+transform: scale(1);
+}
+}
+footer {
+background-color: var(--primary);
+color: white;
+padding: 2rem 0;
+}
+.text-center {
+text-align: center;
+}
+.justify-center {
+justify-content: center;
+}
+.gap-2 {
+gap: 0.5rem;
+}
+.mb-4 {
+margin-bottom: 1rem;
+}
+.text-white {
+color: white;
+}
+.text-white\/80 {
+color: rgba(255, 255, 255, 0.8);
+}
+.mb-6 {
+margin-bottom: 1.5rem;
+}
+.gap-6 {
+gap: 1.5rem;
+}
+.cursor-pointer {
+cursor: pointer;
+}
+.hover\:text-white:hover {
+color: white;
+}
+.transition-colors {
+transition: color 0.3s;
+}
+.mt-8 {
+margin-top: 2rem;
+}
+.text-sm {
+font-size: 0.875rem;
+line-height: 1.25rem;
+}
+.text-white\/60 {
+color: rgba(255, 255, 255, 0.6);
+}
+.museum-detail {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: white;
+z-index: 100;
+overflow-y: auto;
+}
+.museum-detail-header {
+height: 65.09px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+background-color: rgba(255, 255, 255, 0.95);
+backdrop-filter: blur(8px);
+z-index: 50;
+border-bottom: 1px solid var(--border);
+padding: 0 1rem;
+}
+.museum-detail-container {
+max-width: 1400px;
+margin: 0 auto;
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.back-button {
+justify-content: center;
+white-space: nowrap;
+border-radius: 0.375rem;
+font-size: 0.875rem;
+font-weight: 500;
+transition: all 0.3s;
+height: 2.5rem;
+padding: 0 1rem;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+background: transparent;
+border: none;
+cursor: pointer;
+}
+.back-button:hover {
+background-color: var(--secondary);
+}
+.museum-detail-content {
+margin-top: 65.09px;
+padding: 2rem 1rem;
+}
+.museum-layout {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 3rem;
+margin-bottom: 3rem;
+}
+.gallery-container {
+display: flex;
+flex-direction: column;
+gap: 1px;
+}
+.main-image-container {
+position: relative;
+width: 100%;
+height: 500px;
+border-radius: 12px;
+overflow: hidden;
+}
+.main-image {
+background: #e2e8f0;
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+.gallery-nav {
+position: absolute;
+top: 50%;
+transform: translateY(-50%);
+background: rgba(255, 255, 255, 0.8);
+color: var(--primary);
+padding: 0.75rem;
+border-radius: 50%;
+transition: all 0.3s;
+border: none;
+cursor: pointer;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+z-index: 10;
+}
+.gallery-nav:hover {
+background: white;
+}
+.gallery-prev {
+left: 1rem;
+}
+.gallery-next {
+right: 1rem;
+}
+.grid-cols-3 {
+grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.gap-4 {
+gap: 1rem;
+}
+.relative {
+position: relative;
+}
+.h-32 {
+height: 8rem;
+}
+.object-cover {
+object-fit: cover;
+}
+.ring-4 {
+box-shadow: 0 0 0 4px;
+}
+.ring-primary {
+box-shadow: 0 0 0 4px var(--primary);
+}
+.opacity-70 {
+opacity: 0.7;
+}
+.hover\:opacity-100:hover {
+opacity: 1;
+}
+.description-container {
+display: flex;
+flex-direction: column;
+gap: 1.5rem;
+}
+.museum-description h1 {
+font-size: 2.25rem;
+font-weight: 700;
+margin-bottom: 1rem;
+}
+/* Запрещаем тексту выходить за пределы контейнера */
+.museum-description p,
+.description-container p {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    word-break: break-word;
+}
+.museum-details {
+background: var(--secondary);
+border-radius: 12px;
+padding: 1.5rem;
+display: flex;
+justify-content: center;
+flex-wrap: wrap;
+}
+.num1{
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+}
+.num2{
+width: 50%;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+.but1{
+width: 150px;
+height: 150px;
+border-radius: 100%;
+}
+.detail-item {
+display: flex;
+gap: 0.75rem;
+}
+.detail-item:last-child {
+margin-bottom: 0;
+}
+.detail-item svg {
+color: var(--primary);
+}
+.ticket-section {
+display: flex;
+justify-content: center;
+}
+.ticket-card {
+display: flex;
+justify-content: center;
+flex-direction: column;
+border-radius: 12px;
+border: 1px solid var(--border);
+background: var(--card);
+color: var(--card-foreground);
+box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+padding: 1rem;
+max-width: 1500px;
+}
+.ticket-header {
+margin-bottom: 1.5rem;
+text-align: center;
+}
+.ticket-body {
+display: flex;
+flex-direction: row;
+gap: 1rem;
+}
+.ticket-controls {
+display: flex;
+flex-direction: row;
+gap: 3rem;
+}
+.date-picker {
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+width: 419px;
+}
+.date-button {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+padding: 1rem;
+border: 1px solid var(--border);
+border-radius: 0.375rem;
+background-color: var(--background);
+cursor: pointer;
+transition: all 0.3s;
+width: 100%;
+}
+.date-button:hover {
+background-color: var(--secondary);
+}
+.ticket-quantity {
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+}
+.quantity-controls {
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+.quantity-button {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 3rem;
+height: 3rem;
+border: 1px solid var(--border);
+border-radius: 0.375rem;
+background-color: var(--background);
+cursor: pointer;
+transition: all 0.3s;
+}
+.quantity-button:hover {
+background-color: var(--secondary);
+}
+.quantity-input {
+flex: 1;
+text-align: center;
+padding: 1rem;
+border: 1px solid var(--border);
+border-radius: 0.375rem;
+font-size: 1.25rem;
+font-weight: 600;
+width: 100px;
+}
+.ticket-summary1 {
+display: flex;
+flex-direction: column;
+}
+.ticket-summary2 {
+background: var(--secondary);
+border-radius: 12px;
+padding: 1.1rem;
+display: flex;
+flex-direction: column;
+gap: 1rem;
+}
+.summary-row {
+display: flex;
+justify-content: space-between;
+}
+.summary-total {
+border-top: 1px solid var(--border);
+padding-top: 1rem;
+margin-top: 0.5rem;
+}
+.buy-button {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 0.5rem;
+padding: 1.25rem 2rem;
+background-color: var(--primary);
+color: white;
+border: none;
+border-radius: 0.375rem;
+font-size: 1.125rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+height: auto;
+width: 100%;
+margin-top: 1rem;
+}
+.buy-button:hover {
+background-color: #0b8bc7;
+}
+.calendar {
+display: none;
+position: absolute;
+top: 100%;
+left: 0;
+width: 100%;
+background: white;
+border: 1px solid var(--border);
+border-radius: 0.375rem;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+z-index: 10;
+padding: 1rem;
+}
+.calendar-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 1rem;
+}
+.calendar-grid {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 0.5rem;
+}
+.calendar-day {
+display: flex;
+align-items: center;
+justify-content: center;
+height: 2.5rem;
+border-radius: 0.375rem;
+cursor: pointer;
+transition: all 0.3s;
+}
+.calendar-day:hover {
+background-color: var(--secondary);
+}
+.calendar-day.selected {
+background-color: var(--primary);
+color: white;
+}
+@media (max-width: 768px) {
+.text-5xl {
+font-size: 2.5rem;
+}
+.text-7xl {
+font-size: 3.5rem;
+}
+.text-xl {
+font-size: 1.25rem;
+}
+.text-2xl {
+font-size: 1.25rem;
+}
+.md\:grid-cols-2 {
+grid-template-columns: 1fr;
+}
+.hero-section {
+height: 500px;
+}
+.museums-section .container {
+padding: 0 1.5rem;
+}
+.grid {
+gap: 1.5rem;
+}
+.museum-layout {
+grid-template-columns: 1fr;
+gap: 2rem;
+}
+.main-image-container {
+height: 400px;
+}
+.h-32 {
+height: 6rem;
+}
+}
+@media (max-width: 640px) {
+.text-4xl {
+font-size: 1.875rem;
+}
+.text-5xl {
+font-size: 2rem;
+}
+.hero-section {
+height: 400px;
+}
+nav {
+gap: 1rem;
+}
+.museums-section .container {
+padding: 0 1rem;
+}
+.main-image-container {
+height: 300px;
+}
+.h-32 {
+height: 5rem;
+}
+}
+.museum-description .text-lg {
+white-space: pre-line;
+}
+#thumbnail-container button {
+transition: all 0.3s ease;
+}
+#thumbnail-container button:hover {
+transform: scale(1.05);
+}
+.museum-description .text-lg {
+white-space: pre-line;
+}
+#thumbnail-container button {
+transition: all 0.3s ease;
+}
+#thumbnail-container button:hover {
+transform: scale(1.05);
+}
+.date-slots-wrapper {
+position: relative;
+margin-bottom: 1.5rem;
+}
+.date-slots-container {
+display: flex;
+gap: 1rem;
+overflow-x: auto;
+padding: 1rem 0;
+scroll-behavior: smooth;
+border: 2px solid #f1f2f4;
+text-align: center;
+}
+.date-slots-container::-webkit-scrollbar {
+display: none;
+}
+.date-slot {
+min-width: 200px;
+border: 1px solid var(--border);
+border-radius: 12px;
+padding: 1rem;
+background: var(--card);
+}
+.date-text {
+font-weight: 600;
+margin-bottom: 0.75rem;
+text-align: center;
+font-size: 1.1rem;
+}
+.time-slots {
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+}
+.time-slot {
+border: 1px solid var(--border);
+border-radius: 8px;
+padding: 0.75rem;
+cursor: pointer;
+transition: all 0.3s;
+text-align: center;
+}
+.time-slot:hover {
+border-color: var(--primary);
+background: var(--secondary);
+}
+.time-slot.selected {
+border-color: var(--primary);
+background: var(--primary);
+color: white;
+}
+.time-text {
+font-weight: 500;
+margin-bottom: 0.25rem;
+}
+.tickets-available {
+font-size: 0.8rem;
+opacity: 0.7;
+}
+.time-slot.selected .tickets-available {
+opacity: 0.9;
+}
+.scroll-btn {
+position: absolute;
+top: 50%;
+transform: translateY(-50%);
+background: white;
+border: 1px solid var(--border);
+border-radius: 50%;
+width: 40px;
+height: 40px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+z-index: 10;
+}
+.scroll-btn.left {
+left: -20px;
+}
+.scroll-btn.right {
+right: -20px;
+}
+.scroll-btn:hover {
+background: var(--secondary);
+}
+.date-button {
+width: 100%;
+justify-content: start;
+}
+.modal {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.5);
+z-index: 1000;
+justify-content: center;
+align-items: center;
+}
+.modal-content {
+background: white;
+padding: 2rem;
+border-radius: 12px;
+max-width: 400px;
+width: 90%;
+max-height: 80vh;
+overflow-y: auto;
+}
+.form-group {
+margin-bottom: 1rem;
+}
+.form-group label {
+display: block;
+margin-bottom: 0.5rem;
+font-weight: 500;
+}
+.form-group input {
+width: 100%;
+padding: 0.75rem;
+border: 1px solid var(--border);
+border-radius: 0.375rem;
+font-size: 1rem;
+}
+.form-buttons {
+display: flex;
+gap: 1rem;
+margin-top: 1.5rem;
+}
+.auth-tabs {
+display: flex;
+margin-bottom: 1.5rem;
+border-bottom: 1px solid var(--border);
+}
+.auth-tab {
+padding: 0.75rem 1.5rem;
+background: none;
+border: none;
+cursor: pointer;
+border-bottom: 2px solid transparent;
+}
+.auth-tab.active {
+border-bottom-color: var(--primary);
+color: var(--primary);
+}
+.ticket-category {
+margin-bottom: 1.5rem;
+}
+.category-select {
+width: 100%;
+padding: 1rem;
+border: 1px solid var(--border);
+border-radius: 0.375rem;
+font-size: 1rem;
+background-color: var(--background);
+}
+.price-with-discount {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+margin-top: 0.5rem;
+}
+.original-price {
+text-decoration: line-through;
+color: var(--muted-foreground);
+}
+.discounted-price {
+color: #e53e3e;
+font-weight: 600;
+}
+.ticket-header {
+background: linear-gradient(135deg, var(--primary), #0b8bc7);
+color: white;
+padding: 1.5rem;
+text-align: center;
+}
+.ticket-info {
+display: grid;
+gap: 1rem;
+margin-bottom: 1.5rem;
+}
+.info-row {
+display: flex;
+justify-content: space-between;
+padding: 0.5rem 0;
+border-bottom: 1px dashed #e5e7eb;
+}
+.info-label {
+color: var(--muted-foreground);
+}
+.info-value {
+font-weight: 600;
+}
+.ticket-number {
+background: var(--secondary);
+padding: 0.5rem;
+border-radius: 0.375rem;
+text-align: center;
+font-family: monospace;
+font-weight: bold;
+margin: 1rem 0;
+}
+.qr-code {
+text-align: center;
+margin: 1.5rem 0;
+padding: 1rem;
+background: #f8f9fa;
+border-radius: 0.5rem;
+}
+.qr-code img {
+border-radius: 8px;
+transition: transform 0.3s ease;
+}
+.qr-code img:hover {
+transform: scale(1.05);
+}
+.ticket-actions {
+display: flex;
+gap: 1rem;
+margin-top: 1.5rem;
+}
+.action-btn {
+flex: 1;
+padding: 0.75rem;
+border: none;
+border-radius: 0.375rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+}
+.save-btn {
+background: var(--primary);
+color: white;
+}
+.save-btn:hover {
+background: #0b8bc7;
+}
+.share-btn {
+background: var(--secondary);
+color: var(--foreground);
+}
+.share-btn:hover {
+background: #e0f2fe;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(-20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+#tickets-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+gap: 20px;
+padding: 20px;
+width: 100%;
+}
+.ticket-card-compact {
+background: white;
+border-radius: 16px;
+padding: 24px;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+transition: all 0.3s ease;
+position: relative;
+border: 1px solid #e8ecef;
+display: flex;
+flex-direction: column;
+min-height: 480px;
+height: auto;
+}
+.ticket-header-compact {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 20px;
+border-bottom: 2px solid #f3f6f9;
+padding-bottom: 16px;
+}
+.ticket-header-compact h3 {
+font-size: 1.3rem;
+font-weight: 700;
+margin: 0;
+flex: 1;
+margin-right: 12px;
+color: #1a365d;
+}
+.ticket-category-badge {
+background: linear-gradient(135deg, #0da2e7, #0b8bc7);
+color: white;
+padding: 6px 12px;
+border-radius: 8px;
+font-size: 0.85rem;
+font-weight: 600;
+white-space: nowrap;
+}
+.ticket-body-compact {
+flex: 1;
+display: flex;
+flex-direction: column;
+gap: 16px;
+}
+.ticket-info-compact {
+flex: 1;
+}
+.info-row-compact {
+display: flex;
+justify-content: space-between;
+margin-bottom: 12px;
+padding: 8px 0;
+align-items: center;
+}
+.info-label-compact {
+font-weight: 600;
+color: #64748b;
+font-size: 0.95rem;
+flex: 1;
+}
+.info-value-compact {
+font-weight: 500;
+color: #334155;
+text-align: right;
+flex: 1;
+font-size: 0.95rem;
+}
+.ticket-number-compact {
+background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+padding: 12px 16px;
+border-radius: 10px;
+font-family: 'Courier New', monospace;
+font-weight: bold;
+margin: 8px 0;
+text-align: center;
+font-size: 0.95rem;
+border: 2px dashed #cbd5e1;
+color: #475569;
+}
+.qr-code-compact {
+text-align: center;
+margin: 16px 0;
+padding: 20px;
+background: #f8fafc;
+border-radius: 12px;
+border: 1px solid #e2e8f0;
+}
+.ticket-actions-compact {
+display: flex;
+gap: 12px;
+margin-top: auto;
+padding-top: 16px;
+border-top: 1px solid #f1f5f9;
+}
+.action-btn-compact {
+flex: 1;
+padding: 12px 16px;
+border: none;
+border-radius: 8px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+font-size: 0.95rem;
+}
+.save-btn-compact {
+background: #10b981;
+color: white;
+}
+.save-btn-compact:hover {
+background: #059669;
+transform: translateY(-2px);
+}
+.share-btn-compact {
+background: #3b82f6;
+color: white;
+}
+.share-btn-compact:hover {
+background: #2563eb;
+transform: translateY(-2px);
+}
+.ticket-card-compact.new-ticket {
+border: 3px solid #10b981;
+box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+transform: scale(1.02);
+}
+@keyframes glow {
+from {
+box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+to {
+box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+}
+}
+.new-ticket-badge {
+position: absolute;
+top: -8px;
+right: -8px;
+background: #10b981;
+color: white;
+padding: 6px 12px;
+border-radius: 20px;
+font-size: 0.8rem;
+font-weight: bold;
+z-index: 10;
+}
+@keyframes pulse {
+0% {
+transform: scale(1);
+box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+}
+70% {
+transform: scale(1.05);
+box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+}
+100% {
+transform: scale(1);
+box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+}
+}
+@keyframes slideInUp {
+from {
+opacity: 0;
+transform: translateY(20px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+.no-tickets {
+text-align: center;
+padding: 4rem 2rem;
+}
+.tickets-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+gap: 24px;
+padding: 20px 0;
+width: 100%;
+max-width: 1400px;
+margin: 0 auto;
+}
+@media (max-width: 768px) {
+.tickets-grid {
+grid-template-columns: 1fr;
+gap: 16px;
+padding: 16px;
+}
+.ticket-card-compact {
+padding: 20px;
+min-height: 420px;
+}
+.ticket-header-compact {
+flex-direction: column;
+gap: 12px;
+}
+.ticket-header-compact h3 {
+margin-right: 0;
+text-align: center;
+}
+.info-row-compact {
+flex-direction: column;
+align-items: flex-start;
+gap: 4px;
+}
+.info-value-compact {
+text-align: left;
+}
+.ticket-actions-compact {
+flex-direction: column;
+}
+}
+@media (max-width: 480px) {
+.tickets-grid {
+grid-template-columns: 1fr;
+padding: 12px;
+}
+.ticket-card-compact {
+padding: 16px;
+min-height: 380px;
+}
+}
+.ticket-container {
+display: none;
+max-width: 450px;
+margin: 2rem auto;
+background: white;
+border-radius: 20px;
+box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+overflow: hidden;
+position: relative;
+border: 1px solid #e5e7eb;
+}
+.ticket-header {
+padding: 2rem;
+text-align: center;
+position: relative;
+}
+.ticket-header h2 {
+margin: 0 0 0.5rem 0;
+font-size: 1.5rem;
+font-weight: 700;
+}
+.ticket-info {
+display: grid;
+gap: 1rem;
+margin-bottom: 1.5rem;
+}
+.info-row {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+padding: 0.75rem 0;
+border-bottom: 1px dashed #e5e7eb;
+}
+.info-label {
+color: var(--muted-foreground);
+font-weight: 500;
+flex: 1;
+}
+.info-value {
+font-weight: 600;
+text-align: right;
+flex: 1;
+color: var(--foreground);
+}
+.ticket-number {
+background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+padding: 1rem;
+border-radius: 12px;
+text-align: center;
+font-family: 'Courier New', monospace;
+font-weight: bold;
+margin: 2rem 0;
+border: 2px dashed var(--primary);
+color: var(--primary);
+}
+.ticket-container::before {
+content: '';
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.5);
+z-index: -1;
+}
+.ticket-header {
+padding: 2rem;
+text-align: center;
+position: relative;
+}
+.ticket-header::after {
+content: '';
+position: absolute;
+bottom: -10px;
+left: 50%;
+transform: translateX(-50%);
+width: 20px;
+height: 20px;
+background: white;
+border-radius: 50%;
+}
+.ticket-header h2 {
+margin: 0 0 0.5rem 0;
+font-size: 1.5rem;
+font-weight: 700;
+}
+.ticket-header p {
+color: #000;
+margin: 0;
+opacity: 0.9;
+font-size: 1rem;
+text-align: center;
+}
+.ticket-info {
+display: grid;
+gap: 1rem;
+margin-bottom: 1.5rem;
+}
+.info-row {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+padding: 0.75rem 0;
+border-bottom: 1px dashed #e5e7eb;
+}
+.info-row:last-child {
+border-bottom: none;
+}
+.info-label {
+color: var(--muted-foreground);
+font-weight: 500;
+flex: 1;
+}
+.info-value {
+font-weight: 600;
+text-align: right;
+flex: 1;
+color: var(--foreground);
+}
+.ticket-number {
+background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+padding: 1rem;
+border-radius: 12px;
+text-align: center;
+font-family: 'Courier New', monospace;
+font-weight: bold;
+margin: 2rem 0;
+border: 2px dashed var(--primary);
+color: var(--primary);
+}
+.qr-code {
+text-align: center;
+margin: 2rem 0;
+padding: 1.5rem;
+background: #f8fafc;
+border-radius: 12px;
+border: 1px solid #e2e8f0;
+}
+.qr-placeholder {
+width: 180px;
+height: 180px;
+background: #000;
+margin: 0 auto;
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+border-radius: 12px;
+cursor: pointer;
+transition: all 0.3s ease;
+border: 3px solid white;
+box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.qr-placeholder:hover {
+background: #333;
+transform: scale(1.05);
+}
+.qr-placeholder span {
+font-size: 0.8rem;
+text-align: center;
+padding: 1rem;
+line-height: 1.4;
+}
+.ticket-actions {
+display: flex;
+gap: 1rem;
+margin-top: 2rem;
+}
+.action-btn {
+flex: 1;
+padding: 1rem;
+border: none;
+border-radius: 12px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 0.5rem;
+font-size: 1rem;
+}
+.save-btn {
+background: var(--primary);
+color: white;
+}
+.save-btn:hover {
+background: #0b8bc7;
+transform: translateY(-2px);
+}
+.share-btn {
+background: var(--secondary);
+color: var(--foreground);
+border: 2px solid var(--border);
+}
+.share-btn:hover {
+background: #e0f2fe;
+transform: translateY(-2px);
+}
+@keyframes ticketAppear {
+from {
+opacity: 0;
+transform: translateY(30px) scale(0.95);
+}
+to {
+opacity: 1;
+transform: translateY(0) scale(1);
+}
+}
+.top{
+display: flex;
+flex-direction: column;
+margin-right: 1.5rem;
+}
+@media (max-width: 768px) {
+.ticket-card {
+margin: 0.5rem;
+padding: 1rem;
+max-width: 100%;
+}
+.ticket-body {
+flex-direction: column;
+gap: 1rem;
+}
+.ticket-controls {
+flex-direction: column;
+}
+.date-picker {
+width: 100%;
+}
+.date-slots-container {
+max-width: 100%;
+overflow-x: auto;
+}
+.date-slot {
+min-width: 180px;
+}
+.ticket-categories-container {
+width: 100%;
+}
+.ticket-summary {
+width: 100%;
+}
+.summary-row {
+flex-direction: column;
+align-items: flex-start;
+gap: 0.25rem;
+}
+.ticket-detail-row {
+font-size: 0.9rem;
+}
+}
+@media (max-width: 480px) {
+.ticket-card {
+margin: 0.25rem;
+padding: 0.75rem;
+}
+.ticket-header h3 {
+font-size: 1.5rem;
+}
+.date-slot {
+min-width: 160px;
+padding: 0.75rem;
+}
+.time-slot {
+padding: 0.5rem;
+}
+.quantity-controls {
+gap: 0.5rem;
+}
+.quantity-button {
+width: 2.5rem;
+height: 2.5rem;
+}
+.category-select {
+font-size: 0.9rem;
+}
+.buy-button {
+padding: 1rem 1.5rem;
+font-size: 1rem;
+}
+}
+.ticket-categories-container {
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+width: 100%;
+margin-top: 0.5rem;
+}
+.ticket-category {
+display: flex;
+flex-direction: column;
+gap: 0.25rem;
+margin-bottom: 0.5rem;
+}
+.category-select {
+width: 100%;
+padding: 1rem;
+border: 1px solid var(--border);
+border-radius: 0.375rem;
+font-size: 1rem;
+background-color: var(--background);
+cursor: pointer;
+}
+.category-select:focus {
+outline: none;
+border-color: var(--primary);
+}
+.ticket-detail-row {
+border-bottom: 1px dashed #e5e7eb;
+padding-bottom: 0.5rem;
+}
+.ticket-detail-row:last-child {
+border-bottom: none;
+}
+@media (max-width: 768px) {
+.museum-layout {
+grid-template-columns: 1fr;
+gap: 2rem;
+}
+.gallery-container {
+order: 1;
+}
+.description-container {
+order: 2;
+}
+.ticket-section {
+order: 3;
+}
+.main-image-container {
+height: 300px;
+}
+.h-32 {
+height: 6rem;
+}
+}
+@media (max-width: 360px) {
+.ticket-card {
+padding: 0.5rem;
+}
+.date-slot {
+min-width: 140px;
+}
+.time-slots {
+gap: 0.25rem;
+}
+.time-slot {
+padding: 0.4rem;
+font-size: 0.8rem;
+}
+}
+.ticket-item {
+margin-bottom: 2rem;
+padding: 1.5rem;
+border: 2px solid #e5e7eb;
+border-radius: 12px;
+background: white;
+}
+.ticket-item:last-child {
+margin-bottom: 0;
+}
+.ticket-card {
+background: white;
+border-radius: 12px;
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+margin-bottom: 1.5rem;
+}
+.loading-spinner {
+width: 16px;
+height: 16px;
+border: 2px solid #ffffff;
+border-bottom-color: transparent;
+border-radius: 50%;
+display: inline-block;
+box-sizing: border-box;
+margin-right: 8px;
+}
+@keyframes rotation {
+0% {
+transform: rotate(0deg);
+}
+100% {
+transform: rotate(360deg);
+}
+}
+.payment-field-valid {
+border-color: #10b981 !important;
+background-color: #f0fdf4 !important;
+}
+.payment-field-invalid {
+border-color: #ef4444 !important;
+background-color: #fef2f2 !important;
+}
+.form-row {
+display: flex;
+gap: 1rem;
+}
+.form-row .form-group {
+flex: 1;
+}
+.field-hint {
+font-size: 0.75rem;
+color: #6b7280;
+margin-top: 0.25rem;
+}
+.payment-button {
+padding: 0.75rem 1.5rem;
+border-radius: 0.375rem;
+font-weight: 500;
+cursor: pointer;
+transition: all 0.2s;
+border: none;
+width: 100%;
+}
+.payment-button.primary {
+background-color: #3b82f6;
+color: white;
+}
+.payment-button.primary:hover {
+background-color: #2563eb;
+}
+.payment-button.secondary {
+background-color: #6b7280;
+color: white;
+}
+.payment-button.secondary:hover {
+background-color: #4b5563;
+}
+.payment-button:disabled {
+opacity: 0.6;
+cursor: not-allowed;
+}
+.loading-slots {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 3rem;
+color: #6b7280;
+text-align: center;
+}
+.loading-slots .loading-spinner {
+width: 40px;
+height: 40px;
+border: 4px solid #e5e7eb;
+border-bottom-color: #3b82f6;
+border-radius: 50%;
+margin-bottom: 1rem;
+}
+.error-slots {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 2rem;
+color: #ef4444;
+text-align: center;
+}
+.retry-button {
+margin-top: 1rem;
+padding: 0.5rem 1rem;
+background-color: #3b82f6;
+color: white;
+border: none;
+border-radius: 0.375rem;
+cursor: pointer;
+}
+.retry-button:hover {
+background-color: #2563eb;
+}
+@keyframes rotation {
+0% {
+transform: rotate(0deg);
+}
+100% {
+transform: rotate(360deg);
+}
+}
+.loading-spinner-small {
+width: 16px;
+height: 16px;
+border: 2px solid #f3f3f3;
+border-top: 2px solid #3498db;
+border-radius: 50%;
+display: inline-block;
+margin-right: 8px;
+}
+.ticket-card-compact.new-ticket {
+border: 3px solid #10b981;
+box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+transform: scale(1.02);
+transition: all 0.3s ease;
+}
+.new-ticket-badge {
+position: absolute;
+top: -10px;
+right: -10px;
+background: #10b981;
+color: white;
+padding: 4px 8px;
+border-radius: 12px;
+font-size: 0.7rem;
+font-weight: bold;
+z-index: 10;
+}
+.qr-code-compact {
+text-align: center;
+margin: 16px 0;
+padding: 16px;
+background: #f8fafc;
+border-radius: 12px;
+border: 1px solid #e2e8f0;
+}
+.qr-code-compact img {
+width: 120px;
+height: 120px;
+border: 2px solid #000;
+border-radius: 8px;
+background: white;
+display: block;
+margin: 0 auto;
+}
+.ticket-card-compact {
+background: white;
+border: 1px solid #e5e7eb;
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.ticket-header-compact h3 {
+color: #1f2937;
+font-size: 1.25rem;
+}
+.ticket-number-compact {
+color: #374151;
+font-weight: 600;
+}
+.info-label-compact {
+color: #6b7280 !important;
+}
+.info-value-compact {
+color: #374151 !important;
+}
+.barcode-compact {
+text-align: center;
+margin: 16px 0;
+padding: 12px;
+background: #f8fafc;
+border-radius: 8px;
+border: 1px solid #e2e8f0;
+}
+.barcode-compact img {
+width: 200px;
+height: 60px;
+border: 1px solid #ddd;
+background: white;
+display: block;
+margin: 0 auto;
+}
+#ticket-auth-required {
+background: white;
+border-radius: 12px;
+padding: 2rem;
+text-align: center;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+margin-top: 2rem;
+}
+.ticket-auth-message h3 {
+font-size: 1.5rem;
+font-weight: 600;
+margin-bottom: 1rem;
+color: var(--foreground);
+}
+.ticket-auth-message p {
+color: var(--muted-foreground);
+margin-bottom: 1.5rem;
+font-size: 1rem;
+}
+.auth-buttons {
+display: flex;
+gap: 1rem;
+justify-content: center;
+flex-wrap: wrap-reverse;
+}
+.auth-button {
+padding: 0.75rem 1.5rem;
+border-radius: 8px;
+font-weight: 500;
+font-size: 1rem;
+cursor: pointer;
+transition: all 0.2s;
+border: none;
+}
+.auth-button.primary {
+background: var(--primary);
+color: white;
+}
+.auth-button.secondary {
+background: transparent;
+color: var(--primary);
+border: 2px solid var(--primary);
+}
+.ticket-categories-columns {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 1rem;
+margin-top: 1rem;
+}
+.ticket-categories-column {
+display: flex;
+flex-direction: column;
+gap: 1rem;
+}
+.ticket-category {
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+}
+.category-select {
+padding: 0.75rem;
+border: 1px solid #e2e8f0;
+border-radius: 8px;
+font-size: 1rem;
+background: white;
+}
+@media (max-width: 768px) {
+.ticket-categories-columns {
+grid-template-columns: 1fr;
+}
+}
+.date-button {
+transition: all 0.3s ease;
+}
+.time-slot {
+transition: all 0.2s ease;
+cursor: pointer;
+}
+.time-slot.selected {
+transform: scale(1.02);
+box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+/* Гарантируем, что кнопка в карточке музея всегда прижата к низу
+   и переносится при сужении экрана */
+.museum-card {
+    display: flex;
+    flex-direction: column;
+}
+.museum-card .card-content {
+    flex: 1 0 auto;
+}
+.card-content p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;       /* максимум 3 строки */
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+}
+.museum-card .card-button-wrapper {
+    margin-top: auto;
+}
+
+.vniz{
+    margin-left: 2px;
+}
+
+@media (max-width: 452px) {
+    .verh{
+    position: absolute; top: -20px;
+}
+.vniz{
+    position: absolute; top: 2px;
+}
+.logo-container {  
+    margin-left: 3px;
+    display: flex;
+align-items: center;
+justify-content: center;
+flex-wrap: wrap;
+position: relative;
+right: 9px;
+width: 50px;
+}
+ #my-tickets-section .museum-detail-content {
+    max-height: calc(100vh - 65px);
+    overflow-y: auto;
+    padding: 0.5rem;
+  }
+
+  .tickets-grid {
+    padding: 4px;
+    gap: 8px;
+  }
+
+  .ticket-card-compact {
+    padding: 8px;
+    min-height: auto;
+    max-height: 100%;
+  }
+
+  .ticket-header-compact {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+  .ticket-header-compact h3 {
+    font-size: 1rem;
+  }
+
+  .ticket-body-compact {
+    gap: 8px;
+  }
+
+  .info-row-compact {
+    margin-bottom: 4px;
+    padding: 4px 0;
+    flex-direction: row;
+    align-items: center;
+  }
+  .info-label-compact,
+  .info-value-compact {
+    font-size: 0.8rem;
+  }
+
+  .ticket-number-compact {
+    font-size: 0.75rem;
+    padding: 6px;
+  }
+
+  .barcode-compact img {
+    width: 120px;
+    height: 35px;
+  }
+
+  .ticket-actions-compact {
+    flex-direction: row;
+    gap: 4px;
+    padding-top: 8px;
+  }
+  .action-btn-compact {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  /* === ТЕКСТ «МОИ БИЛЕТЫ» В ОДНУ СТРОКУ БЕЗ ОБРЕЗАНИЯ === */
+  .myBilet {
+    white-space: nowrap;
+    font-size: 1.1rem;      /* при необходимости уменьшить/увеличить */
+    /* Убраны overflow:hidden, text-overflow и max-width */
+  }
+}
+/* Кнопка помощи */
+.help-float-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s, background 0.3s;
+}
+.help-float-btn:hover {
+    transform: scale(1.1);
+    background-color: #0b8bc7;
+}
+
+/* Модальное окно помощи */
+.help-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+.help-modal.active {
+    display: flex;
+}
+
+.help-modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    animation: modalIn 0.3s ease;
+}
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.help-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    line-height: 1;
+}
+.help-close-btn:hover {
+    color: #000;
+}
+
+.help-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--primary);
+}
+
+/* Аккордеон для вопросов-ответов */
+.faq-item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+.faq-question {
+    width: 100%;
+    padding: 1rem;
+    background: var(--secondary);
+    border: none;
+    text-align: left;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s;
+}
+.faq-question:hover {
+    background: #e0f2fe;
+}
+.faq-answer {
+    padding: 0 1rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s;
+    background: white;
+    color: #333;
+}
+.faq-item.active .faq-answer {
+    max-height: 200px;
+    padding: 1rem;
+}
+.faq-item.active .faq-question {
+    background: var(--primary);
+    color: white;
+}
+
+/* Кнопки действий */
+.help-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+.help-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 10px;
+    background: var(--secondary);
+    color: var(--foreground);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+.help-action-btn:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+.telegram-btn { background: #e0f2fe; color: #0b8bc7; }
+.email-btn { background: #fce4ec; color: #d81b60; }
+.phone-btn { background: #e8f5e9; color: #2e7d32; }
+
+@media (max-width: 480px) {
+    .help-modal-content {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        border-radius: 0;
+        padding: 1.5rem;
+    }
+    .help-float-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+}
+    </style>
 </head>
 <body>
+    <!-- Первый header (статичный, оставлен для сохранения оригинальной вёрстки) -->
     <header>
         <div class="header-container">
-            <div class="logo-container">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building2 text-primary">
-                    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
-                    <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
-                    <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
-                    <path d="M10 6h4"></path>
-                    <path d="M10 10h4"></path>
-                    <path d="M10 14h4"></path>
-                    <path d="M10 18h4"></path>
-                </svg>
-                <div class="text-2xl font-bold text-foreground">Музеи</div>
-            </div>
             <nav>
-                <a href="#" class="text-foreground hover:text-primary transition-colors" style="font-size: 25px;">Мои билеты</a>
+                <a href="#" class="text-foreground hover:text-primary transition-colors" style="font-size: 25px; width: 200px;">Мои билеты</a>
             </nav>
         </div>
     </header>
 
+    <!-- Второй header с авторизацией (используется скриптом) -->
     <header>
         <div class="header-container">
             <div class="logo-container">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building2 text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building2 text-primary verh">
                     <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
                     <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
                     <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
@@ -39,26 +2383,26 @@
                     <path d="M10 14h4"></path>
                     <path d="M10 18h4"></path>
                 </svg>
-                <div class="text-2xl font-bold text-foreground">Музеи</div>
+                <div class="text-2xl font-bold text-foreground vniz">Музеи</div>
             </div>
             <nav id="auth-nav">
                 <a href="#" class="text-foreground hover:text-primary transition-colors" onclick="showAuthModal()" style="font-size: 25px;">Зарегистрироваться</a>
                 <a href="#" class="text-foreground hover:text-primary transition-colors" onclick="showAuthModal()" style="font-size: 25px;">Войти</a>
             </nav>
-                <nav id="user-nav" style="display: none;">
+            <nav id="user-nav" style="display: none;">
                 <a href="#" class="text-foreground hover:text-primary transition-colors" onclick="showMyTickets()" style="font-size: 25px;">Мои билеты</a>
                 <a href="#" class="text-foreground hover:text-primary transition-colors" onclick="logout()" style="font-size: 25px;">Выйти</a>
             </nav>
         </div>
     </header>
 
+    <!-- Модальное окно авторизации -->
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="switchAuthTab('login')">Войти</button>
                 <button class="auth-tab" onclick="switchAuthTab('register')">Регистрация</button>
             </div>
-            
             <div id="login-form">
                 <div class="form-group">
                     <label>Логин</label>
@@ -74,7 +2418,6 @@
                     </button>
                 </div>
             </div>
-            
             <div id="register-form" style="display: none;">
                 <div class="form-group">
                     <label>Логин</label>
@@ -105,92 +2448,79 @@
         </div>
     </div>
 
+    <!-- Модальное окно оплаты -->
     <div id="payment-modal" class="modal">
-    <div class="modal-content">
-        <h3 class="font-semibold tracking-tight text-2xl mb-4">Оплата билетов</h3>
-        
-        <div class="form-group">
-            <label>Номер карты</label>
-            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
-            <div class="field-hint">16 цифр без пробелов</div>
-        </div>
-        
-        <div class="form-row">
+        <div class="modal-content">
+            <h3 class="font-semibold tracking-tight text-2xl mb-4">Оплата билетов</h3>
             <div class="form-group">
-                <label>Срок действия</label>
-                <input type="text" id="card-expiry" placeholder="ММ/ГГ" maxlength="5">
-                <div class="field-hint">ММ/ГГ</div>
+                <label>Номер карты</label>
+                <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+                <div class="field-hint">16 цифр без пробелов</div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Срок действия</label>
+                    <input type="text" id="card-expiry" placeholder="ММ/ГГ" maxlength="5">
+                    <div class="field-hint">ММ/ГГ</div>
+                </div>
+                <div class="form-group">
+                    <label>CVV</label>
+                    <input type="text" id="card-cvv" placeholder="123" maxlength="4">
+                    <div class="field-hint">3-4 цифры</div>
+                </div>
             </div>
             <div class="form-group">
-                <label>CVV</label>
-                <input type="text" id="card-cvv" placeholder="123" maxlength="4">
-                <div class="field-hint">3-4 цифры</div>
+                <label>Имя владельца</label>
+                <input type="text" id="card-holder" placeholder="IVAN IVANOV">
+                <div class="field-hint">Как на карте</div>
+            </div>
+            <div class="form-buttons">
+                <span id="final-total" style="display: none;">0</span>
+                <button class="payment-button primary" onclick="processPayment()">
+                    Оплатить <span id="total-price-payment"></span>
+                </button>
+                <button class="payment-button secondary" onclick="closePaymentModal()">
+                    Отмена
+                </button>
             </div>
         </div>
-        
-        <div class="form-group">
-            <label>Имя владельца</label>
-            <input type="text" id="card-holder" placeholder="IVAN IVANOV">
-            <div class="field-hint">Как на карте</div>
-        </div>
-        
-        
-        <div class="form-buttons">
-            <button class="payment-button primary" onclick="processPayment()">
-            Оплатить <span id="total-price-payment"></span>
-            </button>
-            <button class="payment-button secondary" onclick="closePaymentModal()">
-                Отмена
-            </button>
-        </div>
     </div>
-</div>
 
-<div id="my-tickets-section" class="museum-detail" style="display: none;">
-    <div class="museum-detail-header">
-        <div class="museum-detail-container">
-            <button class="back-button" onclick="closeMyTickets()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left">
-                    <path d="m12 19-7-7 7-7"></path>
-                    <path d="M19 12H5"></path>
-                </svg>
-                Назад
-            </button>
-            <div class="logo-container">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building2 text-primary">
-                    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
-                    <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
-                    <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
-                    <path d="M10 6h4"></path>
-                    <path d="M10 10h4"></path>
-                    <path d="M10 14h4"></path>
-                    <path d="M10 18h4"></path>
-                </svg>
-                <div class="text-2xl font-bold text-foreground">Мои билеты</div>
+    <!-- Секция "Мои билеты" (отображается после покупки) -->
+    <div id="my-tickets-section" class="museum-detail" style="display: none;">
+        <div class="museum-detail-header">
+            <div class="museum-detail-container">
+                <button class="back-button" onclick="closeMyTickets()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left">
+                        <path d="m12 19-7-7 7-7"></path>
+                        <path d="M19 12H5"></path>
+                    </svg>
+                    Назад
+                </button>
+                <div class="logo-container">
+                    <div class="text-2xl font-bold text-foreground myBilet">Мои билеты</div>
+                </div>
+                <div style="width: 100px;"></div>
             </div>
-            <div style="width: 100px;"></div>
+        </div>
+        <div class="museum-detail-content container">
+            <div class="tickets-grid" id="tickets-grid"></div>
+            <div id="no-tickets-message" class="no-tickets" style="display: none;">
+                <div class="text-center py-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ticket mx-auto mb-4 text-muted-foreground">
+                        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+                        <path d="M13 5v2"></path>
+                        <path d="M13 17v2"></path>
+                        <path d="M13 11v2"></path>
+                    </svg>
+                    <h3 class="text-2xl font-bold text-muted-foreground mb-2">У вас пока нет билетов</h3>
+                    <p class="text-muted-foreground">Купите свой первый билет в разделе "Музеи"</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="museum-detail-content container">
-    <div class="tickets-grid" id="tickets-grid">
-    </div>
-    
-    <div id="no-tickets-message" class="no-tickets" style="display: none;">
-        <div class="text-center py-12">
-            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ticket mx-auto mb-4 text-muted-foreground">
-                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
-                <path d="M13 5v2"></path>
-                <path d="M13 17v2"></path>
-                <path d="M13 11v2"></path>
-            </svg>
-            <h3 class="text-2xl font-bold text-muted-foreground mb-2">У вас пока нет билетов</h3>
-            <p class="text-muted-foreground">Купите свой первый билет в разделе "Музеи"</p>
-        </div>
-    </div>
-</div>
-</div>
-
+    <!-- Hero-секция со слайдером -->
     <section class="hero-section">
         <div class="background-slider">
             <div class="slide active">
@@ -206,7 +2536,6 @@
                 <img src="images/08e35c00-8b7a-426c-8366-025fa7c26fa9.jpg" alt="Современное искусство">
             </div>
         </div>
-
         <div class="hero-content">
             <h1 class="text-5xl md:text-7xl font-bold mb-6">Откройте мир культуры</h1>
             <p class="text-xl md:text-2xl mb-8 text-gray-200">Выберите музей и начните ваше путешествие</p>
@@ -217,7 +2546,6 @@
                 </svg>
             </button>
         </div>
-
         <div class="slider-indicators">
             <button class="active" aria-label="Фото 1"></button>
             <button aria-label="Фото 2"></button>
@@ -226,151 +2554,16 @@
         </div>
     </section>
 
+    <!-- Секция "Наши музеи" – динамическое содержимое -->
     <section class="museums-section container">
         <h2 class="text-4xl md:text-5xl font-bold mb-4">Наши музеи</h2>
         <p style="text-align: center; font-size: 20px; color: gray;">Выберите музей для посещения</p>
-        
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-scale-in cursor-pointer" style="animation-delay: 0s;">
-                <div class="card-image-container">
-                    <img src="images/Museu_de_Arte_Contemporânea_de_Niterói.jpg" alt="Музей современного искусства" class="card-image hover:scale-110">
-                </div>
-                <div class="flex flex-col space-y-1.5 p-6 card-content">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent category-tag">Искусство</div>
-                        <span class="text-2xl font-bold text-primary">500₽</span>
-                    </div>
-                    <h3 class="font-semibold tracking-tight text-2xl">Музей современного искусства</h3>
-                    <p class="text-muted-foreground text-base">Уникальная коллекция современного искусства и интерактивные инсталляции</p>
-                </div>
-                <div class="flex items-center p-6 pt-0">
-                    <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 w-full" onclick="openMuseumDetail('modern-art')">
-                        Подробнее
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-2">
-                            <path d="M5 12h14"></path>
-                            <path d="m12 5 7 7-7 7"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-scale-in cursor-pointer" style="animation-delay: 0.1s;">
-                <div class="card-image-container">
-                    <img src="images/629ca2c2-81fd-419a-b2e4-63185088c637.jpg"  class="card-image hover:scale-110">
-                </div>
-                <div class="flex flex-col space-y-1.5 p-6 card-content">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent category-tag">История</div>
-                        <span class="text-2xl font-bold text-primary">400₽</span>
-                    </div>
-                    <h3 class="font-semibold tracking-tight text-2xl">Исторический музей</h3>
-                    <p class="text-muted-foreground text-base">Погрузитесь в историю через уникальные артефакты и экспозиции</p>
-                </div>
-                <div class="flex items-center p-6 pt-0">
-                    <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 w-full" onclick="openMuseumDetail('history')">
-                        Подробнее
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-2">
-                            <path d="M5 12h14"></path>
-                            <path d="m12 5 7 7-7 7"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-scale-in cursor-pointer" style="animation-delay: 0.2s;">
-                <div class="card-image-container">
-                    <img src="images/0a851476-2d06-4639-94a8-e569a11c7574.jpg" alt="Музей науки и техники" class="card-image hover:scale-110">
-                </div>
-                <div class="flex flex-col space-y-1.5 p-6 card-content">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent category-tag">Наука</div>
-                        <span class="text-2xl font-bold text-primary">450₽</span>
-                    </div>
-                    <h3 class="font-semibold tracking-tight text-2xl">Музей науки и техники</h3>
-                    <p class="text-muted-foreground text-base">Интерактивные экспонаты, демонстрации и научные эксперименты</p>
-                </div>
-                <div class="flex items-center p-6 pt-0">
-                    <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 w-full" onclick="openMuseumDetail('science')">
-                        Подробнее
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-2">
-                            <path d="M5 12h14"></path>
-                            <path d="m12 5 7 7-7 7"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-scale-in cursor-pointer" style="animation-delay: 0.3s;">
-                <div class="card-image-container">
-                    <img src="images/zaujimavosti-den-Europa.jpg" alt="Художественная галерея" class="card-image hover:scale-110">
-                </div>
-                <div class="flex flex-col space-y-1.5 p-6 card-content">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent category-tag">Искусство</div>
-                        <span class="text-2xl font-bold text-primary">450₽</span>
-                    </div>
-                    <h3 class="font-semibold tracking-tight text-2xl">Художественная галерея</h3>
-                    <p class="text-muted-foreground text-base">Произведения классического и современного изобразительного искусства</p>
-                </div>
-                <div class="flex items-center p-6 pt-0">
-                    <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 w-full" onclick="openMuseumDetail('gallery')">
-                        Подробнее
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-2">
-                            <path d="M5 12h14"></path>
-                            <path d="m12 5 7 7-7 7"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-scale-in cursor-pointer" style="animation-delay: 0.4s;">
-                <div class="card-image-container">
-                    <img src="images/b7804ad78dd2c46d504049c74436f862.jpg" alt="Этнографический музей" class="card-image hover:scale-110">
-                </div>
-                <div class="flex flex-col space-y-1.5 p-6 card-content">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent category-tag">Культура</div>
-                        <span class="text-2xl font-bold text-primary">350₽</span>
-                    </div>
-                    <h3 class="font-semibold tracking-tight text-2xl">Этнографический музей</h3>
-                    <p class="text-muted-foreground text-base">Богатая коллекция традиционных костюмов, предметов быта и ремесел народов мира</p>
-                </div>
-                <div class="flex items-center p-6 pt-0">
-                    <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 w-full" onclick="openMuseumDetail('ethno')">
-                        Подробнее
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-2">
-                            <path d="M5 12h14"></path>
-                            <path d="m12 5 7 7-7 7"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-scale-in cursor-pointer" style="animation-delay: 0.5s;">
-                <div class="card-image-container">
-                    <img src="images/bjwgmtlezhj76wkid5lq.jpg" alt="Музей естественной истории" class="card-image hover:scale-110">
-                </div>
-                <div class="flex flex-col space-y-1.5 p-6 card-content">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent category-tag">Природа</div>
-                        <span class="text-2xl font-bold text-primary">420₽</span>
-                    </div>
-                    <h3 class="font-semibold tracking-tight text-2xl">Музей естественной истории</h3>
-                    <p class="text-muted-foreground text-base">Увлекательное путешествие в мир природы: от динозавров до современных экосистем</p>
-                </div>
-                <div class="flex items-center p-6 pt-0">
-                    <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 w-full" onclick="openMuseumDetail('nature')">
-                        Подробнее
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-2">
-                            <path d="M5 12h14"></path>
-                            <path d="m12 5 7 7-7 7"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
+        <!-- Контейнер, в который JS вставит карточки музеев -->
+        <div id="museums-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="bg-primary text-white py-12">
         <div class="container mx-auto px-4 text-center">
             <div class="flex items-center justify-center gap-2 mb-4">
@@ -403,6 +2596,7 @@
         </div>
     </footer>
 
+    <!-- Детальная страница музея (заполняется динамически) -->
     <div id="museum-detail" class="museum-detail">
         <div class="museum-detail-header">
             <div class="museum-detail-container">
@@ -434,7 +2628,6 @@
                 <div class="gallery-container">
                     <div class="main-image-container">
                         <img src="images/91a270d3-1185-489d-bbce-0e2a52ce896b.jpg" alt="Главное изображение музея" class="main-image" id="main-image">
-                        
                         <button class="gallery-nav gallery-prev" onclick="prevImage()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left">
                                 <path d="m15 18-6-6 6-6"></path>
@@ -446,40 +2639,29 @@
                             </svg>
                         </button>
                     </div>
-                    
                     <div style="margin: 10px;" class="grid grid-cols-3 gap-4" id="thumbnail-container">
-                        <button onclick="showImage(0)" class="relative h-32 rounded-lg overflow-hidden transition-all ring-4 ring-primary">
-                            <img src="images/91a270d3-1185-489d-bbce-0e2a52ce896b.jpg" alt="Музей современного искусства 1" class="w-full h-full object-cover">
-                        </button>
-                        <button onclick="showImage(1)" class="relative h-32 rounded-lg overflow-hidden transition-all opacity-70 hover:opacity-100">
-                            <img src="images/275b0bd844136fa3-w820-h440.jpg" alt="Музей современного искусства 2" class="w-full h-full object-cover">
-                        </button>
-                        <button onclick="showImage(2)" class="relative h-32 rounded-lg overflow-hidden transition-all opacity-70 hover:opacity-100">
-                            <img src="images/0a851476-2d06-4639-94a8-e569a11c7574.jpg" alt="Музей современного искусства 3" class="w-full h-full object-cover">
-                        </button>
+                        <!-- Миниатюры генерируются динамически -->
                     </div>
                 </div>
 
                 <div class="description-container">
                     <div class="museum-description">
-                        <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent category-tag">Искусство</div>
+                        <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent category-tag">Искусство</div>
                         <h1 class="text-4xl font-bold mb-4">Музей современного искусства</h1>
                         <p class="text-xl text-muted-foreground mb-6">Уникальная коллекция современного искусства и интерактивные инсталляции</p>
-                        <p class="text-lg leading-relaxed">Один из крупнейших музеев современного искусства в регионе. Здесь представлены работы ведущих художников XX и XXI века, включая живопись, скульптуру, инсталляции и медиа-арт. Музей регулярно проводит временные выставки, мастер-классы и образовательные программы.</p>
-                        <p class="text-lg leading-relaxed">Основанный в 1995 году, музей стал важным центром культурной жизни города. В его постоянной коллекции представлено более 5000 произведений искусства, включая работы как российских, так и зарубежных художников.</p>
+                        <!-- Абзацы полного описания будут добавлены скриптом -->
                     </div>
 
                     <div class="museum-details">
                         <div class="detail-item num1">
-
                             <div class="detail-item">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock text-primary">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
                                 </svg>
                                 <div>
                                     <p class="font-semibold">Режим работы</p>
-                                    <p class="text-muted-foreground">Вт-Вс 10:00-20:00</p>
+                                    <p class="text-muted-foreground"></p> <!-- будет заполнено -->
                                 </div>
                             </div>
                             <div class="detail-item">
@@ -489,7 +2671,7 @@
                                 </svg>
                                 <div>
                                     <p class="font-semibold">Адрес</p>
-                                    <p class="text-muted-foreground">ул. Искусств, д. 10</p>
+                                    <p class="text-muted-foreground"></p> <!-- будет заполнено -->
                                 </div>
                             </div>
                             <div class="detail-item">
@@ -506,8 +2688,7 @@
                             </div>
                         </div>
                         <div class="num2" style="border-bottom: none; justify-content: center; margin-top: 1rem;">
-                            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md text-lg px-8 py-6" 
-                                    onclick="scrollToTicketSection()">
+                            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md text-lg px-8 py-6" onclick="scrollToTicketSection()">
                                 Купить билеты
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down ml-2">
                                     <path d="m6 9 6 6 6-6"></path>
@@ -518,116 +2699,2434 @@
                 </div>
             </div>
 
-<div class="ticket-section">
-    <div id="ticket-buy-section" class="ticket-card">
-        <div class="ticket-header">
-            <h3 class="font-semibold tracking-tight text-3xl">Купить билеты</h3>
-            <p class="text-muted-foreground text-base">Выберите дату и количество билетов</p>
-        </div>
-        <div class="ticket-body">
-            <div class="ticket-controls">
-                <div class="date-picker">
-                    <label class="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-base"><h3 style="text-align: center; margin-bottom: 5px;">Дата и время посещения</h3></label>
-                    <button class="date-button w-full justify-start text-left font-normal h-12">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar mr-2">
-                            <path d="M8 2v4"></path>
-                            <path d="M16 2v4"></path>
-                            <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-                            <path d="M3 10h18"></path>
-                        </svg>
-                        Выберите дату и время
-                    </button>
-                    
-                    <div class="date-slots-wrapper">
-                        <button class="scroll-btn left" onclick="scrollDates(-1)">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m15 18-6-6 6-6"></path>
-                            </svg>
-                        </button>
-                        
-                        <div class="date-slots-container" id="date-slots-container">
-                        </div>
-                        
-                        <button class="scroll-btn right" onclick="scrollDates(1)">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m9 18 6-6-6-6"></path>
-                            </svg>
-                        </button>
+            <!-- Секция покупки билетов -->
+            <div class="ticket-section">
+                <div id="ticket-buy-section" class="ticket-card">
+                    <div class="ticket-header">
+                        <h3 class="font-semibold tracking-tight text-3xl">Купить билеты</h3>
+                        <p class="text-muted-foreground text-base">Выберите дату и количество билетов</p>
                     </div>
-                </div>                        
-                
-                <div class="top">
-                    <div class="ticket-quantity">
-                        <label class="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-base" for="tickets"><h3 style="text-align: center; margin-bottom: 5px;">Количество билетов и Категории</h3></label>
-                        <div class="quantity-controls">
-                            <button class="quantity-button" onclick="decreaseTickets()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus">
-                                    <path d="M5 12h14"></path>
-                                </svg>
-                            </button>
-                            <input type="text" class="quantity-input" id="tickets" min="1" value="1" disabled onchange="updateTotal()">
-                            <button class="quantity-button" onclick="increaseTickets()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus">
-                                    <path d="M5 12h14"></path>
-                                    <path d="M12 5v14"></path>
-                                </svg>
-                            </button>
+                    <div class="ticket-body">
+                        <div class="ticket-controls">
+                            <div class="date-picker">
+                                <label class="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-base"><h3 style="text-align: center; margin-bottom: 5px;">Дата и время посещения</h3></label>
+                                <button class="date-button w-full justify-start text-left font-normal h-12">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar mr-2">
+                                        <path d="M8 2v4"></path>
+                                        <path d="M16 2v4"></path>
+                                        <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                                        <path d="M3 10h18"></path>
+                                    </svg>
+                                    Выберите дату и время
+                                </button>
+                                <div class="date-slots-wrapper">
+                                    <button class="scroll-btn left" onclick="scrollDates(-1)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="m15 18-6-6 6-6"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="date-slots-container" id="date-slots-container">
+                                        <!-- Слоты генерируются динамически -->
+                                    </div>
+                                    <button class="scroll-btn right" onclick="scrollDates(1)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="m9 18 6-6-6-6"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="top">
+                                <div class="ticket-quantity">
+                                    <label class="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-base" for="tickets"><h3 style="text-align: center; margin-bottom: 5px;">Количество билетов и Категории</h3></label>
+                                    <div class="quantity-controls">
+                                        <button class="quantity-button" onclick="decreaseTickets()">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus">
+                                                <path d="M5 12h14"></path>
+                                            </svg>
+                                        </button>
+                                        <input type="text" class="quantity-input" id="tickets" min="1" value="1" disabled onchange="updateTotal()">
+                                        <button class="quantity-button" onclick="increaseTickets()">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus">
+                                                <path d="M5 12h14"></path>
+                                                <path d="M12 5v14"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="ticket-categories-container" class="ticket-categories-container">
+                                    <!-- Динамический список категорий билетов -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ticket-summary1">
+                            <h3 style="text-align: center; margin-bottom: 5px;">Итог к оплате</h3>
+                            <div class="ticket-summary2">
+                                <div id="ticket-details-container"></div>
+                                <div class="coupon-section">
+    <div class="coupon-input-group">
+        <input type="text" id="coupon-input" placeholder="Промокод">
+        <button class="btn small" onclick="applyCoupon()">Применить</button>
+    </div>
+    <div id="coupon-message" style="font-size: 0.8rem; margin-top: 0.25rem;"></div>
+    <div id="coupon-applied" style="display: none; margin-top: 0.5rem;">
+        <span style="color: green;">✓ Промокод применён</span>
+        <span id="coupon-discount-label"></span>
+    </div>
+</div>
+                                <div class="summary-row summary-total">
+                                    <span class="font-bold text-xl">Итого:</span>
+                                    <span class="font-bold text-primary text-xl" id="total-price">500₽</span>
+                                </div>
+                                <button class="buy-button" onclick="buyTickets()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ticket mr-2">
+                                        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+                                        <path d="M13 5v2"></path>
+                                        <path d="M13 17v2"></path>
+                                        <path d="M13 11v2"></path>
+                                    </svg>
+                                    Купить билеты
+                                </button>
+                            </div>
                         </div>
                     </div>
-
-                    <div id="ticket-categories-container" class="ticket-categories-container">
+                </div>
+                <!-- Сообщение для неавторизованных -->
+                <div id="ticket-auth-required" style="display: none;">
+                    <div class="ticket-auth-message">
+                        <h3>Чтобы купить билет, необходимо зарегистрироваться или войти</h3>
+                        <p>После регистрации вы сможете выбрать дату и время посещения, а также оплатить билет онлайн.</p>
+                        <div class="auth-buttons">
+                            <button class="auth-button primary" onclick="showAuthModal()">Зарегистрироваться</button>
+                            <button class="auth-button secondary" onclick="switchAuthTab('login'); showAuthModal();">Войти</button>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Плавающая кнопка помощи -->
+<button id="helpFloatBtn" class="help-float-btn" title="Помощь" onclick="openHelpModal()">?</button>
+
+<!-- Модальное окно помощи -->
+<div id="helpModal" class="help-modal" onclick="if(event.target === this) closeHelpModal()">
+    <div class="help-modal-content">
+        <button class="help-close-btn" onclick="closeHelpModal()">✕</button>
+        <h2 class="help-title">Помощь</h2>
+
+        <!-- Вопросы-ответы -->
+        <div class="faq-container">
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    Как купить билет?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">Выберите музей, дату, время и количество билетов. Затем нажмите «Купить билеты» и оплатите картой.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    Как сохранить билет?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">В разделе «Мои билеты» нажмите «Сохранить» под билетом – он скачается в формате PNG.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    Как поделиться билетом?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">Нажмите «Поделиться» под билетом, и выберите мессенджер. Изображение билета отправится собеседнику.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    Не пришёл билет на почту?
+                    <span>▼</span>
+                </button>
+                <div class="faq-answer">Билеты не отправляются на почту – вы можете найти их в разделе «Мои билеты» после входа в аккаунт.</div>
+            </div>
+        </div>
+
+        <!-- Кнопки действий -->
+        <div class="help-actions">
+            <button class="help-action-btn telegram-btn" onclick="goToTelegram()">
+                📱 Написать в Telegram
+            </button>
+            <button class="help-action-btn email-btn" id="randomEmailBtn" onclick="goToEmail()">
+                ✉️ Написать на почту
+            </button>
+            <button class="help-action-btn phone-btn" onclick="copyPhoneNumber()">
+                📞 Скопировать номер телефона
+            </button>
+        </div>
+    </div>
+</div>
+
+    <script src="libs/html2canvas.min.js"></script>
+     <script>
+        // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
+const API_BASE_URL = window.location.protocol === 'file:'
+    ? 'http://localhost:8002'
+    : window.location.origin;
+const WS_BASE_URL = API_BASE_URL.replace(/^http/, 'ws');
+
+// Данные, получаемые с сервера
+let museumsData = [];            // все активные музеи (из /api/museums-data)
+let ticketCategoriesData = [];  // категории билетов со скидками
+let closedDatesData = [];       // закрытые даты (для каждого музея)
+
+// Пользователь
+let currentUser = null;
+let currentMuseumId = null;     // code выбранного музея (например 'modern-art')
+let currentMuseumPrice = 0; // базовая цена билета текущего музея
+
+let ticketCategoriesWs = null;   // сокет для уведомлений об изменении категорий
+let previousTicketCategories = []; // храним предыдущее состояние для сравнения
 
 
+let appliedCoupon = null; // { code, discount_percent }
+
+let currentMuseumSnapshot = null;   // снимок данных музея при открытии детальной
+
+
+let museumWs = null;  // WebSocket для обновлений музея
+let mainPageWsList = [];  // все сокеты для карточек на главной
+let globalMuseumWs = null;   // WebSocket для глобальных уведомлений о музеях
+
+// Слайдер на главной
+let currentSlide = 0;
+let slides, indicators, totalSlides;
+
+// Галерея внутри детальной страницы
+let currentImageIndex = 0;
+
+// Выбор временного слота
+let selectedDateSlot = null;    // строка YYYY-MM-DD
+let selectedTimeSlot = null;    // строка HH:MM:SS (start_time)
+let currentAvailableTickets = 0;
+let currentSlotDaysAhead = 14;   // значение по умолчанию
+let slotsInterval = null;       // интервал автообновления слотов
+
+// Категории выбранных билетов (массив, длина = количество билетов)
+let ticketCategories = ['Стандартный'];
+
+// ==================== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ====================
+async function loadMuseumsData() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/museums-data`);
+        if (!response.ok) {
+            showMessage('Ошибка загрузки данных музеев');
+            return;
+        }
+        const data = await response.json();
+        museumsData = data.museums || [];
+        ticketCategoriesData = data.ticket_categories || [];
+        closedDatesData = data.closed_dates || [];
+
+        renderMuseumCards();
+        setupSliderImages();
+
+        // ✅ Всегда подключаем WebSocket, независимо от ширины экрана
+        setTimeout(() => {
+            try { connectMainPageWebSockets(); } catch(e) {}
+            try { connectGlobalMuseumWebSocket(); } catch(e) {}
+            try { connectTicketCategoriesWebSocket(); } catch(e) {}
+        }, 500);
+
+        updateTicketCategoriesUI();
+        previousTicketCategories = JSON.parse(JSON.stringify(ticketCategoriesData));
+        console.log('✅ Данные музеев загружены');
+    } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        showMessage('Не удалось загрузить информацию о музеях');
+    }
+}
+
+function connectTicketCategoriesWebSocket() {
+    if (ticketCategoriesWs) ticketCategoriesWs.close();
+    ticketCategoriesWs = new WebSocket(`${WS_BASE_URL}/ws/ticket-categories`);
+    ticketCategoriesWs.onmessage = async function(event) {
+        const data = JSON.parse(event.data);
+        console.log('📢 Изменение категорий:', data);
+
+        // 1. Определяем музей
+        let museumName = 'Неизвестный музей';
+        let numericMuseumId = data.museum_id || null;
+        if (numericMuseumId) {
+            const museum = museumsData.find(m => m.id == numericMuseumId);
+            if (museum) museumName = museum.name;
+        }
+
+        // 2. Уведомление
+        if (data.action === 'created') {
+            showChangeNotification(`В музее «${museumName}» добавлена новая категория билетов.`);
+        } else if (data.action === 'updated') {
+            const cat = data.category;
+            const discountPercent = Math.round((1 - cat.discount_multiplier) * 100);
+            showChangeNotification(`В музее «${museumName}» изменена скидка на категорию «${cat.name}» – теперь ${discountPercent}%.`);
+        } else if (data.action === 'deleted') {
+            showChangeNotification(`В музее «${museumName}» удалена категория «${data.category_name}».`);
+        }
+
+        // 3. Всегда обновляем глобальные данные музея
+        if (numericMuseumId) {
+            try {
+                const resp = await fetch(`${API_BASE_URL}/api/admin/ticket-categories?museum_id=${numericMuseumId}`);
+                if (resp.ok) {
+                    const freshCategories = await resp.json();
+                    // Обновляем глобальный массив
+                    const museum = museumsData.find(m => m.id == numericMuseumId);
+                    if (museum) {
+                        museum.ticket_categories = freshCategories;
+                    }
+                    // Если мы прямо сейчас на странице этого музея – обновляем UI
+                    if (currentMuseumId) {
+                        const currentMuseum = getMuseumByCode(currentMuseumId);
+                        if (currentMuseum && currentMuseum.id == numericMuseumId) {
+                            ticketCategoriesData = freshCategories;
+                            // Приводим выбранные категории в соответствие
+                            ticketCategories = ticketCategories.map(cat => {
+                                if (!freshCategories.some(f => f.name === cat)) {
+                                    return freshCategories.length > 0 ? freshCategories[0].name : 'Стандартный';
+                                }
+                                return cat;
+                            });
+                            updateTicketCategoriesUI();
+                            updateTotal();
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Ошибка обновления категорий после WebSocket:', e);
+            }
+        }
+    };
+    ticketCategoriesWs.onerror = () => console.log('WebSocket категорий прерван');
+}
+
+
+
+function connectGlobalMuseumWebSocket() {
+    if (globalMuseumWs) globalMuseumWs.close();
+    globalMuseumWs = new WebSocket(`${WS_BASE_URL}/ws/museums`);
+    globalMuseumWs.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+
+        if (data.action === 'museum_added') {
+            const museum = data.museum;
+            // Добавляем новый музей в массив, если его там ещё нет
+            if (!museumsData.some(m => m.code === museum.code)) {
+                museumsData.push(museum);
+                museum.ticket_categories = data.museum.ticket_categories || [];
+                // Перерисовываем карточки
+                renderMuseumCards();
+                // Показываем уведомление
+                showChangeNotification(`Гендиректором добавлен новый музей «${museum.name}»!`);
+            }
+        }
+    };
+    globalMuseumWs.onerror = () => console.log('Глобальный WebSocket музеев прерван');
+}
+
+
+
+
+
+function showChangeNotification(message) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10001;
+        display: flex; align-items: center; justify-content: center;
+    `;
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: white; padding: 2rem; border-radius: 12px; max-width: 420px;
+        text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    `;
+    modal.innerHTML = `
+        <h3 style="margin-bottom: 1rem;">Уважаемые посетители!</h3>
+        <p>${message}</p>
+        <p style="margin-top: 0.5rem;">Приносим извинения за возможные неудобства 😔</p>
+        <button class="btn" style="margin-top: 1.5rem; padding: 0.6rem 2rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">Хорошо</button>
+    `;
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    modal.querySelector('button').addEventListener('click', () => overlay.remove());
+}
+
+// ==================== ОТРИСОВКА КАРТОЧЕК МУЗЕЕВ ====================
+function renderMuseumCards() {
+    const container = document.getElementById('museums-grid');
+    if (!container) return;
+
+    let html = '';
+        museumsData.filter(m => m.is_active).forEach((museum, index) => {
+        // Берем первое изображение или заглушку
+        const imageUrl = museum.images && museum.images.length > 0 ? museum.images[0] : 'images/default.jpg';
+        html += `
+        <div id="museum-card-${museum.code}" class="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-scale-in cursor-pointer"
+            style="animation-delay: ${index * 0.1}s;">
+            <div class="card-image-container">
+                <img src="${imageUrl}" alt="${museum.name}" class="card-image hover:scale-110" loading="lazy">
+            </div>
+            <div class="flex flex-col space-y-1.5 p-6 card-content">
+                <div class="flex items-start justify-between mb-2">
+                    <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent category-tag">
+                        ${museum.category}
+                    </div>
+                    <span class="text-2xl font-bold text-primary">${museum.ticket_price}₽</span>
+                </div>
+                <h3 class="font-semibold tracking-tight text-2xl">${museum.name}</h3>
+                <p class="text-muted-foreground text-base">${museum.short_description || ''}</p>
+            </div>
+            <div class="flex items-center p-6 pt-0">
+                <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 w-full"
+                        onclick="openMuseumDetail('${museum.code}')">
+                    Подробнее
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-2">
+                        <path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function updateMuseumCard(museum) {
+    const card = document.getElementById(`museum-card-${museum.code}`);
+    if (!card) return;
+    const imageUrl = museum.images && museum.images.length > 0 ? museum.images[0] : 'images/default.jpg';
+    card.querySelector('.card-image').src = imageUrl;
+    card.querySelector('.card-image').alt = museum.name;
+    card.querySelector('.category-tag').textContent = museum.category;
+    card.querySelector('.text-2xl.font-bold.text-primary').textContent = museum.ticket_price + '₽';
+    card.querySelector('h3').textContent = museum.name;
+    card.querySelector('.text-muted-foreground').textContent = museum.short_description || '';
+    // Если музей неактивен – скрываем карточку
+    card.style.display = museum.is_active ? '' : 'none';
+}
+
+
+
+function connectMainPageWebSockets() {
+    // Закрываем старые соединения
+    mainPageWsList.forEach(ws => ws.close());
+    mainPageWsList = [];
+    museumsData.forEach(museum => {
+        const ws = new WebSocket(`${WS_BASE_URL}/ws/museum/${museum.code}`);
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
 
             
-            <div class="ticket-summary1">
-                <h3 style="text-align: center; margin-bottom: 5px;">Итог к оплате</h3>
-                <div class="ticket-summary2">
-                    
-                    <div id="ticket-details-container">
-                    </div>
-                    <div class="summary-row summary-total">
-                        <span class="font-bold text-xl">Итого:</span>
-                        <span class="font-bold text-primary text-xl" id="total-price">500₽</span>
-                    </div>
-                    <button class="buy-button" onclick="buyTickets()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ticket mr-2">
-                            <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
-                            <path d="M13 5v2"></path>
-                            <path d="M13 17v2"></path>
-                            <path d="M13 11v2"></path>
-                        </svg>
-                        Купить билеты
-                    </button>
+                    // 1. Обработка добавления закрытой даты
+            if (data.action === 'closed_date_added') {
+    const museumId = museumsData.find(m => m.code === data.museum_code)?.id;
+    const museumName = museumsData.find(m => m.code === data.museum_code)?.name || 'Неизвестный музей';
+    if (museumId) {
+        closedDatesData.push({
+            museum_id: museumId,
+            closed_date: data.closed_date,
+            reason: data.reason || ''
+        });
+    }
+    // 👇 эта строка должна быть обязательно
+    if (currentMuseumId === data.museum_code) {
+        generateDateSlots();
+    }
+    const reasonText = data.reason ? ` Причина: ${data.reason}` : '';
+    showChangeNotification(`В  «${museumName}» день ${data.closed_date} закрыт администратором.${reasonText}`);
+    return;
+}
+
+                    if (data.action === 'slot_closed' || data.action === 'slot_opened') {
+    if (currentMuseumId === data.museum_code) {
+        generateDateSlots();
+        if (data.action === 'slot_closed') {
+            // Сброс выбранного слота, если он совпадает с закрытым
+            if (selectedDateSlot === data.date && selectedTimeSlot === data.start_time) {
+                selectedDateSlot = null;
+                selectedTimeSlot = null;
+                currentAvailableTickets = 0;
+                updateDateSelection();
+            }
+            // Уведомление показываем всегда
+            const reason = data.reason ? ` Причина: ${data.reason}` : '';
+            showChangeNotification(`К сожалению, слот ${data.start_time.substring(0,5)}–${data.end_time.substring(0,5)} на ${data.date} был заблокирован администратором.${reason}`);
+        } else if (data.action === 'slot_opened') {
+            showChangeNotification(`Слот ${data.start_time.substring(0,5)}–${data.end_time.substring(0,5)} снова доступен.`);
+        }
+    }
+    return;
+}
+
+            // 2. Обработка удаления закрытой даты
+            if (data.action === 'closed_date_removed') {
+    const museumId = museumsData.find(m => m.code === data.museum_code)?.id;
+    const museumName = museumsData.find(m => m.code === data.museum_code)?.name || 'Неизвестный музей';
+    if (museumId) {
+        closedDatesData = closedDatesData.filter(cd => !(cd.museum_id === museumId && cd.closed_date === data.closed_date));
+    }
+    if (currentMuseumId === data.museum_code) {
+        generateDateSlots();
+        showChangeNotification(`В  «${museumName}» день ${data.closed_date} снова доступен для посещения.`);
+    }
+    return;
+}
+
+// Обработка удаления музея
+if (data.action === 'museum_deleted') {
+    const museumName = museumsData.find(m => m.code === data.museum_code)?.name || data.museum_name;
+    showChangeNotification(`К сожалению, Гендиректором «${museumName}» был удалён.`);
+    
+    // Если пользователь сейчас на детальной странице этого музея – закрыть её
+    if (currentMuseumId === data.museum_code) {
+        closeMuseumDetail();
+    }
+    
+    // Удаляем музей из локального массива и обновляем карточки
+    museumsData = museumsData.filter(m => m.code !== data.museum_code);
+    renderMuseumCards();
+    return;
+}
+
+            // 3. Обычное обновление музея
+            const updatedMuseum = data;
+            const idx = museumsData.findIndex(m => m.code === updatedMuseum.code);
+            if (idx === -1) return;
+
+            const oldMuseum = museumsData[idx];
+            const wasActive = oldMuseum.is_active;
+
+            // Обновляем данные в массиве
+            museumsData[idx] = { ...museumsData[idx], ...updatedMuseum };
+            const museum = museumsData[idx];
+
+            // Если музей стал активным после того, как был неактивен – перестраиваем все карточки
+            if (!wasActive && museum.is_active) {
+                renderMuseumCards();
+                const message = `Музей «${museum.name}» снова работает!`;
+                showChangeNotification(message);
+                return;
+            }
+
+            // Если музей стал неактивным – уведомление и скрытие карточки
+            if (!museum.is_active) {
+                updateMuseumCard(museum);
+                const message = `Музей «${museum.name}» временно не работает`;
+                showChangeNotification(message);
+                return;
+            }
+
+            // Обычное обновление существующей карточки
+            updateMuseumCard(museum);
+
+            // Проверка важных изменений (цена, адрес, режим работы)
+            const changes = [];
+            if (oldMuseum.ticket_price !== museum.ticket_price) {
+                changes.push(`Цена билета изменена с ${oldMuseum.ticket_price}₽ на ${museum.ticket_price}₽`);
+            }
+            if (oldMuseum.address !== museum.address) {
+                changes.push(`Адрес изменён на «${museum.address}»`);
+            }
+            if (oldMuseum.working_hours !== museum.working_hours) {
+                changes.push(`Режим работы изменён на «${museum.working_hours}»`);
+            }
+
+            if (changes.length > 0 && currentMuseumId !== museum.code) {
+                const message = `В  «${museum.name}» произошли изменения:<br>${changes.join('<br>')}`;
+                showChangeNotification(message);
+            }
+        };
+        mainPageWsList.push(ws);
+    });
+}
+
+// ==================== СЛАЙДЕР ГЛАВНОЙ СТРАНИЦЫ ====================
+function setupSliderImages() {
+    slides = document.querySelectorAll('.slide');
+    indicators = document.querySelectorAll('.slider-indicators button');
+    totalSlides = slides.length;
+    if (slides.length > 0) {
+        setInterval(nextSlide, 5000);
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => showSlide(index));
+        });
+    }
+}
+
+function showSlide(index) {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[index].classList.add('active');
+    indicators.forEach((ind, i) => i === index ? ind.classList.add('active') : ind.classList.remove('active'));
+    currentSlide = index;
+}
+
+function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    showSlide(currentSlide);
+}
+
+// ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+/**
+ * Возвращает объект музея из массива museumsData по коду.
+ */
+function getMuseumByCode(code) {
+    return museumsData.find(m => m.code === code) || null;
+}
+
+/**
+ * Возвращает множитель скидки для категории билета.
+ */
+function getMultiplier(categoryName) {
+    const cat = ticketCategoriesData.find(c => c.name === categoryName);
+    return cat ? cat.discount_multiplier : 1.0;
+}
+
+/**
+ * Проверяет, является ли дата закрытой для конкретного музея.
+ */
+function isDateClosed(museumId, dateString) {
+    return closedDatesData.some(cd => cd.museum_id === museumId && cd.closed_date === dateString);
+}
+
+// ==================== АВТОРИЗАЦИЯ ====================
+function showAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
+function hideAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
+
+function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-tab').forEach(t => {
+        if (t.textContent === (tab === 'login' ? 'Войти' : 'Регистрация')) t.classList.add('active');
+    });
+    document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('register-form').style.display = tab === 'login' ? 'none' : 'block';
+}
+
+async function login() {
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    if (!username || !password) { showMessage('Заполните все поля'); return; }
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/visitors/login/`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ login: username, password })
+        });
+        if (response.ok) {
+            currentUser = await response.json();
+            saveUserToStorage(currentUser);
+            updateUI();
+            hideAuthModal();
+            showMessage('Вы успешно вошли!');
+            updateTicketSectionVisibility();
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+        } else {
+            showMessage('Неверный логин или пароль');
+        }
+    } catch (error) { showMessage('Ошибка подключения к серверу'); }
+}
+
+async function register() {
+    const userData = {
+        login: document.getElementById('register-username').value,
+        password: document.getElementById('register-password').value,
+        name: document.getElementById('register-name').value,
+        surname: document.getElementById('register-surname').value,
+        phone: document.getElementById('register-phone').value
+    };
+    if (!userData.login || !userData.password || !userData.name || !userData.phone) {
+        showMessage('Заполните все обязательные поля'); return;
+    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/visitors/`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(userData)
+        });
+        if (response.ok) {
+            currentUser = await response.json();
+            saveUserToStorage(currentUser);
+            updateUI();
+            hideAuthModal();
+            showMessage('Регистрация успешна!');
+            updateTicketSectionVisibility();
+            ['register-username','register-password','register-name','register-surname','register-phone'].forEach(id => document.getElementById(id).value = '');
+        } else {
+            const error = await response.json();
+            showMessage('Ошибка: ' + error.detail);
+        }
+    } catch (error) { showMessage('Ошибка подключения к серверу'); }
+}
+
+function logout() {
+    currentUser = null;
+    removeUserFromStorage();
+    updateUI();
+    showMessage('Вы вышли из системы');
+    updateTicketSectionVisibility();
+    document.getElementById('my-tickets-section').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function checkAuth() {
+    const savedUser = getUserFromStorage();
+    if (savedUser) {
+        currentUser = savedUser;
+        showMessage(`С возвращением, ${currentUser.name}!`);
+    }
+    updateUI();
+    setTimeout(updateTicketSectionVisibility, 100);
+}
+
+function updateUI() {
+    const authNav = document.getElementById('auth-nav');
+    const userNav = document.getElementById('user-nav');
+    if (currentUser) {
+        if (authNav) authNav.style.display = 'none';
+        if (userNav) userNav.style.display = 'flex';
+    } else {
+        if (authNav) authNav.style.display = 'flex';
+        if (userNav) userNav.style.display = 'none';
+    }
+}
+
+function updateTicketSectionVisibility() {
+    const ticketBuy = document.querySelector('.ticket-section .ticket-card');
+    const authReq = document.getElementById('ticket-auth-required');
+    if (currentUser) {
+        if (ticketBuy) ticketBuy.style.display = 'block';
+        if (authReq) authReq.style.display = 'none';
+    } else {
+        if (ticketBuy) ticketBuy.style.display = 'none';
+        if (authReq) authReq.style.display = 'block';
+    }
+}
+
+// ==================== УВЕДОМЛЕНИЯ ====================
+function showMessage(msg) {
+    const notif = document.createElement('div');
+    notif.style.cssText = 'position:fixed;top:20px;right:20px;background:var(--primary);color:white;padding:1rem 1.5rem;border-radius:8px;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
+    notif.textContent = msg;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 3000);
+}
+
+// ==================== ДЕТАЛЬНАЯ СТРАНИЦА МУЗЕЯ ====================
+/**
+ * Открывает детальную страницу музея по коду.
+ */
+async function openMuseumDetail(museumCode) {
+    // Вставьте в DOMContentLoaded или в openMuseumDetail при создании поля
+appliedCoupon = null;
+const couponMsg = document.getElementById('coupon-message');
+if (couponMsg) couponMsg.innerHTML = '';
+const couponApplied = document.getElementById('coupon-applied');
+if (couponApplied) couponApplied.style.display = 'none';
+const couponInput = document.getElementById('coupon-input');
+if (couponInput) couponInput.value = '';
+if (couponInput) {
+    couponInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+}
+    currentMuseumId = museumCode;
+
+    // Сброс купона и сообщений при смене музея
+
+
+    const museum = getMuseumByCode(museumCode);
+    ticketCategoriesData = museum.ticket_categories || [];
+    // Сохраняем снимок данных музея ДО каких-либо изменений
+    currentMuseumSnapshot = JSON.parse(JSON.stringify(museum));
+    if (!museum) return;
+
+    updateMuseumDescription(museum);
+    currentSlotDaysAhead = museum.slot_days_ahead || 14;
+    document.getElementById('museum-detail').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    currentImageIndex = 0;
+    showImage(0);
+    selectedDateSlot = null;
+    selectedTimeSlot = null;
+    currentAvailableTickets = 0;
+    document.getElementById('tickets').value = 1;
+    const defaultCat = (museum.ticket_categories && museum.ticket_categories.length > 0)
+    ? museum.ticket_categories[0].name
+    : 'Стандартный';
+ticketCategories = Array(parseInt(document.getElementById('tickets').value)).fill(defaultCat);
+    updateDateSelection();
+    generateDateSlots();
+    updateTicketCategoriesUI();
+    updateTotal();
+    updateTicketSectionVisibility();
+        // Отключаем главные WebSocket, чтобы избежать дублирования уведомлений
+    mainPageWsList.forEach(ws => ws.close());
+    mainPageWsList = [];
+    // --- Подключение к WebSocket обновлений музея ---
+    if (museumWs) museumWs.close();
+    museumWs = new WebSocket(`${WS_BASE_URL}/ws/museum/${museumCode}`);
+
+    museumWs.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+
+        // 1. Обработка добавления закрытой даты
+        if (data.action === 'closed_date_added') {
+            const museumId = museumsData.find(m => m.code === data.museum_code)?.id;
+            if (museumId) {
+                closedDatesData.push({
+                    museum_id: museumId,
+                    closed_date: data.closed_date,
+                    reason: data.reason || ''
+                });
+            }
+            // 👇 эта строка должна быть обязательно
+            if (currentMuseumId === data.museum_code) {
+                generateDateSlots();
+            }
+            const reasonText = data.reason ? ` Причина: ${data.reason}` : '';
+            showChangeNotification(`День ${data.closed_date} закрыт администратором.${reasonText}`);
+            return;
+        }
+
+        // 2. Обработка удаления закрытой даты
+        if (data.action === 'closed_date_removed') {
+            const museumId = museumsData.find(m => m.code === data.museum_code)?.id;
+            if (museumId) {
+                closedDatesData = closedDatesData.filter(cd => !(cd.museum_id === museumId && cd.closed_date === data.closed_date));
+            }
+            if (currentMuseumId === data.museum_code) {
+                generateDateSlots();
+                showMessage('Расписание обновлено: день снова открыт');
+            }
+            showChangeNotification(`День ${data.closed_date} снова доступен для посещения.`);
+            return;
+        }
+
+                // Обработка обновления слотов (после изменения настроек админом)
+                if (data.action === 'slots_updated') {
+            if (data.slot_days_ahead !== undefined) {
+                currentSlotDaysAhead = data.slot_days_ahead || 14;
+            }
+            generateDateSlots();
+            return;
+        }
+
+
+
+                if (data.action === 'slot_closed' || data.action === 'slot_opened') {
+    if (currentMuseumId === data.museum_code) {
+        generateDateSlots();
+        if (data.action === 'slot_closed') {
+            // Сброс выбранного слота, если он совпадает с закрытым
+            if (selectedDateSlot === data.date && selectedTimeSlot === data.start_time) {
+                selectedDateSlot = null;
+                selectedTimeSlot = null;
+                currentAvailableTickets = 0;
+                updateDateSelection();
+            }
+            // Уведомление показываем всегда
+            const reason = data.reason ? ` Причина: ${data.reason}` : '';
+            showChangeNotification(`К сожалению, слот ${data.start_time.substring(0,5)}–${data.end_time.substring(0,5)} на ${data.date} был заблокирован администратором.${reason}`);
+        } else if (data.action === 'slot_opened') {
+            showChangeNotification(`Слот ${data.start_time.substring(0,5)}–${data.end_time.substring(0,5)} снова доступен.`);
+        }
+    }
+    return;
+}
+
+// Обработка удаления музея
+if (data.action === 'museum_deleted') {
+    showChangeNotification(`К сожалению, Гендиректором «${data.museum_name}» был удалён.`);
+    closeMuseumDetail();
+    // Удаляем из глобального массива
+    museumsData = museumsData.filter(m => m.code !== data.museum_code);
+    renderMuseumCards();
+    return;
+}
+        // 3. Обычное обновление музея
+        const updatedMuseum = data;
+        console.log('📡 [ДЕТАЛЬНАЯ] Получены данные:', updatedMuseum.name);
+
+        if (currentMuseumSnapshot) {
+            const oldMuseum = currentMuseumSnapshot;
+
+            const changes = [];
+            if (oldMuseum.ticket_price !== updatedMuseum.ticket_price) {
+                changes.push(`Цена билета изменена с ${oldMuseum.ticket_price}₽ на ${updatedMuseum.ticket_price}₽`);
+            }
+            if (oldMuseum.address !== updatedMuseum.address) {
+                changes.push(`Адрес изменён на «${updatedMuseum.address}»`);
+            }
+            if (oldMuseum.working_hours !== updatedMuseum.working_hours) {
+                changes.push(`Режим работы изменён на «${updatedMuseum.working_hours}»`);
+            }
+
+            // Обновляем глобальный массив
+            const idx = museumsData.findIndex(m => m.code === updatedMuseum.code);
+            if (idx !== -1) {
+                museumsData[idx] = { ...museumsData[idx], ...updatedMuseum };
+            }
+
+            // Обновляем снимок для следующих сравнений
+            currentMuseumSnapshot = { ...currentMuseumSnapshot, ...updatedMuseum };
+
+            // Если пользователь всё ещё на детальной странице этого же музея
+                        // Если пользователь всё ещё на детальной странице этого же музея
+            if (currentMuseumId === updatedMuseum.code) {
+                updateMuseumDescription(museumsData[idx]);
+                if (!updatedMuseum.is_active) {
+                    // Показываем диалоговое окно, затем закрываем детальную страницу
+                    showChangeNotification(`Музей «${updatedMuseum.name}» временно не работает`);
+                    closeMuseumDetail();
+                    renderMuseumCards();
+                    return; // важно — чтобы не показывать другие уведомления об изменениях
+                }
+            }
+
+            // Показываем уведомление, если были важные изменения
+            if (changes.length > 0) {
+                const message = `В  «${updatedMuseum.name}» произошли изменения:<br>${changes.join('<br>')}`;
+                showChangeNotification(message);
+            }
+        }
+        renderMuseumCards();
+    };
+
+    museumWs.onerror = function() {
+        console.log('WebSocket музея прерван, работаем через REST');
+    };
+}
+
+function closeMuseumDetail() {
+    currentMuseumSnapshot = null;
+    // НОВОЕ: закрываем WebSocket
+    if (museumWs) {
+        museumWs.close();
+        museumWs = null;
+    }
+    // ... дальше идёт существующий код функции ...
+    document.getElementById('museum-detail').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    currentMuseumId = null;
+    stopSlotsUpdateInterval();
+    connectMainPageWebSockets();
+
+    appliedCoupon = null;
+    const couponInput = document.getElementById('coupon-input');
+    if (couponInput) couponInput.value = '';
+    const appliedEl = document.getElementById('coupon-applied');
+    if (appliedEl) appliedEl.style.display = 'none';
+    const discountLabel = document.getElementById('coupon-discount-label');
+    if (discountLabel) discountLabel.textContent = '';
+}
+
+function scrollToTicketSection() {
+    const ticketSection = document.querySelector('.ticket-section');
+    if (ticketSection) {
+        ticketSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+function updateMuseumDescription(museum) {
+    // Категория и название
+    document.querySelector('.museum-description .category-tag').textContent = museum.category;
+    document.querySelector('.museum-description h1').textContent = museum.name;
+    document.querySelector('.museum-description .text-xl').textContent = museum.short_description || '';
+
+    // Полное описание: очищаем старые абзацы, вставляем разбивку по \n
+    const descContainer = document.querySelector('.museum-description');
+    const existingParagraphs = descContainer.querySelectorAll('p:not(.text-xl)');
+    existingParagraphs.forEach(p => p.remove());
+    if (museum.description) {
+        const paragraphs = museum.description.split('\n').filter(p => p.trim());
+        paragraphs.forEach(text => {
+            const p = document.createElement('p');
+            p.className = 'text-lg leading-relaxed';
+            p.textContent = text;
+            descContainer.appendChild(p);
+        });
+    }
+
+    // Режим работы, адрес, цена
+    document.querySelector('.detail-item .text-2xl').textContent = museum.ticket_price + '₽';
+    // Индексы могут отличаться – ищем по содержимому (предполагаем структуру HTML)
+    const detailItems = document.querySelectorAll('.detail-item');
+    // Режим работы: второй элемент с классом detail-item (после первого detail-item внутри num1)
+    // Надёжнее искать по родителю: первый detail-item внутри num1 — режим работы, второй — адрес.
+    const num1 = document.querySelector('.detail-item.num1');
+    if (num1) {
+        const items = num1.querySelectorAll(':scope > .detail-item'); // прямые дочерние
+        if (items.length >= 2) {
+            // Первый (режим работы)
+            items[0].querySelector('.text-muted-foreground').textContent = museum.working_hours || '';
+            // Второй (адрес)
+            items[1].querySelector('.text-muted-foreground').textContent = museum.address || '';
+        }
+    }
+
+    currentMuseumPrice = museum.ticket_price;
+    if (museum.ticket_categories) {
+    ticketCategoriesData = museum.ticket_categories;
+}
+    ticketCategoriesData = museum.ticket_categories || [];
+    currentSlotDaysAhead = museum.slot_days_ahead || 14;
+
+    // Обновляем галерею
+    updateGallery(museum.images || []);
+
+    // Сбрасываем количество билетов и итог
+    document.getElementById('tickets').value = 1;
+    updateTotal();
+}
+
+/**
+ * Обновляет главное изображение и миниатюры.
+ */
+function updateGallery(images) {
+    const mainImg = document.getElementById('main-image');
+    if (mainImg) {
+        mainImg.src = images[0] || '';
+        mainImg.setAttribute('loading', 'lazy');   // <-- ленивая загрузка для главного фото
+    }
+    const thumbContainer = document.getElementById('thumbnail-container');
+    if (thumbContainer) {
+        thumbContainer.innerHTML = '';
+        images.forEach((img, i) => {
+            const btn = document.createElement('button');
+            btn.className = `relative h-32 rounded-lg overflow-hidden transition-all ${i === 0 ? 'ring-4 ring-primary' : 'opacity-70 hover:opacity-100'}`;
+            btn.onclick = () => showImage(i);
+            const image = document.createElement('img');
+            image.src = img;
+            image.alt = `Изображение ${i+1}`;
+            image.className = 'w-full h-full object-cover';
+            image.setAttribute('loading', 'lazy');   // <-- миниатюры тоже загружаются лениво
+            btn.appendChild(image);
+            thumbContainer.appendChild(btn);
+        });
+    }
+}
+
+function showImage(index) {
+    const museum = getMuseumByCode(currentMuseumId);
+    if (!museum || !museum.images) return;
+    currentImageIndex = index;
+    document.getElementById('main-image').src = museum.images[index];
+    updateThumbnails();
+}
+
+function updateThumbnails() {
+    document.querySelectorAll('#thumbnail-container button').forEach((btn, i) => {
+        btn.className = `relative h-32 rounded-lg overflow-hidden transition-all ${i === currentImageIndex ? 'ring-4 ring-primary' : 'opacity-70 hover:opacity-100'}`;
+    });
+}
+
+function nextImage() {
+    const museum = getMuseumByCode(currentMuseumId);
+    if (!museum || !museum.images) return;
+    currentImageIndex = (currentImageIndex + 1) % museum.images.length;
+    showImage(currentImageIndex);
+}
+
+function prevImage() {
+    const museum = getMuseumByCode(currentMuseumId);
+    if (!museum || !museum.images) return;
+    currentImageIndex = (currentImageIndex - 1 + museum.images.length) % museum.images.length;
+    showImage(currentImageIndex);
+}
+
+// ==================== УПРАВЛЕНИЕ КОЛИЧЕСТВОМ БИЛЕТОВ ====================
+function increaseTickets() {
+    const input = document.getElementById('tickets');
+    let val = parseInt(input.value);
+    if (selectedDateSlot && selectedTimeSlot && val >= currentAvailableTickets) {
+        showMessage(`Доступно только ${currentAvailableTickets} билетов`);
+        return;
+    }
+    val++;
+    input.value = val;
+    const defCat = ticketCategoriesData.length > 0 ? ticketCategoriesData[0].name : 'Стандартный';
+    ticketCategories.push(defCat);
+    updateTicketCategoriesUI();
+    updateTotal();
+}
+
+function decreaseTickets() {
+    const input = document.getElementById('tickets');
+    let val = parseInt(input.value);
+    if (val > 1) {
+        val--;
+        input.value = val;
+        ticketCategories.pop();
+        updateTicketCategoriesUI();
+        updateTotal();
+    }
+}
+
+/**
+ * Обновляет UI выбора категорий для каждого билета, используя ticketCategoriesData.
+ */
+function updateTicketCategoriesUI() {
+    const container = document.getElementById('ticket-categories-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const colsContainer = document.createElement('div');
+    colsContainer.className = 'ticket-categories-columns';
+
+    const total = ticketCategories.length;
+    const firstColCount = Math.ceil(total / 2);
+    const secondColCount = total - firstColCount;
+
+    function createColumn(count, startIndex) {
+        const col = document.createElement('div');
+        col.className = 'ticket-categories-column';
+        for (let i = 0; i < count; i++) {
+            col.appendChild(createCategoryElement(startIndex + i, ticketCategories[startIndex + i]));
+        }
+        return col;
+    }
+
+    colsContainer.appendChild(createColumn(firstColCount, 0));
+    if (secondColCount > 0) {
+        colsContainer.appendChild(createColumn(secondColCount, firstColCount));
+    }
+    container.appendChild(colsContainer);
+    updateTotal(); 
+}
+
+function createCategoryElement(index, category) {
+    const div = document.createElement('div');
+    div.className = 'ticket-category';
+    const label = index === 0 ? 'Категория билета' : `Категория ${index+1}-го билета`;
+    let options = ticketCategoriesData.map(cat => {
+    const discountPercent = Math.round((1 - cat.discount_multiplier) * 100);
+    return `<option value="${cat.name}" ${cat.name === category ? 'selected' : ''}>${cat.name} скидка: ${discountPercent}%</option>`;
+    }).join('');
+    div.innerHTML = `
+        <label class="font-medium text-base">${label}</label>
+        <select class="category-select" onchange="updateTicketCategory(${index}, this.value)">
+            ${options}
+        </select>`;
+    return div;
+}
+
+/**
+ * Вызывается при смене категории в выпадающем списке.
+ */
+function updateTicketCategory(index, category) {
+    ticketCategories[index] = category;
+    updateTotal();
+}
+
+// ==================== РАСЧЁТ ИТОГОВОЙ СТОИМОСТИ ====================
+// ==================== РАСЧЁТ ИТОГОВОЙ СТОИМОСТИ ====================
+function updateTotal() {
+    const input = document.getElementById('tickets');
+    if (!input) return;
+    const count = parseInt(input.value);
+    let total = 0;
+    let detailsHTML = '';
+
+    ticketCategories.forEach((cat, i) => {
+        const mult = getMultiplier(cat);
+        const price = Math.round(currentMuseumPrice * mult);
+        total += price;
+        detailsHTML += `
+            <div class="summary-row ticket-detail-row">
+                <span class="text-muted-foreground">Билет №${i+1} (${cat}): </span>
+                <span class="font-semibold">
+                    ${currentMuseumPrice}₽ ${cat !== 'Стандартный' ? `→ <span style="font-size:20px;color:green;">${price}₽</span>` : ''}
+                </span>
+            </div>`;
+    });
+    detailsHTML += `<div class="summary-row"><span class="text-muted-foreground">Количество:</span><span class="font-semibold">${count}</span></div>`;
+
+    // Сохраняем полную цену до купона
+    window.lastTotalBeforeDiscount = total;
+
+    // Применяем купон, если есть
+    let finalTotal = total;
+    if (appliedCoupon) {
+        finalTotal = Math.round(total * (1 - appliedCoupon.discount_percent / 100));
+        document.getElementById('total-price').innerHTML = `
+            <span style="text-decoration: line-through; color: #999; margin-right: 0.5rem;">${total}₽</span>
+            <span style="color: green;">${finalTotal}₽</span>
+        `;
+    } else {
+        document.getElementById('total-price').textContent = finalTotal + '₽';
+    }
+
+    document.getElementById('ticket-details-container').innerHTML = detailsHTML;
+
+    // Обновляем скрытый элемент с финальной ценой
+    const finalTotalSpan = document.getElementById('final-total');
+    if (finalTotalSpan) {
+        finalTotalSpan.textContent = finalTotal;
+    }
+}
+
+// ==================== ДАТА И ВРЕМЯ (ЗАГРУЗКА СЛОТОВ) ====================
+/**
+ * Запрашивает с сервера доступные временные слоты для музея на конкретную дату.
+ */
+async function getAvailableTimeSlots(museumCode, date) {
+    try {
+        const resp = await fetch(`${API_BASE_URL}/api/time-slots/${museumCode}/${date}`);
+        if (resp.ok) return await resp.json();
+        return [];
+    } catch (e) {
+        console.error('Ошибка слотов:', e);
+        return [];
+    }
+}
+
+/**
+ * Генерирует список дней (14 дней) со слотами.
+ */
+async function generateDateSlots() {
+    if (!currentMuseumId) return;
+    const container = document.getElementById('date-slots-container');
+    if (!container) return;
+
+    container.innerHTML = '<div class="loading-slots">Загрузка слотов...</div>';
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const fromDate = today.toISOString().split('T')[0];
+    const toDate = new Date(today);
+    toDate.setDate(today.getDate() + currentSlotDaysAhead - 1);
+    const toDateStr = toDate.toISOString().split('T')[0];
+
+    try {
+        const resp = await fetch(`${API_BASE_URL}/api/time-slots/${currentMuseumId}/range?from_date=${fromDate}&to_date=${toDateStr}`);
+        if (!resp.ok) throw new Error('Ошибка');
+        const slotsByDate = await resp.json();
+        fillSlotsContainerFromObject(container, slotsByDate, today);
+        restoreSelectedSlot();
+        addTimeSlotListeners();
+    } catch(e) {
+        container.innerHTML = '<p style="color:red;">Ошибка загрузки слотов</p>';
+    }
+}
+
+function fillSlotsContainerFromObject(container, slotsByDate, today) {
+    container.innerHTML = '';
+    for (let i = 0; i < currentSlotDaysAhead; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        const daySlots = slotsByDate[dateStr] || [];
+        const dateEl = document.createElement('div');
+        dateEl.className = 'date-slot';
+        const formatted = d.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' });
+        dateEl.innerHTML = `
+            <div class="date-text">${formatted}</div>
+            <div class="time-slots">${generateTimeSlotsHTML(daySlots, dateStr)}</div>`;
+        container.appendChild(dateEl);
+    }
+}
+
+function generateTimeSlotsHTML(daySlots, dateString) {
+    // ✅ Проверка, закрыта ли дата администратором
+    if (currentMuseumId) {
+        const museum = getMuseumByCode(currentMuseumId);
+        if (museum && isDateClosed(museum.id, dateString)) {
+            return '<div class="no-slots" style="color: green; font-weight: 500;">Закрыто администратором</div>';
+        }
+    }
+    if (!daySlots || daySlots.length === 0) {
+        return '<div class="no-slots">Нет доступных слотов</div>';
+    }
+
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+
+    return daySlots.map(slot => {
+        const isClosed = !!slot.is_closed;   // или slot.is_closed === true || slot.is_closed === 1
+        const available = isClosed ? 0 : slot.available_tickets;
+        const isAvail = !isClosed && available > 0;
+        
+        
+
+        // Проверяем, истекло ли время слота
+        let isExpired = false;
+        if (dateString === todayStr) {
+            const [hours, minutes] = slot.start_time.split(':').map(Number);
+            const slotTime = new Date();
+            slotTime.setHours(hours, minutes, 0, 0);
+            isExpired = slotTime < now;
+        } else if (dateString < todayStr) {
+            isExpired = true; // прошедшая дата
+        }
+
+        // Определяем классы
+        const classes = [
+            'time-slot',
+            isAvail ? 'available' : 'sold-out',
+            selectedDateSlot === dateString && selectedTimeSlot === slot.start_time ? 'selected' : '',
+            isExpired ? 'expired' : '',
+            isClosed ? 'closed-admin' : ''
+        ].filter(Boolean).join(' ');
+
+        const timeDisplay = slot.start_time.substring(0,5) + '-' + slot.end_time.substring(0,5);
+        const statusText = isClosed ? 'Закрыто администратором' : (isExpired ? 'Прошло' : (isAvail ? `${available} билетов` : 'Распродано'));
+
+        return `
+            <div class="${classes}" 
+                 data-date="${dateString}" 
+                 data-time="${slot.start_time}"
+                 data-available="${isClosed ? 0 : (isExpired ? 0 : available)}">
+                <div class="time-text">${timeDisplay}</div>
+                <div class="tickets-available">${statusText}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function addTimeSlotListeners() {
+    document.querySelectorAll('.time-slot.available:not(.expired)').forEach(slot => {
+        slot.onclick = function() {
+            handleTimeSlotSelection(this);
+        };
+    });
+}
+
+function handleTimeSlotSelection(el) {
+    const available = parseInt(el.dataset.available);
+    currentAvailableTickets = available;
+    const selectedCount = parseInt(document.getElementById('tickets').value);
+    if (selectedCount > available) {
+        showMessage(`Доступно только ${available} билетов`);
+        document.getElementById('tickets').value = available;
+        ticketCategories = ticketCategories.slice(0, available);
+        updateTicketCategoriesUI();
+        updateTotal();
+    }
+    document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedDateSlot = el.dataset.date;
+    selectedTimeSlot = el.dataset.time;
+    updateDateSelection();
+}
+
+function restoreSelectedSlot() {
+    if (selectedDateSlot && selectedTimeSlot) {
+        const slot = document.querySelector(`.time-slot[data-date="${selectedDateSlot}"][data-time="${selectedTimeSlot}"]`);
+        if (slot && slot.classList.contains('available')) {
+            currentAvailableTickets = parseInt(slot.dataset.available);
+            slot.classList.add('selected');
+        } else {
+            selectedDateSlot = null; selectedTimeSlot = null; currentAvailableTickets = 0;
+        }
+    }
+}
+
+function updateDateSelection() {
+    const btn = document.querySelector('.date-button');
+    if (!btn) return;
+
+    // Принудительно задаём правильные стили, чтобы кнопка всегда была аккуратной
+    btn.style.display = 'flex';
+    btn.style.alignItems = 'center';
+    btn.style.justifyContent = 'flex-start';
+    btn.style.gap = '0.5rem';
+    btn.style.textAlign = 'left';
+    btn.style.padding = '0 1rem';
+    btn.style.width = '100%';
+    btn.style.height = '3rem';           // чуть увеличим высоту для удобства
+    btn.style.fontSize = '1rem';
+    btn.style.lineHeight = '1.5';
+
+    if (selectedDateSlot && selectedTimeSlot) {
+        const d = new Date(selectedDateSlot);
+        const dateStr = d.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
+        const timeMap = {
+            '10:00:00':'10:00-12:00','12:00:00':'12:00-14:00',
+            '14:00:00':'14:00-16:00','16:00:00':'16:00-18:00'
+        };
+        const timeDisp = timeMap[selectedTimeSlot] || selectedTimeSlot;
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+            <path d="M8 2v4"></path><path d="M16 2v4"></path>
+            <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+            <path d="M3 10h18"></path>
+        </svg> ${dateStr}, ${timeDisp}`;
+    } else {
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+            <path d="M8 2v4"></path><path d="M16 2v4"></path>
+            <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+            <path d="M3 10h18"></path>
+        </svg> Выберите дату и время`;
+    }
+}
+
+function scrollDates(dir) {
+    const cont = document.getElementById('date-slots-container');
+    if (cont) cont.scrollLeft += dir * 432;
+}
+
+
+function stopSlotsUpdateInterval() { if (slotsInterval) clearInterval(slotsInterval); }
+
+// ==================== ПОКУПКА БИЛЕТОВ ====================
+/**
+ * Основная функция покупки: проверяет авторизацию, выбранный слот,
+ * количество билетов, затем открывает модалку оплаты.
+ */
+async function buyTickets() {
+    if (!currentUser) {
+        showMessage('Для покупки билетов необходимо зарегистрироваться');
+        showAuthModal();
+        return;
+    }
+
+    if (!selectedDateSlot || !selectedTimeSlot) {
+        showMessage('Пожалуйста, выберите дату и время посещения');
+        const dateBtn = document.querySelector('.date-button');
+        if (dateBtn) {
+            dateBtn.style.border = '2px solid #ef4444';
+            dateBtn.style.backgroundColor = '#fef2f2';
+            setTimeout(() => {
+                dateBtn.style.border = '';
+                dateBtn.style.backgroundColor = '';
+            }, 2000);
+        }
+        return;
+    }
+
+    const ticketCount = parseInt(document.getElementById('tickets').value);
+
+    if (ticketCount > currentAvailableTickets) {
+        showMessage(`В выбранном слоте доступно только ${currentAvailableTickets} билетов. Уменьшите количество билетов.`);
+        return;
+    }
+
+    if (ticketCount > 10) {
+        showMessage('Нельзя заказать больше 10 билетов за один раз');
+        return;
+    }
+
+    // Открываем модалку оплаты и бронируем слот на время оплаты
+    showPaymentModal();
+    reserveTicketsInBackground(currentMuseumId, selectedDateSlot, selectedTimeSlot, ticketCount);
+}
+
+/**
+ * Временно резервирует билеты (без списания), пока открыта платёжная форма.
+ */
+async function reserveTicketsInBackground(museumCode, date, startTime, quantity) {
+    try {
+        const resp = await fetch(`${API_BASE_URL}/api/time-slots/reserve`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                museum_code: museumCode,
+                date: date,
+                start_time: startTime,
+                quantity: quantity
+            })
+        });
+
+        if (resp.ok) {
+            console.log('✅ Билеты временно забронированы');
+            window.currentReservation = {
+                museumCode: museumCode,
+                date: date,
+                startTime: startTime,
+                quantity: quantity
+            };
+        } else {
+            const err = await resp.json();
+            console.error('❌ Ошибка бронирования:', err);
+        }
+    } catch (error) {
+        console.error('Ошибка сети при бронировании:', error);
+    }
+}
+
+function showPaymentModal() {
+    resetPaymentForm();
+    const finalTotalElem = document.getElementById('final-total');
+    let finalTotal = finalTotalElem ? finalTotalElem.textContent : '0';
+    let fullPrice = window.lastTotalBeforeDiscount || finalTotal;
+    
+    let buttonHtml = '';
+    if (appliedCoupon && parseFloat(fullPrice) !== parseFloat(finalTotal)) {
+        buttonHtml = `Оплатить <span style="text-decoration: line-through; color: #999;">${fullPrice}₽</span> <span style="color: white;">${finalTotal}₽</span>`;
+    } else {
+        buttonHtml = `Оплатить ${finalTotal}₽`;
+    }
+
+    const payBtn = document.querySelector('#payment-modal .payment-button.primary');
+    if (payBtn) {
+        payBtn.innerHTML = buttonHtml;
+        payBtn.disabled = false;
+    }
+
+    document.getElementById('payment-modal').style.display = 'flex';
+}
+
+function closePaymentModal() {
+    document.getElementById('payment-modal').style.display = 'none';
+    cancelReservation();  // отменяем временное бронирование
+}
+function closePaymentModalAfterSuccess() {
+    // Просто скрываем окно, НЕ отменяя бронирование
+    document.getElementById('payment-modal').style.display = 'none';
+    resetPaymentForm();
+    window.currentReservation = null;  // сбрасываем временное бронирование, не делая запрос на сервер
+}
+
+/**
+ * Отмена временного бронирования (если пользователь закрыл окно оплаты).
+ */
+async function cancelReservation() {
+    if (!window.currentReservation) return;
+
+    try {
+        await fetch(`${API_BASE_URL}/api/time-slots/cancel-reservation`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                museum_code: window.currentReservation.museumCode,
+                date: window.currentReservation.date,
+                start_time: window.currentReservation.startTime,
+                quantity: window.currentReservation.quantity
+            })
+        });
+        console.log('🔄 Бронирование отменено');
+        generateDateSlots(); // обновляем слоты
+    } catch (error) {
+        console.error('Ошибка при отмене бронирования:', error);
+    } finally {
+        window.currentReservation = null;
+    }
+}
+
+// ==================== ВАЛИДАЦИЯ ПЛАТЁЖНОЙ ФОРМЫ ====================
+function setupPaymentValidation() {
+    const cardNumber = document.getElementById('card-number');
+    const cardExpiry = document.getElementById('card-expiry');
+    const cardCvv = document.getElementById('card-cvv');
+    const cardHolder = document.getElementById('card-holder');
+
+    if (cardNumber) {
+        cardNumber.addEventListener('input', function(e) {
+            let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formatted = '';
+            for (let i = 0; i < val.length; i++) {
+                if (i > 0 && i % 4 === 0) formatted += ' ';
+                formatted += val[i];
+            }
+            e.target.value = formatted.substring(0, 19);
+        });
+    }
+
+    if (cardExpiry) {
+        cardExpiry.addEventListener('input', function(e) {
+            let val = e.target.value.replace(/[^0-9]/g, '');
+            if (val.length >= 2) val = val.substring(0, 2) + '/' + val.substring(2);
+            e.target.value = val.substring(0, 5);
+        });
+    }
+
+    if (cardCvv) {
+        cardCvv.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '').substring(0, 4);
+        });
+    }
+
+    if (cardHolder) {
+        cardHolder.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^a-zA-Zа-яА-Я\s]/g, '').toUpperCase();
+        });
+    }
+}
+
+function resetPaymentForm() {
+    const fields = ['card-number', 'card-expiry', 'card-cvv', 'card-holder'];
+    fields.forEach(id => {
+        const field = document.getElementById(id);
+        if (field) {
+            field.value = '';
+            field.style.borderColor = '';
+            field.style.backgroundColor = '';
+        }
+    });
+}
+
+function validatePaymentForm() {
+    const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
+    const cardExpiry = document.getElementById('card-expiry').value;
+    const cardCvv = document.getElementById('card-cvv').value;
+    const cardHolder = document.getElementById('card-holder').value.trim();
+
+    let isValid = true;
+    let errorMessage = '';
+
+    if (!cardNumber || cardNumber.length !== 16 || !/^\d+$/.test(cardNumber)) {
+        isValid = false;
+        errorMessage = 'Введите корректный номер карты (16 цифр)';
+        highlightField('card-number', false);
+    } else {
+        highlightField('card-number', true);
+    }
+
+    if (!cardExpiry || !/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+        isValid = false;
+        errorMessage = 'Введите срок действия в формате ММ/ГГ';
+        highlightField('card-expiry', false);
+    } else {
+        const [month, year] = cardExpiry.split('/');
+        const monthNum = parseInt(month);
+        const yearNum = parseInt('20' + year);
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+
+        if (monthNum < 1 || monthNum > 12) {
+            isValid = false;
+            errorMessage = 'Месяц должен быть от 01 до 12';
+            highlightField('card-expiry', false);
+        } else if (yearNum < currentYear || (yearNum === currentYear && monthNum < currentMonth)) {
+            isValid = false;
+            errorMessage = 'Срок действия карты истек';
+            highlightField('card-expiry', false);
+        } else {
+            highlightField('card-expiry', true);
+        }
+    }
+
+    if (!cardCvv || cardCvv.length < 3 || cardCvv.length > 4 || !/^\d+$/.test(cardCvv)) {
+        isValid = false;
+        errorMessage = 'Введите корректный CVV код (3-4 цифры)';
+        highlightField('card-cvv', false);
+    } else {
+        highlightField('card-cvv', true);
+    }
+
+    if (!cardHolder || cardHolder.length < 2 || !/^[a-zA-Zа-яА-Я\s]{2,}$/.test(cardHolder)) {
+        isValid = false;
+        errorMessage = 'Введите имя и фамилию владельца карты';
+        highlightField('card-holder', false);
+    } else {
+        highlightField('card-holder', true);
+    }
+
+    if (!isValid) {
+        showMessage(errorMessage);
+        return false;
+    }
+
+    return true;
+}
+
+function highlightField(fieldId, isValid) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.style.borderColor = isValid ? '#10b981' : '#ef4444';
+        field.style.backgroundColor = isValid ? '#f0fdf4' : '#fef2f2';
+    }
+}
+
+// ==================== ОБРАБОТКА ОПЛАТЫ ====================
+async function processPayment() {
+    if (!validatePaymentForm()) return;
+
+    const ticketCount = parseInt(document.getElementById('tickets').value);
+    const payBtn = document.querySelector('#payment-modal .payment-button.primary');
+    const originalText = payBtn.textContent;
+    payBtn.innerHTML = '<div class="loading-spinner"></div> Обработка оплаты...';
+    payBtn.disabled = true;
+
+    try {
+        // Финальное подтверждение оплаты и списание билетов
+        const finalResponse = await fetch(`${API_BASE_URL}/api/time-slots/confirm-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                museum_code: currentMuseumId,
+                date: selectedDateSlot,
+                start_time: selectedTimeSlot,
+                quantity: ticketCount,
+                visitor_id: currentUser.id
+            })
+        });
+
+        if (!finalResponse.ok) {
+            const err = await finalResponse.json();
+            throw new Error(err.detail || 'Ошибка подтверждения оплаты');
+        }
+
+        await finalResponse.json();
+
+        // Имитация задержки обработки платежа
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        closePaymentModalAfterSuccess();
+        stopSlotsUpdateInterval();   // останавливаем автообновление
+        generateDateSlots();         // получаем актуальные слоты
+        showMessage('✅ Оплата прошла успешно! Билеты забронированы.');
+
+        // Генерируем билеты в базе данных
+        await generateTicket();
+
+
+
+        resetPaymentForm();
+        window.currentReservation = null;
+
+    } catch (error) {
+        console.error('Ошибка при обработке оплаты:', error);
+        showMessage(error.message || 'Ошибка при обработке оплаты. Попробуйте ещё раз.');
+        payBtn.textContent = originalText;
+        payBtn.disabled = false;
+    }
+}
+
+// ==================== ГЕНЕРАЦИЯ БИЛЕТОВ В БАЗЕ ====================
+async function generateTicket() {
+    const museum = getMuseumByCode(currentMuseumId);
+    if (!museum) return;
+
+    const ticketCount = parseInt(document.getElementById('tickets').value);
+    const baseTicketNumber = 'T' + Date.now();
+    let total = 0;
+
+    // Собираем данные всех билетов с учётом выбранных категорий
+    const ticketsToSave = ticketCategories.map((cat, i) => {
+    const mult = getMultiplier(cat);
+    let price = Math.round(currentMuseumPrice * mult);
+    if (appliedCoupon) {
+        price = Math.round(price * (1 - appliedCoupon.discount_percent / 100));
+    }
+    total += price;   // теперь total считается с учётом купона
+    return {
+        ticket_number: baseTicketNumber + '-' + (i + 1).toString().padStart(2, '0'),
+        visitor_id: currentUser.id,
+        ticket_type: cat,
+        price: price,
+        museum_code: currentMuseumId,
+        quantity: 1,
+        visit_date: selectedDateSlot,
+        visit_time: selectedTimeSlot
+    };
+});
+
+    try {
+        const savePromises = ticketsToSave.map(ticket =>
+            fetch(`${API_BASE_URL}/api/tickets/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(ticket)
+            })
+        );
+
+        await Promise.all(savePromises);
+        console.log('✅ Все билеты сохранены');
+
+        // Записываем продажу
+        await recordSale(currentMuseumId, ticketCount, total);
+
+        async function applyCouponUsage(code) {
+    if (!code) return;
+    await fetch(`${API_BASE_URL}/api/coupons/apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+    });
+}
+
+// В generateTicket после recordSale добавим:
+// Внутри generateTicket, после вызова applyCouponUsage (если купон был)
+if (appliedCoupon) {
+    await applyCouponUsage(appliedCoupon.code);
+    appliedCoupon = null;
+    // Очищаем поле ввода и скрываем надпись о применённом купоне
+    const couponInput = document.getElementById('coupon-input');
+    if (couponInput) couponInput.value = '';
+    const appliedEl = document.getElementById('coupon-applied');
+    if (appliedEl) appliedEl.style.display = 'none';
+    const discountLabel = document.getElementById('coupon-discount-label');
+    if (discountLabel) discountLabel.textContent = '';
+}
+
+        // Сохраняем номера новых билетов для подсветки
+        window.newTicketNumbers = [baseTicketNumber];
+
+        // Закрываем детальную страницу и открываем "Мои билеты"
+        closeMuseumDetail();
+        showMyTickets(window.newTicketNumbers);
+
+    } catch (error) {
+        console.error('Ошибка при сохранении билетов:', error);
+        showMessage('Ошибка при создании билетов. Попробуйте ещё раз.');
+    }
+}
+
+async function recordSale(museumCode, quantity, totalPrice) {
+    try {
+        // Получаем ID музея по коду
+        const mapResp = await fetch(`${API_BASE_URL}/api/museums/mapping`);
+        const mapping = await mapResp.json();
+        const museumId = mapping[museumCode];
+
+        if (!museumId) {
+            console.error('Не удалось определить ID музея');
+            return;
+        }
+
+        await fetch(`${API_BASE_URL}/api/sales/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                museums_id: museumId,
+                quantity_tickets_sold: quantity,
+                income: totalPrice.toString(),
+                date: new Date().toISOString().split('T')[0],
+                status: 'online'
+            })
+        });
+    } catch (error) {
+        console.error('Ошибка записи продажи:', error);
+    }
+}
+
+// ==================== РАЗДЕЛ "МОИ БИЛЕТЫ" ====================
+function showMyTickets(newTicketNumbers = []) {
+    if (!currentUser) {
+        showMessage('Для просмотра билетов необходимо войти в систему');
+        showAuthModal();
+        return;
+    }
+
+    document.getElementById('museum-detail').style.display = 'none';
+    document.getElementById('my-tickets-section').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    window.newTicketNumbers = newTicketNumbers;
+    loadUserTickets();
+    startTicketsAutoRefresh();
+}
+
+function closeMyTickets() {
+    document.getElementById('my-tickets-section').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    stopTicketsAutoRefresh();
+}
+
+let ticketsRefreshInterval = null;
+
+function startTicketsAutoRefresh() {
+    stopTicketsAutoRefresh();
+    ticketsRefreshInterval = setInterval(() => {
+        if (document.getElementById('my-tickets-section').style.display === 'block') {
+            loadUserTickets();
+        }
+    }, 3000);
+}
+
+function stopTicketsAutoRefresh() {
+    if (ticketsRefreshInterval) {
+        clearInterval(ticketsRefreshInterval);
+        ticketsRefreshInterval = null;
+    }
+}
+
+async function loadUserTickets() {
+    if (!currentUser) return;
+
+    try {
+        const resp = await fetch(`${API_BASE_URL}/api/tickets/${currentUser.id}`);
+        if (resp.ok) {
+            const tickets = await resp.json();
+            // Показываем только неотмеченные как "проверено"
+            const unchecked = tickets.filter(t => !t.check || t.check.toString().toLowerCase().trim() !== 'проверено');
+            displayTickets(unchecked);
+        } else {
+            console.error('Ошибка загрузки билетов');
+        }
+    } catch (error) {
+        console.error('Ошибка сети при загрузке билетов:', error);
+    }
+}
+
+// ==================== ОТОБРАЖЕНИЕ БИЛЕТОВ (ШТРИХКОД, СОХРАНЕНИЕ, ШЕРИНГ) ====================
+function generateBarcodeDataURL(text, width = 200, height = 80) {
+    return new Promise((resolve) => {
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+            const binarySequence = textToBinary(text);
+            drawBarcode(ctx, binarySequence, width, height);
+            resolve(canvas.toDataURL('image/png', 1.0));
+        } catch (error) {
+            resolve(createSimpleBarcode(text, width, height));
+        }
+    });
+}
+
+function textToBinary(text) {
+    let binary = '';
+    for (let i = 0; i < text.length; i++) {
+        const charCode = text.charCodeAt(i);
+        binary += (charCode & 0x0F).toString(2).padStart(4, '0');
+    }
+    return binary;
+}
+
+function drawBarcode(ctx, binarySequence, width, height) {
+    const barWidth = Math.max(1, Math.floor(width / binarySequence.length));
+    const actualWidth = barWidth * binarySequence.length;
+    const startX = (width - actualWidth) / 2;
+    ctx.fillStyle = '#000000';
+    for (let i = 0; i < binarySequence.length; i++) {
+        if (binarySequence[i] === '1') {
+            ctx.fillRect(startX + i * barWidth, 0, barWidth, height);
+        }
+    }
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('ШТРИХ-КОД', width / 2, height + 5);
+}
+
+function createSimpleBarcode(text, width = 200, height = 80) {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height + 20;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, width, height + 20);
+    ctx.fillStyle = '#000000';
+    const barCount = 30;
+    const barWidth = width / barCount;
+    for (let i = 0; i < barCount; i++) {
+        const charCode = text.charCodeAt(i % text.length);
+        if (charCode % 3 !== 0) {
+            const x = i * barWidth;
+            const barHeight = height - (i % 3) * 10;
+            ctx.fillRect(x, 0, barWidth, barHeight);
+        }
+    }
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 10px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    if (text.length > 20) {
+        ctx.fillText(text.substring(0, 20), width / 2, height + 5);
+        ctx.fillText(text.substring(20, 40), width / 2, height + 18);
+    } else {
+        ctx.fillText(text, width / 2, height + 5);
+    }
+    return canvas.toDataURL('image/png', 1.0);
+}
+
+async function displayTickets(tickets) {
+    const ticketsGrid = document.getElementById('tickets-grid');
+    const noTicketsMessage = document.getElementById('no-tickets-message');
+
+    if (!ticketsGrid || !noTicketsMessage) return;
+
+    if (!tickets || tickets.length === 0) {
+        ticketsGrid.innerHTML = '';
+        noTicketsMessage.style.display = 'block';
+        return;
+    }
+
+    noTicketsMessage.style.display = 'none';
+
+    const ticketsWithBarcode = await Promise.all(tickets.map(async ticket => {
+        const barcodeDataURL = await generateBarcodeDataURL(ticket.ticket_number, 200, 60);
+        return { ...ticket, barcodeDataURL };
+    }));
+
+    const ticketsHTML = ticketsWithBarcode.map(ticket => {
+        const isNew = window.newTicketNumbers && window.newTicketNumbers.some(num =>
+            ticket.ticket_number && ticket.ticket_number.includes(num.replace('T', '').split('-')[0])
+        );
+
+        const museumName = ticket.museum_name || 'Неизвестный музей';
+        const visitorName = ticket.visitor_name || currentUser?.name || '';
+        const visitorSurname = ticket.visitor_surname || '';
+        const visitorPhone = ticket.visitor_phone || '';
+        const ticketType = ticket.ticket_type || 'Стандартный';
+        const price = ticket.price || 0;
+        const visitDate = ticket.visit_date ? formatDate(ticket.visit_date) : '';
+        const visitTime = ticket.visit_time ? formatTime(ticket.visit_time) : '';
+        const purchaseDate = ticket.issued_at ? formatDateTime(ticket.issued_at) : '';
+
+        return `
+                <div class="ticket-card-compact ${isNew ? 'new-ticket' : ''}" data-ticket-id="${ticket.id}">
+            ${isNew ? '<div class="new-ticket-badge">НОВЫЙ</div>' : ''}
+            <div class="ticket-status-indicator" style="background: #10b981;"></div>
+            <div class="ticket-header-compact">
+                <h3>${museumName}</h3>
+                <div class="ticket-category-badge">${ticketType}</div>
+            </div>
+            <div class="ticket-body-compact">
+                <div class="ticket-info-compact">
+                    <div class="info-row-compact"><span class="info-label-compact">Посетитель:</span><span class="info-value-compact">${visitorName} ${visitorSurname}</span></div>
+                    <div class="info-row-compact"><span class="info-label-compact">Телефон:</span><span class="info-value-compact">${visitorPhone}</span></div>
+                    <div class="info-row-compact"><span class="info-label-compact">Приобретено:</span><span class="info-value-compact" style="color: #10b981; font-weight: bold;">${purchaseDate}</span></div>
+                    <div class="info-row-compact"><span class="info-label-compact">Дата посещения:</span><span class="info-value-compact">${visitDate} ${visitTime}</span></div>
+                    <div class="info-row-compact"><span class="info-label-compact">Сумма:</span><span class="info-value-compact" style="font-weight: bold; color: #3b82f6;">${price}₽</span></div>
+                </div>
+                <div class="ticket-number-compact">№ ${ticket.ticket_number}</div>
+                <div class="barcode-compact">
+                    <img src="${ticket.barcodeDataURL}" alt="Штрих-код" style="width: 200px; height: 60px; border: 1px solid #ddd; background: white; display: block; margin: 0 auto;" loading="lazy">
+                    <p style="font-size: 0.7rem; margin-top: 5px; color: #666; text-align: center;">Штрих-код для входа</p>
+                </div>
+                <div class="ticket-actions-compact">
+                    <button class="action-btn-compact save-btn-compact" onclick="saveSingleTicket(this)">Сохранить</button>
+                    <button class="action-btn-compact share-btn-compact" onclick="shareSingleTicket(this)">Поделиться</button>
                 </div>
             </div>
-        </div>
-        
-    </div>
-<div id="ticket-auth-required" style="display: none;">
-    <div class="ticket-auth-message">
-        <h3>Чтобы купить билет, необходимо зарегистрироваться или войти</h3>
-        <p>После регистрации вы сможете выбрать дату и время посещения, а также оплатить билет онлайн.</p>
-        <div class="auth-buttons">
-            <button class="auth-button primary" onclick="showAuthModal()">Зарегистрироваться</button>
-            <button class="auth-button secondary" onclick="switchAuthTab('login'); showAuthModal();">Войти</button>
+        </div>`;
+    }).join('');
+
+    ticketsGrid.innerHTML = ticketsHTML;
+
+    // Через 7 секунд убираем подсветку новых билетов
+    if (window.newTicketNumbers?.length) {
+        setTimeout(() => {
+            document.querySelectorAll('.ticket-card-compact.new-ticket').forEach(el => {
+                el.classList.remove('new-ticket');
+                const badge = el.querySelector('.new-ticket-badge');
+                if (badge) badge.remove();
+            });
+            window.newTicketNumbers = [];
+        }, 7000);
+    }
+}
+
+// ==================== СОХРАНЕНИЕ И ШЕРИНГ БИЛЕТОВ ====================
+function saveSingleTicket(button) {
+    const ticketCard = button.closest('.ticket-card-compact');
+    if (typeof html2canvas === 'undefined') {
+        showMessage('Функция сохранения недоступна');
+        return;
+    }
+    const originalText = button.textContent;
+    button.textContent = 'Сохраняем...';
+    button.disabled = true;
+
+    const tempContainer = document.createElement('div');
+    tempContainer.style.cssText = 'position:fixed;left:0;top:0;width:400px;z-index:-1000;opacity:0;pointer-events:none;';
+    const clone = ticketCard.cloneNode(true);
+    clone.style.width = '380px';
+    clone.style.margin = '10px auto';
+    clone.style.background = '#ffffff';
+    clone.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
+    tempContainer.appendChild(clone);
+    document.body.appendChild(tempContainer);
+
+    setTimeout(() => {
+        html2canvas(clone, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            allowTaint: false
+        }).then(canvas => {
+            const link = document.createElement('a');
+            const ticketNumber = ticketCard.querySelector('.ticket-number-compact')?.textContent?.replace(/[^\w]/g, '') || 'ticket';
+            link.download = `билет_${ticketNumber}.png`;
+            link.href = canvas.toDataURL('image/png', 1.0);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            document.body.removeChild(tempContainer);
+            button.textContent = '✓ Сохранено';
+            button.style.background = '#10b981';
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.background = '';
+                button.disabled = false;
+            }, 2000);
+            showMessage('Билет успешно сохранен!');
+        }).catch(() => {
+            document.body.removeChild(tempContainer);
+            simpleSaveTicket(ticketCard, button, originalText);
+        });
+    }, 100);
+}
+
+function simpleSaveTicket(ticketCard, button, originalText) {
+    const number = ticketCard.querySelector('.ticket-number-compact')?.textContent || 'Неизвестно';
+    const museum = ticketCard.querySelector('h3')?.textContent || 'Неизвестный музей';
+    const visitor = ticketCard.querySelector('.info-value-compact')?.textContent || 'Неизвестно';
+    const date = Array.from(ticketCard.querySelectorAll('.info-value-compact'))[3]?.textContent || 'Неизвестно';
+
+    const content = `БИЛЕТ В МУЗЕЙ\nМузей: ${museum}\nПосетитель: ${visitor}\nДата: ${date}\nНомер: ${number}\nПредъявите этот номер на входе.`;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    link.download = `билет_${number.replace(/\s+/g, '')}.txt`;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
+    button.textContent = originalText;
+    button.disabled = false;
+    showMessage('Билет сохранен в текстовом формате');
+}
+
+async function shareSingleTicket(button) {
+    const ticketCard = button.closest('.ticket-card-compact');
+    const ticketId = ticketCard ? ticketCard.dataset.ticketId : null;
+    if (!ticketId) {
+        showMessage('Не удалось определить билет');
+        return;
+    }
+
+    button.disabled = true;
+    const originalText = button.textContent;
+    button.textContent = 'Создание ссылки...';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/tickets/${ticketId}/share`, {
+            method: 'POST'
+        });
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || 'Ошибка сервера');
+        }
+        const data = await response.json();
+        const shareUrl = data.share_url;
+
+        // Показываем наше модальное окно
+        showShareModal(shareUrl);
+
+        button.textContent = '✓ Ссылка готова';
+        button.style.background = '#10b981';
+    } catch (error) {
+        showMessage('Не удалось создать ссылку');
+    } finally {
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.background = '';
+            button.disabled = false;
+        }, 2000);
+    }
+}
+
+async function shareTicketImage(element) {
+    if (typeof html2canvas === 'undefined') {
+        showMessage('Функция поделиться недоступна в этом браузере');
+        return;
+    }
+    const actionButtons = element.querySelectorAll('.ticket-actions-compact, .action-btn-compact');
+    const originalDisplays = [];
+    actionButtons.forEach(btn => {
+        originalDisplays.push(btn.style.display);
+        btn.style.display = 'none';
+    });
+
+    try {
+        const canvas = await html2canvas(element, { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff' });
+        actionButtons.forEach((btn, i) => { btn.style.display = originalDisplays[i] || ''; });
+
+        canvas.toBlob(async (blob) => {
+            if (!blob) { showMessage('Не удалось создать изображение'); return; }
+            const file = new File([blob], 'ticket.png', { type: 'image/png' });
+            const shareData = { files: [file] };
+
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {}
+            } else {
+                showMessage('Ваш браузер не поддерживает отправку изображений. Изображение будет сохранено.');
+                const link = document.createElement('a');
+                link.download = 'ticket.png';
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+        }, 'image/png');
+    } catch (error) {
+        showMessage('Не удалось подготовить билет для отправки');
+        actionButtons.forEach((btn, i) => { btn.style.display = originalDisplays[i] || ''; });
+    }
+}
+
+// ==================== ФОРМАТИРОВАНИЕ ДАТ ====================
+function formatDate(dateString) {
+    if (!dateString) return '';
+    try {
+        const d = new Date(dateString.includes('T') ? dateString : dateString + 'T00:00:00');
+        if (isNaN(d.getTime())) return dateString;
+        return d.toLocaleDateString('ru-RU');
+    } catch (e) { return dateString; }
+}
+
+function formatTime(timeString) {
+    if (!timeString) return '';
+    const parts = timeString.split(':');
+    return parts.length >= 2 ? parts[0] + ':' + parts[1] : timeString;
+}
+
+function formatDateTime(dateTimeString) {
+    if (!dateTimeString) return '';
+    const d = new Date(dateTimeString);
+    if (isNaN(d.getTime())) return dateTimeString;
+    return d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
+
+// ==================== LOCAL STORAGE ====================
+function saveUserToStorage(user) { localStorage.setItem('currentUser', JSON.stringify(user)); }
+function getUserFromStorage() { return JSON.parse(localStorage.getItem('currentUser') || 'null'); }
+function removeUserFromStorage() { localStorage.removeItem('currentUser'); }
+
+// ==================== ИНИЦИАЛИЗАЦИЯ ====================
+document.addEventListener('DOMContentLoaded', () => {
+    // Создать скрытый элемент для хранения финальной суммы
+let finalTotalSpan = document.getElementById('final-total');
+if (!finalTotalSpan) {
+    finalTotalSpan = document.createElement('span');
+    finalTotalSpan.id = 'final-total';
+    finalTotalSpan.style.display = 'none';
+    document.querySelector('.ticket-card')?.appendChild(finalTotalSpan);
+}
+    // Загрузка данных музеев
+    loadMuseumsData();
+
+    // Настройка валидации платёжной формы
+    setupPaymentValidation();
+
+    // Восстановление авторизации
+    checkAuth();
+
+    // Кнопка "Посмотреть музеи" в hero
+    document.querySelector('.hero-content button')?.addEventListener('click', () => {
+        document.querySelector('.museums-section').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Закрытие модалок по клику на фон
+    document.getElementById('auth-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) hideAuthModal();
+    });
+    document.getElementById('payment-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) closePaymentModal();
+    });
+
+    // Закрытие по Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (document.getElementById('auth-modal')?.style.display === 'flex') hideAuthModal();
+            if (document.getElementById('payment-modal')?.style.display === 'flex') closePaymentModal();
+        }
+    });
+
+    // Обработчик поля количества билетов
+    const ticketsInput = document.getElementById('tickets');
+    if (ticketsInput) {
+        ticketsInput.addEventListener('change', function() {
+            let val = parseInt(this.value);
+            if (val < 1) { this.value = 1; val = 1; }
+            if (selectedDateSlot && selectedTimeSlot && val > currentAvailableTickets) {
+                showMessage(`Доступно только ${currentAvailableTickets}`);
+                this.value = currentAvailableTickets;
+                val = currentAvailableTickets;
+            }
+            const defCat = ticketCategoriesData.length > 0 ? ticketCategoriesData[0].name : 'Стандартный';
+            while (ticketCategories.length < val) ticketCategories.push(defCat);
+            if (ticketCategories.length > val) ticketCategories = ticketCategories.slice(0, val);
+            updateTicketCategoriesUI();
+            updateTotal();
+        });
+    }
+});
+
+window.addEventListener('beforeunload', () => {
+    mainPageWsList.forEach(ws => ws.close());
+    if (museumWs) museumWs.close();
+    if (ticketCategoriesWs) ticketCategoriesWs.close();
+    if (globalMuseumWs) globalMuseumWs.close();   // <--
+});
+
+
+async function applyCoupon() {
+    const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+    const msgEl = document.getElementById('coupon-message');
+    const appliedEl = document.getElementById('coupon-applied');
+    const discountLabel = document.getElementById('coupon-discount-label');
+
+    if (!code) {
+        msgEl.innerHTML = '<span style="color:black;">Введите промокод</span>';
+        return;
+    }
+
+    if (!currentMuseumId) {
+        msgEl.innerHTML = '<span style="color:black;">Сначала выберите музей</span>';
+        return;
+    }
+
+    try {
+        const resp = await fetch(`${API_BASE_URL}/api/coupons/validate`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ code, museum_code: currentMuseumId })
+        });
+
+        if (!resp.ok) {
+            const err = await resp.json();
+            msgEl.innerHTML = `<span style="color:black;">${err.detail || 'Неверный промокод'}</span>`;
+            appliedEl.style.display = 'none';
+            appliedCoupon = null;
+            updateTotal(); // пересчет без скидки
+            return;
+        }
+
+        const data = await resp.json();
+        appliedCoupon = { code: data.code, discount_percent: data.discount_percent };
+        msgEl.innerHTML = '';
+        appliedEl.style.display = 'block';
+        discountLabel.textContent = ` (Скидка ${data.discount_percent}%)`;
+        updateTotal(); // пересчет с учетом скидки
+    } catch (error) {
+        msgEl.innerHTML = '<span style="color:black;">Ошибка проверки</span>';
+    }
+}
+// ========== ПОМОЩЬ ==========
+function openHelpModal() {
+    document.getElementById('helpModal').classList.add('active');
+    // Генерируем случайный email при открытии (меняется каждый раз)
+    const randomStr = Math.random().toString(36).substring(2, 10);
+    const randomEmail = `museum.help.${randomStr}@gmail.com`;
+    document.getElementById('randomEmailBtn').setAttribute('data-email', randomEmail);
+}
+
+function closeHelpModal() {
+    document.getElementById('helpModal').classList.remove('active');
+}
+
+// Аккордеон FAQ
+function toggleFaq(button) {
+    const faqItem = button.parentElement;
+    faqItem.classList.toggle('active');
+    // Обновляем стрелку (необязательно, можно через CSS поворачивать)
+    const arrow = button.querySelector('span');
+    if (arrow) {
+        arrow.textContent = faqItem.classList.contains('active') ? '▲' : '▼';
+    }
+}
+
+// Переход в Telegram (ссылка на несуществующего бота)
+function goToTelegram() {
+    window.open('https://t.me/MuseumHelpBot', '_blank');
+}
+
+// Почта со случайным адресом
+function goToEmail() {
+    const email = document.getElementById('randomEmailBtn').getAttribute('data-email');
+    window.location.href = `mailto:${email}`;
+}
+
+// Копирование номера телефона
+function copyPhoneNumber() {
+    const phoneNumber = '+7 (999) 123-45-67'; // можно заменить на реальный или оставить
+    navigator.clipboard.writeText(phoneNumber).then(() => {
+        showMessage('Номер скопирован: ' + phoneNumber);
+    }).catch(() => {
+        showMessage('Не удалось скопировать номер');
+    });
+}
+let currentShareUrl = '';
+
+function showShareModal(url) {
+    currentShareUrl = url;
+    document.getElementById('share-url-display').textContent = url;
+    document.getElementById('share-modal').style.display = 'flex';
+}
+
+function closeShareModal() {
+    document.getElementById('share-modal').style.display = 'none';
+}
+
+function shareVia(platform) {
+    const encodedUrl = encodeURIComponent(currentShareUrl);
+    const text = encodeURIComponent('Вот мой билет в музей!');
+
+    let shareLink = '';
+    switch (platform) {
+        case 'telegram':
+            shareLink = `https://t.me/share/url?url=${encodedUrl}&text=${text}`;
+            break;
+        case 'whatsapp':
+            shareLink = `https://wa.me/?text=${text}%20${encodedUrl}`;
+            break;
+        case 'vk':
+            shareLink = `https://vk.com/share.php?url=${encodedUrl}&title=${text}`;
+            break;
+    }
+
+    // Пытаемся открыть приложение/сайт
+    const newWindow = window.open(shareLink, '_blank', 'noopener,noreferrer');
+    if (!newWindow) {
+        // Если всплывающее окно заблокировано, копируем ссылку
+        copyToClipboard(currentShareUrl);
+        showMessage('Ссылка скопирована в буфер обмена');
+    }
+    // Закрываем модальное окно
+    closeShareModal();
+}
+
+async function copyShareLink() {
+    await copyToClipboard(currentShareUrl);
+    showMessage('Ссылка скопирована в буфер обмена');
+    closeShareModal();
+}
+
+// Функция копирования (уже есть, но если нет – добавьте)
+async function copyToClipboard(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+    }
+}
+     </script>
+
+
+<!-- Модальное окно "Поделиться билетом" -->
+<div id="share-modal" class="modal" onclick="if(event.target === this) closeShareModal()">
+    <div class="modal-content share-modal-content">
+        <h3>Поделиться билетом</h3>
+        <p style="word-break: break-all; font-size: 0.9rem; margin-bottom: 1.5rem;" id="share-url-display"></p>
+        <div class="share-buttons">
+            <button class="share-btn telegram" onclick="shareVia('telegram')">
+                <span class="icon">✈️</span> Telegram
+            </button>
+            <button class="share-btn whatsapp" onclick="shareVia('whatsapp')">
+                <span class="icon">💬</span> WhatsApp
+            </button>
+            <button class="share-btn vk" onclick="shareVia('vk')">
+                <span class="icon">🔵</span> ВКонтакте
+            </button>
+            <button class="share-btn copy" onclick="copyShareLink()">
+                <span class="icon">📋</span> Копировать ссылку
+            </button>
         </div>
     </div>
 </div>
-</div>
-        </div>
-    </div>
-
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-<script src="script.js"></script>
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
 </body>
 </html>
