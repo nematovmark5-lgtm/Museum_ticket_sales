@@ -1,6 +1,13 @@
 # MuseTicket – Дипломный проект
 Веб-платформа для онлайн-бронирования билетов в музей с поддержкой четырёх ролей: посетитель, кассир, администратор музея и генеральный директор.
 
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.95%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Pydantic](https://img.shields.io/badge/Pydantic-1.10%2B-e92063)](https://pydantic-docs.helpmanual.io/)
+[![Uvicorn](https://img.shields.io/badge/Uvicorn-0.20%2B-7b5ea7)](https://www.uvicorn.org/)
+[![WebSocket](https://img.shields.io/badge/WebSocket-enabled-9cf)](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+
 ## Функциональность
 ###Для посетителей
 * Просмотр каталога музеев с фотогалереей, описанием и ценами
